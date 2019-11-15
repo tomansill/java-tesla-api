@@ -2,16 +2,23 @@ package com.ansill.tesla.test.low;
 
 import com.ansill.tesla.low.LowLevelClient;
 import com.ansill.tesla.low.exception.APIProtocolException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Optional;
-import java.util.Scanner;
+import java.util.Properties;
 
 import static com.ansill.tesla.utility.Constants.*;
+import static com.ansill.tesla.utility.Utility.f;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LowLevelClientTest{
+
+    private static final File CREDENTIALS_FILE = new File("ignored/tesla-credentials.properties");
 
     private static String username = "";
 
@@ -19,35 +26,24 @@ class LowLevelClientTest{
 
     private static String test_vehicle = "";
 
-    //@BeforeAll
-    static void askCredentials(){
+    @BeforeAll
+    static void askCredentials() throws IOException {
 
-        // Announce
-        System.out.println("To run the tests, the tesla credentials are required");
+        // Ensure file exists
+        if (!CREDENTIALS_FILE.exists())
+            throw new RuntimeException(f("File located at '{}' does not exist!", CREDENTIALS_FILE.getPath()));
 
-        // Set up scanner
-        Scanner scanner = new Scanner(System.in);
+        // Open it up
+        Properties properties = new Properties();
+        try (Reader reader = new FileReader(CREDENTIALS_FILE)) {
+            properties.load(reader);
+        }
 
-        // Ask for username
-        do{
-            System.out.print("Your Tesla email (used for testing): ");
-            String input = scanner.nextLine().trim();
-            if(!input.isEmpty()){
-                username = input;
-                break;
-            }
-        }while(true);
-
-        // Ask for password
-        do{
-            System.out.print("Your Tesla password (used for testing): ");
-            String input = scanner.nextLine().trim();
-            if(!input.isEmpty()){
-                password = input;
-                break;
-            }
-        }while(true);
-
+        // Obtain attributes
+        username = properties.getProperty("username");
+        if (username == null) throw new RuntimeException(f("Expecting '{}' in the property file", "username"));
+        password = properties.getProperty("password");
+        if (password == null) throw new RuntimeException(f("Expecting '{}' in the property file", "password"));
     }
 
     @Test

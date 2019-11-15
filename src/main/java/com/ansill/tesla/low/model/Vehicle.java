@@ -6,21 +6,22 @@ import java.util.List;
 
 import static com.ansill.tesla.utility.Utility.fs;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 @Immutable
 public class Vehicle{
-    private final long id;
-    private final long vehicle_id;
-    private final String vin;
-    private final String option_codes;
-    private final String color;
-    private final List<String> tokens;
-    private final String state;
-    private final boolean in_service;
-    private final String id_s;
-    private final boolean calendar_enabled;
-    private final int api_version;
-    private final String backseat_token; // TODO confirm String
-    private final String backseat_token_updated_at; // TODO confirm String
+    protected final long id;
+    protected final long vehicle_id;
+    protected final String vin;
+    protected final String option_codes;
+    protected final String color;
+    protected final List<String> tokens;
+    protected final String state;
+    protected final boolean in_service;
+    protected final String id_s;
+    protected final boolean calendar_enabled;
+    protected final int api_version;
+    protected final String backseat_token; // TODO confirm String
+    protected final String backseat_token_updated_at; // TODO confirm String
 
     public Vehicle(
             long id,
@@ -108,7 +109,7 @@ public class Vehicle{
     public String toString(){
         return fs(
                 "Vehicle(id={}, vehicle_id={}, vin={}, option_codes={}, color={}, tokens={}, state={}, "
-                + "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={})",
+                        + "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={})",
                 id,
                 vehicle_id,
                 vin,
