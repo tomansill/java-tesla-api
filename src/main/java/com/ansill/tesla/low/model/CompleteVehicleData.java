@@ -3,7 +3,7 @@ package com.ansill.tesla.low.model;
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
-import static com.ansill.tesla.utility.Utility.fs;
+import static com.ansill.tesla.utility.Utility.getClassValues;
 
 @SuppressWarnings("unused")
 @Immutable
@@ -75,8 +75,14 @@ public class CompleteVehicleData extends Vehicle{
 
     @Override
     public String toString(){
+        return getClassValues(this);
+    }
+
+    /*
+    @Override
+    public String toString(){
         return fs(
-                "Vehicle(id={}, vehicle_id={}, vin={}, option_codes={}, color={}, tokens={}, state={}, "
+                "CompleteVehicleData(id={}, vehicle_id={}, vin={}, option_codes={}, color={}, tokens={}, state={}, "
                 +
                 "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={}, "
                 +
@@ -102,6 +108,7 @@ public class CompleteVehicleData extends Vehicle{
                 vehicle_config
         );
     }
+     */
 
     public ChargeState getChargeState(){
         return charge_state;

@@ -3,6 +3,8 @@ package com.ansill.tesla.low.model;
 
 import javax.annotation.concurrent.Immutable;
 
+import static com.ansill.tesla.utility.Utility.getClassValues;
+
 @SuppressWarnings("unused")
 @Immutable
 public class VehicleState{
@@ -314,5 +316,10 @@ public class VehicleState{
         public boolean getPinCodeSet(){
             return pin_code_set;
         }
+    }
+
+    @Override
+    public String toString(){
+        return getClassValues(this);
     }
 }

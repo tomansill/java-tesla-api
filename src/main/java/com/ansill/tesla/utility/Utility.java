@@ -5,6 +5,7 @@ import okhttp3.Response;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -109,5 +110,72 @@ public final class Utility{
         return builder.toString();
     }
 
+    public static String getClassValues(@Nullable Object object){
+
+        // Short circuit if null
+        if(object == null) return "null";
+        switch(object.getClass().getName()){
+            case "java.lang.Boolean":
+            case "java.lang.Integer":
+            case "java.lang.Long":
+            case "java.lang.Short":
+            case "java.lang.Byte":
+            case "java.lang.Double":
+            case "java.lang.Float":
+                return object.toString();
+            case "java.lang.String":
+                return "\"" + object.toString() + "\"";
+            default:
+                break;
+        }
+
+        // Set up builder
+        StringBuilder sb = new StringBuilder();
+
+        // Get object's class
+        sb.append(object.getClass().getSimpleName());
+
+        // Start the fields
+        sb.append("(");
+
+        // Get fields
+        boolean first = true;
+        for(Field field : object.getClass().getDeclaredFields()){
+
+            // First
+            if(first) first = false;
+            else sb.append(", ");
+
+            // Add field name
+            sb.append(field.getName());
+
+            // Add equals
+            sb.append("=");
+
+            // Get value
+            try{
+                sb.append(getClassValues(field.get(object)));
+            }catch(IllegalAccessException e){
+
+                // Try again but with accessible set to true
+                field.setAccessible(true);
+                try{
+                    sb.append(getClassValues(field.get(object)));
+                }catch(IllegalAccessException ex){
+                    throw new RuntimeException(e);
+                }finally{
+                    //field.setAccessible(false); // Undo it
+                }
+            }
+
+        }
+
+
+        // End the fields
+        sb.append(")");
+
+        // Finish the string
+        return sb.toString();
+    }
 }
 

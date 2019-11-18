@@ -2,6 +2,8 @@ package com.ansill.tesla.low.model;
 
 import javax.annotation.concurrent.Immutable;
 
+import static com.ansill.tesla.utility.Utility.getClassValues;
+
 @SuppressWarnings("unused")
 @Immutable
 public class ClimateState{
@@ -219,5 +221,10 @@ public class ClimateState{
 
     public boolean getWiperBladeHeater(){
         return wiper_blade_heater;
+    }
+
+    @Override
+    public String toString(){
+        return getClassValues(this);
     }
 }

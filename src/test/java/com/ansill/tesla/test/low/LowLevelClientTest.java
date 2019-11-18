@@ -211,4 +211,37 @@ class LowLevelClientTest{
         assertEquals(id_s, vehicle.orElseThrow().getIdString());
 
     }
+
+    @Test
+    void testGetVehicleDataValid() throws IOException{
+
+
+        // Use default
+        LowLevelClient client1 = new LowLevelClient();
+
+        // Send it
+        var response = client1.authenticate(username, password);
+
+        // Assert
+        assertNotEquals(Optional.empty(), response);
+
+        // Now obtain vehicles list
+        var vehicles = client1.getVehicles(response.orElseThrow().getAccessToken());
+
+        // Assert count
+        assertEquals(1, vehicles.size());
+
+        // Get a id
+        String id_s = vehicles.iterator().next().getIdString();
+
+        // Send it again
+        var vehicle = client1.getVehicleData(response.orElseThrow().getAccessToken(), id_s);
+
+        // Assert
+        assertNotEquals(Optional.empty(), vehicle);
+
+        // Assert count
+        assertEquals(id_s, vehicle.orElseThrow().getIdString());
+
+    }
 }

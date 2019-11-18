@@ -2,6 +2,8 @@ package com.ansill.tesla.low.model;
 
 import javax.annotation.concurrent.Immutable;
 
+import static com.ansill.tesla.utility.Utility.getClassValues;
+
 @SuppressWarnings("unused")
 @Immutable
 public class ChargeState{
@@ -295,5 +297,10 @@ public class ChargeState{
 
     public boolean getBatteryHeaterOn(){
         return battery_heater_on;
+    }
+
+    @Override
+    public String toString(){
+        return getClassValues(this);
     }
 }

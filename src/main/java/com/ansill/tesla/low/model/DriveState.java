@@ -2,6 +2,8 @@ package com.ansill.tesla.low.model;
 
 import javax.annotation.concurrent.Immutable;
 
+import static com.ansill.tesla.utility.Utility.getClassValues;
+
 @SuppressWarnings("unused")
 @Immutable
 public class DriveState{
@@ -93,5 +95,10 @@ public class DriveState{
 
     public long getTimestamp(){
         return timestamp;
+    }
+
+    @Override
+    public String toString(){
+        return getClassValues(this);
     }
 }

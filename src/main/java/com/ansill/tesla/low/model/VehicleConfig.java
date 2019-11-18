@@ -2,6 +2,8 @@ package com.ansill.tesla.low.model;
 
 import javax.annotation.concurrent.Immutable;
 
+import static com.ansill.tesla.utility.Utility.getClassValues;
+
 @SuppressWarnings("unused")
 @Immutable
 public class VehicleConfig{
@@ -177,5 +179,10 @@ public class VehicleConfig{
 
     public String getWheelType(){
         return wheel_type;
+    }
+
+    @Override
+    public String toString(){
+        return getClassValues(this);
     }
 }
