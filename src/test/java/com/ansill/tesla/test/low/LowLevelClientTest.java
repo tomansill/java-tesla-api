@@ -27,23 +27,23 @@ class LowLevelClientTest{
     private static String test_vehicle = "";
 
     @BeforeAll
-    static void askCredentials() throws IOException {
+    static void askCredentials() throws IOException{
 
         // Ensure file exists
-        if (!CREDENTIALS_FILE.exists())
+        if(!CREDENTIALS_FILE.exists())
             throw new RuntimeException(f("File located at '{}' does not exist!", CREDENTIALS_FILE.getPath()));
 
         // Open it up
         Properties properties = new Properties();
-        try (Reader reader = new FileReader(CREDENTIALS_FILE)) {
+        try(Reader reader = new FileReader(CREDENTIALS_FILE)){
             properties.load(reader);
         }
 
         // Obtain attributes
         username = properties.getProperty("username");
-        if (username == null) throw new RuntimeException(f("Expecting '{}' in the property file", "username"));
+        if(username == null) throw new RuntimeException(f("Expecting '{}' in the property file", "username"));
         password = properties.getProperty("password");
-        if (password == null) throw new RuntimeException(f("Expecting '{}' in the property file", "password"));
+        if(password == null) throw new RuntimeException(f("Expecting '{}' in the property file", "password"));
     }
 
     @Test

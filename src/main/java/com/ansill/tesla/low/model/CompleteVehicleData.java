@@ -6,7 +6,7 @@ import java.util.List;
 import static com.ansill.tesla.utility.Utility.fs;
 
 @Immutable
-public class CompleteVehicleData extends Vehicle {
+public class CompleteVehicleData extends Vehicle{
 
     public CompleteVehicleData(
             long id,
@@ -22,15 +22,29 @@ public class CompleteVehicleData extends Vehicle {
             int api_version,
             String backseat_token,
             String backseat_token_updated_at
-    ) {
-        super(id, vehicle_id, vin, option_codes, color, tokens, state, in_service, id_s, calendar_enabled, api_version, backseat_token, backseat_token_updated_at);
+    ){
+        super(
+                id,
+                vehicle_id,
+                vin,
+                option_codes,
+                color,
+                tokens,
+                state,
+                in_service,
+                id_s,
+                calendar_enabled,
+                api_version,
+                backseat_token,
+                backseat_token_updated_at
+        );
     }
 
     @Override
-    public String toString() {
+    public String toString(){
         return fs(
                 "Vehicle(id={}, vehicle_id={}, vin={}, option_codes={}, color={}, tokens={}, state={}, "
-                        + "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={})",
+                + "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={})",
                 id,
                 vehicle_id,
                 vin,

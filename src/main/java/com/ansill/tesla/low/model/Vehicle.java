@@ -109,7 +109,7 @@ public class Vehicle{
     public String toString(){
         return fs(
                 "Vehicle(id={}, vehicle_id={}, vin={}, option_codes={}, color={}, tokens={}, state={}, "
-                        + "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={})",
+                + "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={})",
                 id,
                 vehicle_id,
                 vin,
