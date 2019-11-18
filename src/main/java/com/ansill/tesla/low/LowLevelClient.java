@@ -325,21 +325,25 @@ public final class LowLevelClient{
         }
     }
 
+    @SuppressWarnings("unused")
     private static class FailedAuthenticationResponse{
         private String error;
         private String error_description;
         private String response;
     }
 
+    @SuppressWarnings("unused")
     private static class VehiclesResponse{
         private List<Vehicle> response;
         private int count;
     }
 
+    @SuppressWarnings("unused")
     private static class VehicleResponse{
         private Vehicle response;
     }
 
+    @SuppressWarnings("unused")
     private static class CompleteVehicleDataResponse{
         private CompleteVehicleData response;
     }
