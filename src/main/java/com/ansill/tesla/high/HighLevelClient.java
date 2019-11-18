@@ -1,9 +1,9 @@
-package com.ansill.tesla.high;
+package com.ansill.tesla.test.low.high;
 
-import com.ansill.tesla.high.model.CompleteVehicleData;
-import com.ansill.tesla.high.model.SuccessfulAuthenticationResponse;
-import com.ansill.tesla.high.model.Vehicle;
 import com.ansill.tesla.low.LowLevelClient;
+import com.ansill.tesla.test.low.high.model.CompleteVehicleData;
+import com.ansill.tesla.test.low.high.model.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.test.low.high.model.Vehicle;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

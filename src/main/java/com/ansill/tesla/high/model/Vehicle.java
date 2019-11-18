@@ -13,7 +13,7 @@ public class Vehicle{
     @Nonnull
     private final State state;
 
-    private Vehicle(@Nonnull String id, @Nonnull String vin, @Nonnull State state){
+    protected Vehicle(@Nonnull String id, @Nonnull String vin, @Nonnull State state){
         this.id = id;
         this.vin = vin;
         this.state = state;
@@ -43,7 +43,7 @@ public class Vehicle{
         return state;
     }
 
-    private enum State{
+    public enum State{
         ONLINE,
         OFFLINE // TODO confirm if there are other values
     }

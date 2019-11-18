@@ -1,4 +1,4 @@
-package com.ansill.tesla.test.low;
+package com.ansill.tesla.test;
 
 import com.ansill.tesla.low.LowLevelClient;
 import com.ansill.tesla.low.exception.APIProtocolException;
@@ -209,6 +209,78 @@ class LowLevelClientTest{
 
         // Assert count
         assertEquals(id_s, vehicle.orElseThrow().getIdString());
+
+    }
+
+    @Test
+    void testLockUnlockValid() throws IOException, InterruptedException{
+
+
+        // Use default
+        LowLevelClient client = new LowLevelClient();
+
+        // Send it
+        var access_token = client.authenticate(username, password).orElseThrow().getAccessToken();
+
+        // Assert
+        assertNotEquals(Optional.empty(), access_token);
+
+        // Now obtain vehicles list
+        var vehicles = client.getVehicles(access_token);
+
+        // Assert count
+        assertEquals(1, vehicles.size());
+
+        // Get a id
+        String id_s = vehicles.iterator().next().getIdString();
+
+        // Send it again
+        var vehicle = client.getVehicleData(access_token, id_s).orElseThrow();
+
+        // Now get lock state
+        boolean old_state = vehicle.getVehicleState().getLocked();
+
+        // Unlock it first then lock it or vice versa
+        if(old_state){
+
+            // Unlock
+            assertNotEquals(Optional.empty(), client.unlockDoors(access_token, id_s));
+
+            // Wait a bit
+            Thread.sleep(3000);
+
+            // Get status
+            assertFalse(client.getVehicleData(access_token, id_s).orElseThrow().getVehicleState().getLocked());
+
+            // Then lock
+            assertNotEquals(Optional.empty(), client.lockDoors(access_token, id_s));
+
+            // Wait a bit
+            Thread.sleep(3000);
+
+            // Get status
+            assertTrue(client.getVehicleData(access_token, id_s).orElseThrow().getVehicleState().getLocked());
+
+        }else{
+
+            // Lock
+            assertNotEquals(Optional.empty(), client.lockDoors(access_token, id_s));
+
+            // Wait a bit
+            Thread.sleep(3000);
+
+            // Get status
+            assertTrue(client.getVehicleData(access_token, id_s).orElseThrow().getVehicleState().getLocked());
+
+            // Then unlock
+            assertNotEquals(Optional.empty(), client.unlockDoors(access_token, id_s));
+
+            // Wait a bit
+            Thread.sleep(3000);
+
+            // Get status
+            assertFalse(client.getVehicleData(access_token, id_s).orElseThrow().getVehicleState().getLocked());
+        }
 
     }
 

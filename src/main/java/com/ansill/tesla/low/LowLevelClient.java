@@ -2,14 +2,17 @@ package com.ansill.tesla.low;
 
 import com.ansill.tesla.low.exception.APIProtocolException;
 import com.ansill.tesla.low.model.CompleteVehicleData;
+import com.ansill.tesla.low.model.SimpleResponse;
 import com.ansill.tesla.low.model.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.low.model.Vehicle;
 import com.ansill.tesla.utility.Utility;
 import com.ansill.validation.Validation;
 import com.google.gson.Gson;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import javax.annotation.Nonnull;
@@ -281,6 +284,138 @@ public final class LowLevelClient{
 
                 // Throw error if unexpected
             else throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
+
+        }
+    }
+
+    @Nonnull
+    public Optional<Vehicle> wakeup(@Nonnull String access_token, @Nonnull String id_s)
+    throws IOException{
+
+        // Check parameters
+        Validation.assertNonnull(access_token, "access_token");
+
+        // Check parameters
+        Validation.assertNonnull(id_s, "id_s");
+
+        // Set up request
+        Request request = new Request.Builder().url(url + "api/1/vehicles/" + id_s + "/wake_up")
+                                               .addHeader("Authorization", "Bearer " + access_token)
+                                               .post(RequestBody.create(MediaType.parse("text/plain"), ""))
+                                               .build();
+
+        // Send request
+        try(Response response = new OkHttpClient().newCall(request).execute()){
+
+            // Handle if 200
+            if(response.code() == 200){
+
+                // Get body
+                var body = Utility.getStringFromResponseBody(response)
+                                  .orElseThrow(() -> new APIProtocolException("The request body is null!"));
+
+                // Convert json response to object
+                var list = new Gson().fromJson(body, VehiclesResponse.class).response;
+
+                // The list should be non-empty
+                if(list.isEmpty()) return Optional.empty();
+                else return Optional.of(list.iterator().next());
+            }
+
+            // Return empty if not found
+            else if(response.code() == 404) return Optional.empty();
+
+                // Throw error if unexpected
+            else throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
+
+        }
+    }
+
+    @Nonnull
+    public Optional<SimpleResponse> unlockDoors(@Nonnull String access_token, @Nonnull String id_s)
+    throws IOException{
+
+        // Check parameters
+        Validation.assertNonnull(access_token, "access_token");
+
+        // Check parameters
+        Validation.assertNonnull(id_s, "id_s");
+
+        // Set up request
+        Request request = new Request.Builder().url(url + "api/1/vehicles/" + id_s + "/command/door_unlock")
+                                               .addHeader("Authorization", "Bearer " + access_token)
+                                               .post(RequestBody.create(MediaType.parse("text/plain"), ""))
+                                               .build();
+
+        // Send request
+        try(Response response = new OkHttpClient().newCall(request).execute()){
+
+            // Handle if 200
+            if(response.code() == 200){
+
+                // Get body
+                var body = Utility.getStringFromResponseBody(response)
+                                  .orElseThrow(() -> new APIProtocolException("The request body is null!"));
+
+                // Convert json response to object
+                return Optional.of(new Gson().fromJson(body, SimpleResponse.class));
+            }
+
+            // Return empty if not found
+            else if(response.code() == 404){
+
+                return Optional.empty();
+            }
+
+            // Throw error if unexpected
+            else throw new APIProtocolException(f(
+                        "Unexpected status code: {} body: {}",
+                        response.code(),
+                        Utility.getStringFromResponseBody(response)
+                ));
+
+        }
+    }
+
+    @Nonnull
+    public Optional<SimpleResponse> lockDoors(@Nonnull String access_token, @Nonnull String id_s)
+    throws IOException{
+
+        // Check parameters
+        Validation.assertNonnull(access_token, "access_token");
+
+        // Check parameters
+        Validation.assertNonnull(id_s, "id_s");
+
+        // Set up request
+        Request request = new Request.Builder().url(url + "api/1/vehicles/" + id_s + "/command/door_lock")
+                                               .addHeader("Authorization", "Bearer " + access_token)
+                                               .post(RequestBody.create(MediaType.parse("text/plain"), ""))
+                                               .build();
+
+        // Send request
+        try(Response response = new OkHttpClient().newCall(request).execute()){
+
+            // Handle if 200
+            if(response.code() == 200){
+
+                // Get body
+                var body = Utility.getStringFromResponseBody(response)
+                                  .orElseThrow(() -> new APIProtocolException("The request body is null!"));
+
+                // Convert json response to object
+                return Optional.of(new Gson().fromJson(body, SimpleResponse.class));
+            }
+
+            // Return empty if not found
+            else if(response.code() == 404) return Optional.empty();
+
+                // Throw error if unexpected
+            else throw new APIProtocolException(f(
+                        "Unexpected status code: {} body: {}",
+                        response.code(),
+                        Utility.getStringFromResponseBody(response)
+                ));
 
         }
     }
