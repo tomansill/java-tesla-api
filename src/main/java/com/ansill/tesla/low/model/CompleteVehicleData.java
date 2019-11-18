@@ -5,8 +5,16 @@ import java.util.List;
 
 import static com.ansill.tesla.utility.Utility.fs;
 
+@SuppressWarnings("unused")
 @Immutable
 public class CompleteVehicleData extends Vehicle{
+
+    private final GuiSettings gui_settings;
+    private final DriveState drive_state;
+    private final ChargeState charge_state;
+    private final ClimateState climate_state;
+    private final VehicleState vehicle_state;
+    private final VehicleConfig vehicle_config;
 
     public CompleteVehicleData(
             long id,
@@ -21,7 +29,10 @@ public class CompleteVehicleData extends Vehicle{
             boolean calendar_enabled,
             int api_version,
             String backseat_token,
-            String backseat_token_updated_at
+            String backseat_token_updated_at,
+            GuiSettings gui_settings, DriveState drive_state, ChargeState charge_state,
+            ClimateState climate_state,
+            VehicleState vehicle_state, VehicleConfig vehicle_config
     ){
         super(
                 id,
@@ -38,13 +49,38 @@ public class CompleteVehicleData extends Vehicle{
                 backseat_token,
                 backseat_token_updated_at
         );
+        this.gui_settings = gui_settings;
+        this.drive_state = drive_state;
+        this.charge_state = charge_state;
+        this.climate_state = climate_state;
+        this.vehicle_state = vehicle_state;
+        this.vehicle_config = vehicle_config;
+    }
+
+    public DriveState getDriveState(){
+        return drive_state;
+    }
+
+    public GuiSettings getGuiSettings(){
+        return gui_settings;
+    }
+
+    public VehicleState getVehicleState(){
+        return vehicle_state;
+    }
+
+    public VehicleConfig getVehicleConfig(){
+        return vehicle_config;
     }
 
     @Override
     public String toString(){
         return fs(
                 "Vehicle(id={}, vehicle_id={}, vin={}, option_codes={}, color={}, tokens={}, state={}, "
-                + "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={})",
+                +
+                "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={}, "
+                +
+                "drive_state={}, climate_state={}, charge_state={}, gui_settings={], vehicle_state={}, vehicle_config={})",
                 id,
                 vehicle_id,
                 vin,
@@ -57,7 +93,21 @@ public class CompleteVehicleData extends Vehicle{
                 calendar_enabled,
                 api_version,
                 backseat_token,
-                backseat_token_updated_at
+                backseat_token_updated_at,
+                drive_state,
+                climate_state,
+                charge_state,
+                gui_settings,
+                vehicle_state,
+                vehicle_config
         );
+    }
+
+    public ChargeState getChargeState(){
+        return charge_state;
+    }
+
+    public ClimateState getClimateState(){
+        return climate_state;
     }
 }

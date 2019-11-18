@@ -1,6 +1,7 @@
 package com.ansill.tesla.low;
 
 import com.ansill.tesla.low.exception.APIProtocolException;
+import com.ansill.tesla.low.model.CompleteVehicleData;
 import com.ansill.tesla.low.model.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.low.model.Vehicle;
 import com.ansill.tesla.utility.Utility;
@@ -284,6 +285,46 @@ public final class LowLevelClient{
         }
     }
 
+    @Nonnull
+    public Optional<CompleteVehicleData> getVehicleData(@Nonnull String access_token, @Nonnull String id_s)
+    throws IOException{
+
+        // Check parameters
+        Validation.assertNonnull(access_token, "access_token");
+
+        // Check parameters
+        Validation.assertNonnull(id_s, "id_s");
+
+        // Set up request
+        Request request = new Request.Builder().url(url + "api/1/vehicles/" + id_s + "/vehicle_data")
+                                               .addHeader("Authorization", "Bearer " + access_token)
+                                               .get()
+                                               .build();
+
+        // Send request
+        try(Response response = new OkHttpClient().newCall(request).execute()){
+
+            // Handle if 200
+            if(response.code() == 200){
+
+                // Get body
+                var body = Utility.getStringFromResponseBody(response)
+                                  .orElseThrow(() -> new APIProtocolException("The request body is null!"));
+
+                // Convert json response to object
+                return Optional.of(new Gson().fromJson(body, CompleteVehicleDataResponse.class).response);
+
+            }
+
+            // Return empty if not found
+            else if(response.code() == 404) return Optional.empty();
+
+                // Throw error if unexpected
+            else throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
+
+        }
+    }
+
     private static class FailedAuthenticationResponse{
         private String error;
         private String error_description;
@@ -297,6 +338,10 @@ public final class LowLevelClient{
 
     private static class VehicleResponse{
         private Vehicle response;
+    }
+
+    private static class CompleteVehicleDataResponse{
+        private CompleteVehicleData response;
     }
 
 }

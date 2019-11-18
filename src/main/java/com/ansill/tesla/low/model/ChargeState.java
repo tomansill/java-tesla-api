@@ -181,7 +181,7 @@ public class ChargeState{
         return charge_port_cold_weather_mode;
     }
 
-    public boolean isChargePort_door_open(){
+    public boolean getChargePortDoorOpen(){
         return charge_port_door_open;
     }
 
@@ -193,7 +193,7 @@ public class ChargeState{
         return charge_rate;
     }
 
-    public boolean isChargeToMaxRange(){
+    public boolean getChargeToMaxRange(){
         return charge_to_max_range;
     }
 
@@ -213,7 +213,7 @@ public class ChargeState{
         return charger_power;
     }
 
-    public int getCharger_voltage(){
+    public int getChargerVoltage(){
         return charger_voltage;
     }
 
@@ -233,7 +233,7 @@ public class ChargeState{
         return fast_charger_brand;
     }
 
-    public boolean isFastChargerPresent(){
+    public boolean getFastChargerPresent(){
         return fast_charger_present;
     }
 
@@ -245,7 +245,7 @@ public class ChargeState{
         return ideal_battery_range;
     }
 
-    public boolean isManagedChargingActive(){
+    public boolean getManagedChargingActive(){
         return managed_charging_active;
     }
 
@@ -253,7 +253,7 @@ public class ChargeState{
         return managed_charging_start_time;
     }
 
-    public boolean isManagedChargingUserCanceled(){
+    public boolean getManagedChargingUserCanceled(){
         return managed_charging_user_canceled;
     }
 
@@ -261,11 +261,11 @@ public class ChargeState{
         return max_range_charger_counter;
     }
 
-    public boolean isNotEnoughPowerTo_heat(){
+    public boolean getNotEnoughPowerToHeat(){
         return not_enough_power_to_heat;
     }
 
-    public boolean isScheduledChargingPending(){
+    public boolean getScheduledChargingPending(){
         return scheduled_charging_pending;
     }
 
@@ -293,7 +293,7 @@ public class ChargeState{
         return battery_level;
     }
 
-    public boolean isBatteryHeaterOn(){
+    public boolean getBatteryHeaterOn(){
         return battery_heater_on;
     }
 }
