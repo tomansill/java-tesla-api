@@ -205,6 +205,35 @@ public final class Client{
         }
     }
 
+    public void revokeToken(@Nonnull String refreshToken){
+
+        // Check parameters
+        Validation.assertNonnull(refreshToken, "refreshToken");
+
+        // Set up body
+        var requestBody = new FormBody.Builder().add("token", refreshToken).build();
+
+        // Set up request
+        Request request = new Request.Builder().url(url + "oauth/revoke")
+                                               .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                                               .post(requestBody)
+                                               .build();
+
+        // Send request
+        try(Response response = new OkHttpClient().newCall(request).execute()){
+
+            // Handle code
+            if(response.code() != 200){
+                throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
+            }
+
+        }catch(IOException e){
+
+            // Wrap and re-throw
+            throw new ClientException("Unhandled Exception has occurred", e);
+        }
+    }
+
     @Nonnull
     public SuccessfulAuthenticationResponse refreshToken(@Nonnull String refreshToken) throws ReAuthenticationException{
 
@@ -291,11 +320,7 @@ public final class Client{
                 case 200 -> fromJson(response, VehiclesResponse.class);
 
                 // Unauthenticated
-                case 401 -> {
-
-                    // TODO
-                    throw new RuntimeException("Unimplemented");
-                }
+                case 401 -> throw new InvalidAccessTokenException();
 
                 // Unknown
                 default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
@@ -333,11 +358,7 @@ public final class Client{
                 case 200 -> Optional.of(fromJson(response, VehicleResponse.class));
 
                 // Unauthenticated
-                case 401 -> {
-
-                    // TODO
-                    throw new RuntimeException("Unimplemented");
-                }
+                case 401 -> throw new InvalidAccessTokenException();
 
                 // Not found
                 case 404 -> Optional.empty();
@@ -379,11 +400,7 @@ public final class Client{
                 case 200 -> fromJson(response, VehiclesResponse.class);
 
                 // Unauthenticated
-                case 401 -> {
-
-                    // TODO
-                    throw new RuntimeException("Unimplemented");
-                }
+                case 401 -> throw new InvalidAccessTokenException();
 
                 // Not found
                 case 404 -> throw new VehicleIDNotFoundException(idString);
@@ -425,11 +442,7 @@ public final class Client{
                 case 200 -> fromJson(response, SimpleReasonResponse.class);
 
                 // Unauthenticated
-                case 401 -> {
-
-                    // TODO
-                    throw new RuntimeException("Unimplemented");
-                }
+                case 401 -> throw new InvalidAccessTokenException();
 
                 // Not found
                 case 404 -> throw new VehicleIDNotFoundException(idString);
@@ -471,11 +484,7 @@ public final class Client{
                 case 200 -> fromJson(response, SimpleReasonResponse.class);
 
                 // Unauthenticated
-                case 401 -> {
-
-                    // TODO
-                    throw new RuntimeException("Unimplemented");
-                }
+                case 401 -> throw new InvalidAccessTokenException();
 
                 // Not found
                 case 404 -> throw new VehicleIDNotFoundException(idString);
@@ -517,11 +526,7 @@ public final class Client{
                 case 200 -> fromJson(response, CompleteVehicleDataResponse.class);
 
                 // Unauthenticated
-                case 401 -> {
-
-                    // TODO
-                    throw new RuntimeException("Unimplemented");
-                }
+                case 401 -> throw new InvalidAccessTokenException();
 
                 // Not found
                 case 404 -> throw new VehicleIDNotFoundException(idString);

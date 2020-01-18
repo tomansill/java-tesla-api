@@ -1,5 +1,7 @@
 package com.ansill.tesla.test;
 
+import com.ansill.tesla.low.model.Vehicle;
+import com.ansill.tesla.test.fake.mock.MockModel;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnegative;
@@ -11,6 +13,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import static com.ansill.tesla.utility.Utility.f;
@@ -48,6 +52,34 @@ public final class TestUtility{
 
         // Throw it
         throw new RuntimeException("Cannot find any open ports!");
+    }
+
+    public static MockModel.VehicleAccount createParkingVehicle(){
+        long id = new Random().nextLong();
+        long vehicle_id = new Random().nextLong();
+        var vehicle = new Vehicle(
+                id,
+                vehicle_id,
+                generateString(32),
+                IntStream.range(0, new Random().nextInt(32) + 1)
+                         .asLongStream()
+                         .mapToObj(item -> generateString(6))
+                         .collect(Collectors.joining(",")),
+                null, // Always null...
+                IntStream.range(0, new Random().nextInt(2) + 1)
+                         .asLongStream()
+                         .mapToObj(item -> generateString(16))
+                         .collect(Collectors.toList()),
+                "online",
+                false,
+                id + "",
+                true,
+                6,
+                null,
+                null
+
+        );
+        return new MockModel.VehicleAccount(new AtomicReference<>(vehicle));
     }
 
     public static synchronized void unreservePort(@Nonnegative int port){

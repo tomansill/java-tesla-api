@@ -10,7 +10,7 @@ public class InvalidAccessTokenException extends RuntimeException{
     private static final String MESSAGE = "Invalid Access Token";
 
     /**
-     * Constructor that takes in emailAddress and formats exception message
+     * Constructor that formats exception message
      */
     public InvalidAccessTokenException(){
         super(MESSAGE);

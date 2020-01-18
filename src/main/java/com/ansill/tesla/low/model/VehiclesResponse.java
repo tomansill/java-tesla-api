@@ -24,7 +24,7 @@ public class VehiclesResponse{
      * @param response response
      * @param count    count
      */
-    private VehiclesResponse(@Nonnull List<Vehicle> response, @Nonnegative int count){
+    public VehiclesResponse(@Nonnull List<Vehicle> response, @Nonnegative int count){
         this.response = response;
         this.count = count;
     }
