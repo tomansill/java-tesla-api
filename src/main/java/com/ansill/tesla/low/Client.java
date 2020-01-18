@@ -7,7 +7,7 @@ import com.ansill.tesla.low.exception.InvalidAccessTokenException;
 import com.ansill.tesla.low.exception.ReAuthenticationException;
 import com.ansill.tesla.low.exception.VehicleIDNotFoundException;
 import com.ansill.tesla.low.model.CompleteVehicleDataResponse;
-import com.ansill.tesla.low.model.FailedAuthenticationResponse;
+import com.ansill.tesla.low.model.GenericErrorResponse;
 import com.ansill.tesla.low.model.SimpleReasonResponse;
 import com.ansill.tesla.low.model.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.low.model.VehicleResponse;
@@ -158,7 +158,7 @@ public final class Client{
                 case 401 -> {
 
                     // Parse error
-                    var error = fromJson(response, FailedAuthenticationResponse.class);
+                    var error = fromJson(response, GenericErrorResponse.class);
 
                     // If we get an response, ignore other error
                     if(error.getResponse().isPresent()){
@@ -266,7 +266,7 @@ public final class Client{
                 case 401 -> {
 
                     // Get error
-                    var error = fromJson(response, FailedAuthenticationResponse.class);
+                    var error = fromJson(response, GenericErrorResponse.class);
 
                     // Find out whether if it's password invalid or protocol error
                     if(!"invalid_grant".equals(error.getError().orElse(""))){

@@ -1,6 +1,6 @@
 package com.ansill.tesla.test.fake.mock;
 
-import com.ansill.tesla.low.model.FailedAuthenticationResponse;
+import com.ansill.tesla.low.model.GenericErrorResponse;
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -35,7 +35,7 @@ public class OAuthTokenEndpoint implements Handler{
            !map.containsKey("client_secret")
         ){
             context.status(401);
-            context.result(new Gson().toJson(new FailedAuthenticationResponse(
+            context.result(new Gson().toJson(new GenericErrorResponse(
                     "invalid_request",
                     "The request is missing a required parameter, includes an unsupported parameter value, or is otherwise malformed.",
                     null
@@ -47,7 +47,7 @@ public class OAuthTokenEndpoint implements Handler{
         if(!clientId.equals(map.get("client_id").iterator().next()) || !clientSecret.equals(map.get(
                 "client_secret").iterator().next())){
             context.status(401);
-            context.result(new Gson().toJson(new FailedAuthenticationResponse(
+            context.result(new Gson().toJson(new GenericErrorResponse(
                     "invalid_client",
                     "The request is missing a required parameter, includes an unsupported parameter value, or is otherwise malformed.",
                     // TODO get correct message?
@@ -67,7 +67,7 @@ public class OAuthTokenEndpoint implements Handler{
                 // Ensure refresh_token are provided
                 if(!map.containsKey("refresh_token")){
                     context.status(401);
-                    context.result(new Gson().toJson(new FailedAuthenticationResponse(
+                    context.result(new Gson().toJson(new GenericErrorResponse(
                             "invalid_request",
                             "The request is missing a required parameter, includes an unsupported parameter value, or is otherwise malformed.",
                             null
@@ -87,7 +87,7 @@ public class OAuthTokenEndpoint implements Handler{
                     context.result(new Gson().toJson(result.get()));
                 }else{
                     context.status(401);
-                    context.result(new Gson().toJson(new FailedAuthenticationResponse(
+                    context.result(new Gson().toJson(new GenericErrorResponse(
                             "invalid_grant",
                             "The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.",
                             null
@@ -100,7 +100,7 @@ public class OAuthTokenEndpoint implements Handler{
                 // Ensure email and password are provided
                 if(!map.containsKey("email") || !map.containsKey("password")){
                     context.status(401);
-                    context.result(new Gson().toJson(new FailedAuthenticationResponse(
+                    context.result(new Gson().toJson(new GenericErrorResponse(
                             "invalid_request",
                             "The request is missing a required parameter, includes an unsupported parameter value, or is otherwise malformed.",
                             null
@@ -121,7 +121,7 @@ public class OAuthTokenEndpoint implements Handler{
                     context.result(new Gson().toJson(result.get()));
                 }else{
                     context.status(401);
-                    context.result(new Gson().toJson(new FailedAuthenticationResponse(
+                    context.result(new Gson().toJson(new GenericErrorResponse(
                             null,
                             null,
                             f("authorization_required_for_txid_'{}'", generateString(32))

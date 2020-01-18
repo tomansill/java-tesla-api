@@ -7,9 +7,9 @@ import java.util.Optional;
 
 import static com.ansill.tesla.utility.Utility.simpleToString;
 
-/** Failed Authentication Response */
+/** Generic Error Response */
 @Immutable
-public class FailedAuthenticationResponse{
+public class GenericErrorResponse{
 
     /** String that describes type of error */
     @Nullable
@@ -23,7 +23,7 @@ public class FailedAuthenticationResponse{
     @Nullable
     private final String response;
 
-    public FailedAuthenticationResponse(
+    public GenericErrorResponse(
             @Nullable String error,
             @Nullable String errorDescription,
             @Nullable String response

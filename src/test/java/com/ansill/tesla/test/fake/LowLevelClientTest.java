@@ -3,6 +3,7 @@ package com.ansill.tesla.test.fake;
 import com.ansill.tesla.low.Client;
 import com.ansill.tesla.low.exception.AuthenticationException;
 import com.ansill.tesla.low.exception.ClientException;
+import com.ansill.tesla.low.exception.InvalidAccessTokenException;
 import com.ansill.tesla.low.exception.ReAuthenticationException;
 import com.ansill.tesla.test.TestUtility;
 import com.ansill.tesla.test.fake.mock.MockModel;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.ansill.tesla.test.TestUtility.generateEmailAddress;
@@ -228,4 +230,119 @@ class LowLevelClientTest{
         // TODO check insides
     }
 
+    @Test
+    void getVehiclesInvalidToken(){
+
+        // Set up username and password
+        var emailAddress = generateEmailAddress();
+        var password = generateString(32);
+
+        // Init store
+        assertTrue(store.addAccount(emailAddress, password));
+
+        // Authenticate it
+        store.authenticate(emailAddress, password).orElseThrow();
+
+        // Run it
+        assertThrows(InvalidAccessTokenException.class, () -> client.getVehicles(generateString(32)));
+    }
+
+    @Test
+    void getVehicleNotFound(){
+
+        // Set up username and password
+        var emailAddress = generateEmailAddress();
+        var password = generateString(32);
+
+        // Create vehicles
+        var v1 = TestUtility.createParkingVehicle();
+        var v2 = TestUtility.createParkingVehicle();
+        var v3 = TestUtility.createParkingVehicle();
+
+        // Init store
+        assertTrue(store.addAccount(emailAddress, password));
+        assertTrue(store.addVehicleToAccount(emailAddress, v1));
+        assertTrue(store.addVehicleToAccount(emailAddress, v2));
+        assertTrue(store.addVehicleToAccount(emailAddress, v3));
+
+        // Authenticate it
+        var response = store.authenticate(emailAddress, password).orElseThrow();
+
+        // Run it
+        var item = assertDoesNotThrow(() -> client.getVehicle(response.getAccessToken(), generateString(32)));
+
+        // Assert not null
+        assertNotNull(item);
+
+        // Assert empty
+        assertEquals(Optional.empty(), item);
+
+        // TODO check insides
+    }
+
+
+    @Test
+    void getVehicleBadToken(){
+
+        // Set up username and password
+        var emailAddress = generateEmailAddress();
+        var password = generateString(32);
+
+        // Create vehicles
+        var v1 = TestUtility.createParkingVehicle();
+        var v2 = TestUtility.createParkingVehicle();
+        var v3 = TestUtility.createParkingVehicle();
+
+        // Init store
+        assertTrue(store.addAccount(emailAddress, password));
+        assertTrue(store.addVehicleToAccount(emailAddress, v1));
+        assertTrue(store.addVehicleToAccount(emailAddress, v2));
+        assertTrue(store.addVehicleToAccount(emailAddress, v3));
+
+        // Authenticate it
+        store.authenticate(emailAddress, password).orElseThrow();
+
+        // Run it
+        assertThrows(
+                InvalidAccessTokenException.class,
+                () -> client.getVehicle(generateString(23), v2.vehicleAtomicReference.get().getIdString())
+        );
+
+    }
+
+    @Test
+    void getVehicleSuccess(){
+
+        // Set up username and password
+        var emailAddress = generateEmailAddress();
+        var password = generateString(32);
+
+        // Create vehicles
+        var v1 = TestUtility.createParkingVehicle();
+        var v2 = TestUtility.createParkingVehicle();
+        var v3 = TestUtility.createParkingVehicle();
+
+        // Init store
+        assertTrue(store.addAccount(emailAddress, password));
+        assertTrue(store.addVehicleToAccount(emailAddress, v1));
+        assertTrue(store.addVehicleToAccount(emailAddress, v2));
+        assertTrue(store.addVehicleToAccount(emailAddress, v3));
+
+        // Authenticate it
+        var response = store.authenticate(emailAddress, password).orElseThrow();
+
+        // Run it
+        var item = assertDoesNotThrow(() -> client.getVehicle(
+                response.getAccessToken(),
+                v2.vehicleAtomicReference.get().getIdString()
+        ));
+
+        // Assert not null
+        assertNotNull(item);
+
+        // Assert not empty
+        assertNotEquals(Optional.empty(), item);
+
+        // TODO check insides
+    }
 }

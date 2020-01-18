@@ -49,7 +49,10 @@ public class MockServer implements AutoCloseable{
             path("oauth/revoke", () -> post(new OAuthRevokeEndpoint(model)));
 
             // Vehicles
-            path("api/1/vehicles", () -> get(new VehiclesEndpoint(model)));
+            path("api/1/vehicles", () -> {
+                get(new VehiclesEndpoint(model));
+                path(":id", () -> get(new VehicleEndpoint(model)));
+            });
         });
 
 

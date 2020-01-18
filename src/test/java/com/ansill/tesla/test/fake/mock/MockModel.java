@@ -162,6 +162,23 @@ public class MockModel{
         accessToAuth.remove(old.response.getRefreshToken());
     }
 
+    public Optional<Vehicle> getVehicle(String token, String id){
+
+        if(!accessToAuth.containsKey(token)) throw new InvalidAccessTokenException();
+
+        // Get account
+        var email = accessToAuth.get(token).email;
+
+        // Get vehicle
+        return usernameToVehicleAccount.get(email)
+                                       .values()
+                                       .stream()
+                                       .map(item -> item.vehicleAtomicReference.get())
+                                       .filter(item -> item.getIdString().equals(id))
+                                       .findAny();
+
+    }
+
     public static class Auth{
 
         public final String email;
@@ -175,7 +192,7 @@ public class MockModel{
     }
 
     public static class VehicleAccount{
-        final AtomicReference<Vehicle> vehicleAtomicReference;
+        public final AtomicReference<Vehicle> vehicleAtomicReference;
 
         public VehicleAccount(AtomicReference<Vehicle> vehicleAtomicReference){
             this.vehicleAtomicReference = vehicleAtomicReference;
