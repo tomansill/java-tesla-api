@@ -13,12 +13,12 @@ import com.ansill.tesla.low.model.SimpleReasonResponse;
 import com.ansill.tesla.low.model.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.low.model.VehicleResponse;
 import com.ansill.tesla.low.model.VehiclesResponse;
+import com.ansill.tesla.utility.ReusableResponse;
 import com.ansill.tesla.utility.Utility;
 import com.ansill.validation.Validation;
 import com.google.gson.Gson;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -86,6 +86,24 @@ public final class Client{
     }
 
     @Nonnull
+    private static <T> T fromJson(@Nonnull ReusableResponse response, Class<T> type)
+    throws APIProtocolException, ClientException{
+
+        try{
+
+            // Get body
+            String body = response.getBodyAsString()
+                                  .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
+
+            // Forward it
+            return fromJson(body, type);
+
+        }catch(IOException e){
+            throw new ClientException("Failed to parse content of response body", e);
+        }
+    }
+
+    @Nonnull
     private static <T> T fromJson(@Nonnull Response response, Class<T> type)
     throws APIProtocolException, ClientException{
 
@@ -146,8 +164,9 @@ public final class Client{
                                                .post(requestBody)
                                                .build();
 
+
         // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+        try(ReusableResponse response = Utility.httpCall(request)){
 
             // Handle code
             return switch(response.code()){
@@ -221,7 +240,7 @@ public final class Client{
                                                .build();
 
         // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+        try(ReusableResponse response = Utility.httpCall(request)){
 
             // Handle code
             if(response.code() != 200){
@@ -255,7 +274,7 @@ public final class Client{
                                                .build();
 
         // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+        try(ReusableResponse response = Utility.httpCall(request)){
 
             // Handle code
             return switch(response.code()){
@@ -312,7 +331,7 @@ public final class Client{
                                                .build();
 
         // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+        try(ReusableResponse response = Utility.httpCall(request)){
 
             // Handle code
             return switch(response.code()){
@@ -350,7 +369,7 @@ public final class Client{
                                                .build();
 
         // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+        try(ReusableResponse response = Utility.httpCall(request)){
 
             // Handle code
             return switch(response.code()){
@@ -392,7 +411,7 @@ public final class Client{
                                                .build();
 
         // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+        try(ReusableResponse response = Utility.httpCall(request)){
 
             // Handle code
             return switch(response.code()){
@@ -441,7 +460,7 @@ public final class Client{
                                                .build();
 
         // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+        try(ReusableResponse response = Utility.httpCall(request)){
 
             // Handle code
             return switch(response.code()){
@@ -607,7 +626,7 @@ public final class Client{
                                                .build();
 
         // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+        try(ReusableResponse response = Utility.httpCall(request)){
 
             // Handle code
             return switch(response.code()){
