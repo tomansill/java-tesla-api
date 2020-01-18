@@ -406,6 +406,58 @@ public final class Client{
                 // Not found
                 case 404 -> throw new VehicleIDNotFoundException(idString);
 
+                // Request Timeout
+                case 408 -> throw new VehicleUnavailableException(); // TODO will this ever happen?
+
+                // Unknown
+                default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
+            };
+
+        }catch(IOException e){
+
+            // Wrap and re-throw
+            throw new ClientException("Unhandled Exception has occurred", e);
+        }
+    }
+
+    @Nonnull
+    private SimpleReasonResponse invokeSimpleCommand(
+            @Nonnull String accessToken,
+            @Nonnull String idString,
+            @Nonnull String command
+    )
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Set up request
+        Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/command/" + command)
+                                               .addHeader("Authorization", "Bearer " + accessToken)
+                                               .post(RequestBody.create("", MediaType.parse("text/plain")))
+                                               .build();
+
+        // Send request
+        try(Response response = new OkHttpClient().newCall(request).execute()){
+
+            // Handle code
+            return switch(response.code()){
+
+                // Success
+                case 200 -> fromJson(response, SimpleReasonResponse.class);
+
+                // Unauthenticated
+                case 401 -> throw new InvalidAccessTokenException();
+
+                // Request Timeout
+                case 408 -> throw new VehicleUnavailableException();
+
+                // Not found
+                case 404 -> throw new VehicleIDNotFoundException(idString);
+
                 // Unknown
                 default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
             };
@@ -420,91 +472,122 @@ public final class Client{
     @Nonnull
     public SimpleReasonResponse unlockDoors(@Nonnull String accessToken, @Nonnull String idString)
     throws VehicleIDNotFoundException{
-
-        // Check parameters
-        Validation.assertNonnull(accessToken, "accessToken");
-
-        // Check parameters
-        Validation.assertNonnull(idString, "idString");
-
-        // Set up request
-        Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/command/door_unlock")
-                                               .addHeader("Authorization", "Bearer " + accessToken)
-                                               .post(RequestBody.create("", MediaType.parse("text/plain")))
-                                               .build();
-
-        // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
-
-            // Handle code
-            return switch(response.code()){
-
-                // Success
-                case 200 -> fromJson(response, SimpleReasonResponse.class);
-
-                // Unauthenticated
-                case 401 -> throw new InvalidAccessTokenException();
-
-                // Request Timeout
-                case 408 -> throw new VehicleUnavailableException();
-
-                // Not found
-                case 404 -> throw new VehicleIDNotFoundException(idString);
-
-                // Unknown
-                default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
-            };
-
-        }catch(IOException e){
-
-            // Wrap and re-throw
-            throw new ClientException("Unhandled Exception has occurred", e);
-        }
+        return this.invokeSimpleCommand(accessToken, idString, "door_unlock");
     }
 
     @Nonnull
     public SimpleReasonResponse lockDoors(@Nonnull String accessToken, @Nonnull String idString)
     throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "door_lock");
+    }
 
-        // Check parameters
-        Validation.assertNonnull(accessToken, "accessToken");
+    @Nonnull
+    public SimpleReasonResponse honkHorn(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "honk_horn");
+    }
 
-        // Check parameters
-        Validation.assertNonnull(idString, "idString");
+    @Nonnull
+    public SimpleReasonResponse flashLights(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "flash_lights");
+    }
 
-        // Set up request
-        Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/command/door_lock")
-                                               .addHeader("Authorization", "Bearer " + accessToken)
-                                               .post(RequestBody.create("", MediaType.parse("text/plain")))
-                                               .build();
+    @Nonnull
+    public SimpleReasonResponse startHVACSystem(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "auto_conditioning_start");
+    }
 
-        // Send request
-        try(Response response = new OkHttpClient().newCall(request).execute()){
+    @Nonnull
+    public SimpleReasonResponse stopHVACSystem(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "auto_conditioning_stop");
+    }
 
-            // Handle code
-            return switch(response.code()){
+    @Nonnull
+    public SimpleReasonResponse setMaxRangeChargeLimit(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "charge_max_range");
+    }
 
-                // Success
-                case 200 -> fromJson(response, SimpleReasonResponse.class);
+    @Nonnull
+    public SimpleReasonResponse setStandardChargeLimit(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "charge_standard");
+    }
 
-                // Unauthenticated
-                case 401 -> throw new InvalidAccessTokenException();
+    @Nonnull
+    public SimpleReasonResponse openChargePortDoor(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "charge_port_door_open");
+    }
 
-                // Not found
-                case 404 -> throw new VehicleIDNotFoundException(idString);
+    @Nonnull
+    public SimpleReasonResponse closeChargePortDoor(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "charge_port_door_close");
+    }
 
-                // Request Timeout
-                case 408 -> throw new VehicleUnavailableException();
+    @Nonnull
+    public SimpleReasonResponse startCharge(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "charge_start");
+    }
 
-                // Unknown
-                default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
-            };
+    @Nonnull
+    public SimpleReasonResponse stopCharge(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "charge_stop");
+    }
 
-        }catch(IOException e){
+    @Nonnull
+    public SimpleReasonResponse toggleMediaPlayback(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "media_toggle_playback");
+    }
 
-            // Wrap and re-throw
-            throw new ClientException("Unhandled Exception has occurred", e);
-        }
+    @Nonnull
+    public SimpleReasonResponse nextMediaTrack(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "media_next_track");
+    }
+
+    @Nonnull
+    public SimpleReasonResponse previousMediaTrack(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "media_prev_track");
+    }
+
+    @Nonnull
+    public SimpleReasonResponse nextFavoriteMedia(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "media_next_fav");
+    }
+
+    @Nonnull
+    public SimpleReasonResponse previousFavoriteMedia(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "media_prev_fav");
+    }
+
+    @Nonnull
+    public SimpleReasonResponse turnMediaVolumeUp(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "media_volume_up");
+    }
+
+    @Nonnull
+    public SimpleReasonResponse turnMediaVolumeDown(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "media_volume_down");
+    }
+
+
+    @Nonnull
+    public SimpleReasonResponse cancelSoftwareUpdate(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+        return this.invokeSimpleCommand(accessToken, idString, "cancel_software_update");
     }
 
     @Nonnull
