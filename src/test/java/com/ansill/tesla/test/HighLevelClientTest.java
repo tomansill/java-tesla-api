@@ -1,7 +1,6 @@
 package com.ansill.tesla.test;
 
-import com.ansill.tesla.high.HighLevelClient;
-import com.ansill.tesla.low.Client;
+import com.ansill.tesla.high.Client;
 import com.ansill.tesla.low.exception.APIProtocolException;
 import com.ansill.tesla.low.exception.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,7 +51,7 @@ class HighLevelClientTest{
     void testValidAuthentication() throws IOException, AuthenticationException{
 
         // Use default
-        Client client = new Client();
+        com.ansill.tesla.low.Client client = new com.ansill.tesla.low.Client();
 
         // Send it
         assertNotEquals(Optional.empty(), client.authenticate(username, password));
@@ -62,7 +61,7 @@ class HighLevelClientTest{
     void testInvalidAuthenticationWithWrongPassword() throws IOException{
 
         // Use default
-        HighLevelClient client = new HighLevelClient();
+        Client client = new Client();
 
         // Send it
         assertEquals(Optional.empty(), client.authenticate(username, password + "a"));
@@ -72,7 +71,7 @@ class HighLevelClientTest{
     void testInvalidAuthenticationWithWrongURL(){
 
         // Use custom
-        HighLevelClient client = new HighLevelClient("http://www.example.com/", CLIENT_ID, CLIENT_SECRET);
+        Client client = new Client("http://www.example.com/", CLIENT_ID, CLIENT_SECRET);
 
         // Send it
         assertThrows(APIProtocolException.class, () -> client.authenticate(username, password));
@@ -82,7 +81,7 @@ class HighLevelClientTest{
     void testInvalidAuthenticationWithWrongClientID(){
 
         // Use custom
-        HighLevelClient client = new HighLevelClient(URL, CLIENT_ID + "awfw", CLIENT_SECRET);
+        Client client = new Client(URL, CLIENT_ID + "awfw", CLIENT_SECRET);
 
         // Send it
         assertThrows(APIProtocolException.class, () -> client.authenticate(username, password));

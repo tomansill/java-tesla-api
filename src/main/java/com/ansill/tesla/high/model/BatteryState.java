@@ -25,7 +25,7 @@ public class BatteryState{
     @Nonnull
     private final Unit<Length> estimatedBatteryRange;
 
-    public BatteryState(
+    BatteryState(
             boolean batteryHeaterActive,
             int batteryCapacityPercentage,
             int usableBatteryCapacityPercentage,
