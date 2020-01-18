@@ -1,24 +1,34 @@
 package com.ansill.tesla.low.model;
 
+import com.ansill.validation.Validation;
+
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-@SuppressWarnings("unused")
+/** Simple Response */
 @Immutable
-public class SimpleResponse{
+public abstract class SimpleResponse<T>{
 
-    private final boolean result;
-    private final String reason;
+    /** Response */
+    @Nonnull
+    private final T response;
 
-    public SimpleResponse(boolean result, String reason){
-        this.result = result;
-        this.reason = reason;
+    /**
+     * Response
+     *
+     * @param response response
+     */
+    public SimpleResponse(@Nonnull T response){
+        this.response = Validation.assertNonnull(response);
     }
 
-    public boolean getResult(){
-        return result;
-    }
-
-    public String getReason(){
-        return reason;
+    /**
+     * Returns response
+     *
+     * @return response
+     */
+    @Nonnull
+    public T getResponse(){
+        return response;
     }
 }

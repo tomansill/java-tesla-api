@@ -2,10 +2,10 @@ package com.ansill.tesla.high.model;
 
 import javax.annotation.Nonnull;
 
-public final class CompleteVehicleData extends Vehicle{
+public final class CompleteVehicleData extends VehicleID{
 
-    protected CompleteVehicleData(@Nonnull String id, @Nonnull String vin, @Nonnull Vehicle.State state){
-        super(id, vin, state);
+    protected CompleteVehicleData(@Nonnull String id, @Nonnull String vin, @Nonnull Object state){
+        super(id, vin);
     }
 
     @Nonnull

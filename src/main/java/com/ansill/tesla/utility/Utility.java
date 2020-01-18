@@ -1,5 +1,6 @@
 package com.ansill.tesla.utility;
 
+import com.ansill.validation.Validation;
 import okhttp3.Response;
 
 import javax.annotation.Nonnull;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Utility Class
@@ -39,6 +41,52 @@ public final class Utility{
             else if(object instanceof String) return "\"" + object.toString() + "\"";
             return object.toString();
         }).toArray(Object[]::new));
+    }
+
+    @Nonnull
+    public static String simpleToString(@Nonnull Object object){
+
+        // Ensure no null
+        Validation.assertNonnull(object, "object");
+
+        // Print class name and its fields
+        return object.getClass().getSimpleName() + "(" + Arrays.stream(object.getClass().getDeclaredFields())
+                                                               .map(field -> {
+                                                                   try{
+                                                                       return field.getName() + "=" + sensibleToString(
+                                                                               field.get(object));
+                                                                   }catch(IllegalAccessException e){
+
+                                                                       // Check if it's access issue
+                                                                       if(!e.getMessage()
+                                                                            .contains("modifiers \"private"))
+                                                                           return "error";
+
+                                                                       // Temporarily change access
+                                                                       field.setAccessible(true);
+                                                                       try{
+
+                                                                           // Access it
+                                                                           return field.getName() +
+                                                                                  "=" +
+                                                                                  sensibleToString(field.get(object));
+
+                                                                       }catch(IllegalAccessException ex){
+                                                                           ex.printStackTrace();
+                                                                           return "inaccessible";
+                                                                       }finally{
+                                                                           field.setAccessible(false);
+                                                                       }
+                                                                   }
+                                                               })
+                                                               .collect(Collectors.joining(", ")) + ")";
+    }
+
+    @Nonnull
+    public static String sensibleToString(@Nullable Object object){
+        if(object == null) return "null";
+        if(object instanceof String) return "\"" + object.toString() + "\"";
+        else return object.toString();
     }
 
     /**
