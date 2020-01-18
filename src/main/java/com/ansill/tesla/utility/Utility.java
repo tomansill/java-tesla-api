@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public final class Utility{
 
     private Utility(){
-        // Prevents instantiation
+        throw new AssertionError(f("No {} instances for you!", this.getClass().getName()));
     }
 
     @Nonnull

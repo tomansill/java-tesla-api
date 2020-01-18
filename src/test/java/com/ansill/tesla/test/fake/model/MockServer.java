@@ -89,6 +89,35 @@ public class MockServer implements AutoCloseable{
 
                         case "refresh_token" -> {
 
+                            // Ensure refresh_token are provided
+                            if(!map.containsKey("refresh_token")){
+                                handler.status(401);
+                                handler.result(new Gson().toJson(new FailedAuthenticationResponse(
+                                        "invalid_request",
+                                        "The request is missing a required parameter, includes an unsupported parameter value, or is otherwise malformed.",
+                                        null
+                                )));
+                                return;
+                            }
+
+                            // Now, check if credentials are correct
+                            var refreshToken = map.get("refresh_token").iterator().next();
+
+                            // Auth
+                            var result = model.get().refresh(refreshToken);
+
+                            // Handle result
+                            if(result.isPresent()){
+                                handler.status(200);
+                                handler.result(new Gson().toJson(result.get()));
+                            }else{
+                                handler.status(401);
+                                handler.result(new Gson().toJson(new FailedAuthenticationResponse(
+                                        "invalid_grant",
+                                        "The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.",
+                                        null
+                                )));
+                            }
                         }
 
                         case "password" -> {
@@ -126,7 +155,7 @@ public class MockServer implements AutoCloseable{
 
                         }
 
-                        default -> throw new RuntimeException(f("unexpected grant type", type));
+                        default -> throw new RuntimeException(f("unexpected grant type {}", type));
 
                     }
                 });

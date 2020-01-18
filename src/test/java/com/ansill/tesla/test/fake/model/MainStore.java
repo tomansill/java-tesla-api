@@ -20,6 +20,8 @@ public class MainStore{
 
     private Map<String,SuccessfulAuthenticationResponse> accessToAccount = new ConcurrentHashMap<>();
 
+    private Map<String,SuccessfulAuthenticationResponse> refreshToAccount = new ConcurrentHashMap<>();
+
     public MainStore(){
     }
 
@@ -27,7 +29,6 @@ public class MainStore{
         accounts.put(email, password);
     }
 
-    // JSON string
     public Optional<SuccessfulAuthenticationResponse> authenticate(String email, String password){
 
         if(!password.equals(accounts.get(email))){
@@ -43,13 +44,50 @@ public class MainStore{
         Instant now = Instant.now();
         Instant expiry = Instant.now().plus(5, ChronoUnit.MINUTES);
 
-        return Optional.of(new SuccessfulAuthenticationResponse(
+        var response = new SuccessfulAuthenticationResponse(
                 accessToken,
                 "bearer",
                 expiry.toEpochMilli(),
                 refreshToken,
                 now.toEpochMilli()
-        ));
+        );
+
+        // Update stuff
+        accessToAccount.put(accessToken, response);
+        refreshToAccount.put(refreshToken, response);
+
+        return Optional.of(response);
+
+    }
+
+    public Optional<SuccessfulAuthenticationResponse> refresh(String refreshToken){
+
+        // Check if it exists
+        if(!refreshToAccount.containsKey(refreshToken)) return Optional.empty();
+
+        // Delete both access and refresh
+        var response = refreshToAccount.remove(refreshToken);
+        accessToAccount.remove(response.getAccessToken());
+
+        // Build
+        String accessToken = generateString(32);
+        refreshToken = generateString(32);
+        Instant now = Instant.now();
+        Instant expiry = Instant.now().plus(5, ChronoUnit.MINUTES);
+
+        response = new SuccessfulAuthenticationResponse(
+                accessToken,
+                "bearer",
+                expiry.toEpochMilli(),
+                refreshToken,
+                now.toEpochMilli()
+        );
+
+        // Update stuff
+        accessToAccount.put(accessToken, response);
+        refreshToAccount.put(refreshToken, response);
+
+        return Optional.of(response);
 
     }
 

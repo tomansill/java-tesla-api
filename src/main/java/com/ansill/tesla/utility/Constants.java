@@ -1,5 +1,7 @@
 package com.ansill.tesla.utility;
 
+import static com.ansill.tesla.utility.Utility.f;
+
 public final class Constants{
 
     /** Last known working URL */
@@ -12,6 +14,6 @@ public final class Constants{
     public static final String CLIENT_SECRET = "c7257eb71a564034f9419ee651c7d0e5f7aa6bfbd18bafb5c5c033b093bb2fa3";
 
     private Constants(){
-        // No initializations allowed
+        throw new AssertionError(f("No {} instances for you!", this.getClass().getName()));
     }
 }

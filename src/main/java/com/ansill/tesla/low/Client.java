@@ -212,8 +212,8 @@ public final class Client{
         Validation.assertNonnull(refreshToken, "refreshToken");
 
         // Set up body
-        var requestBody = new FormBody.Builder().add("grant_type", "refreshToken")
-                                                .add("refreshToken", refreshToken)
+        var requestBody = new FormBody.Builder().add("grant_type", "refresh_token")
+                                                .add("refresh_token", refreshToken)
                                                 .add("client_id", clientId)
                                                 .add("client_secret", clientSecret)
                                                 .build();
