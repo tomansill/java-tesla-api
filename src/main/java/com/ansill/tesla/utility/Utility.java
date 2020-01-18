@@ -1,6 +1,8 @@
 package com.ansill.tesla.utility;
 
 import com.ansill.validation.Validation;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
 
 import javax.annotation.Nonnull;
@@ -9,12 +11,19 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * Utility Class
  */
 public final class Utility{
+
+    // Purely for debugging - remove later
+    @Deprecated
+    public static final AtomicReference<BiConsumer<Request,ReusableResponse>> HTTP_LOGGING = new AtomicReference<>();
 
     private Utility(){
         throw new AssertionError(f("No {} instances for you!", this.getClass().getName()));
@@ -27,20 +36,16 @@ public final class Utility{
         return Optional.of(body.string());
     }
 
-    /**
-     * Formats string, replaces any '{}' with objects. But this method will add '"' between any String. If String is null. then it will simply use 'null'
-     *
-     * @param message message with '{}'
-     * @param objects objects to replace
-     * @return formatted string
-     */
     @Nonnull
-    public static String fs(@Nonnull String message, @Nonnull Object... objects){
-        return format(message, Arrays.stream(objects).map(object -> {
-            if(object == null) return "null";
-            else if(object instanceof String) return "\"" + object.toString() + "\"";
-            return object.toString();
-        }).toArray(Object[]::new));
+    public static ReusableResponse httpCall(@Nonnull Request request) throws IOException{
+        ReusableResponse reusableResponse = null;
+        try{
+            reusableResponse = new ReusableResponse(new OkHttpClient().newCall(request).execute());
+        }finally{
+            var consumer = HTTP_LOGGING.get();
+            if(consumer != null) consumer.accept(request, reusableResponse);
+        }
+        return reusableResponse;
     }
 
     @Nonnull
@@ -49,37 +54,43 @@ public final class Utility{
         // Ensure no null
         Validation.assertNonnull(object, "object");
 
+        // Set up mapper
+        Function<Field,String> mapper = field -> {
+            try{
+                return field.getName() + "=" + sensibleToString(
+                        field.get(object));
+            }catch(IllegalAccessException e){
+
+                // Check if it's access issue
+                if(!e.getMessage()
+                     .contains("modifiers \"private"))
+                    return "error";
+
+                // Temporarily change access
+                field.setAccessible(true);
+                try{
+
+                    // Access it
+                    return field.getName() +
+                           "=" +
+                           sensibleToString(field.get(object));
+
+                }catch(IllegalAccessException ex){
+                    //ex.printStackTrace();
+                    return "inaccessible";
+                }finally{
+                    field.setAccessible(false);
+                }
+            }
+        };
+
+        // Collect fields
+        var fields = Arrays.stream(object.getClass().getDeclaredFields())
+                           .map(mapper)
+                           .collect(Collectors.joining(", "));
+
         // Print class name and its fields
-        return object.getClass().getSimpleName() + "(" + Arrays.stream(object.getClass().getDeclaredFields())
-                                                               .map(field -> {
-                                                                   try{
-                                                                       return field.getName() + "=" + sensibleToString(
-                                                                               field.get(object));
-                                                                   }catch(IllegalAccessException e){
-
-                                                                       // Check if it's access issue
-                                                                       if(!e.getMessage()
-                                                                            .contains("modifiers \"private"))
-                                                                           return "error";
-
-                                                                       // Temporarily change access
-                                                                       field.setAccessible(true);
-                                                                       try{
-
-                                                                           // Access it
-                                                                           return field.getName() +
-                                                                                  "=" +
-                                                                                  sensibleToString(field.get(object));
-
-                                                                       }catch(IllegalAccessException ex){
-                                                                           ex.printStackTrace();
-                                                                           return "inaccessible";
-                                                                       }finally{
-                                                                           field.setAccessible(false);
-                                                                       }
-                                                                   }
-                                                               })
-                                                               .collect(Collectors.joining(", ")) + ")";
+        return f("{}({})", object.getClass().getSimpleName(), fields);
     }
 
     @Nonnull
@@ -158,72 +169,5 @@ public final class Utility{
         return builder.toString();
     }
 
-    public static String getClassValues(@Nullable Object object){
-
-        // Short circuit if null
-        if(object == null) return "null";
-        switch(object.getClass().getName()){
-            case "java.lang.Boolean":
-            case "java.lang.Integer":
-            case "java.lang.Long":
-            case "java.lang.Short":
-            case "java.lang.Byte":
-            case "java.lang.Double":
-            case "java.lang.Float":
-                return object.toString();
-            case "java.lang.String":
-                return "\"" + object.toString() + "\"";
-            default:
-                break;
-        }
-
-        // Set up builder
-        StringBuilder sb = new StringBuilder();
-
-        // Get object's class
-        sb.append(object.getClass().getSimpleName());
-
-        // Start the fields
-        sb.append("(");
-
-        // Get fields
-        boolean first = true;
-        for(Field field : object.getClass().getDeclaredFields()){
-
-            // First
-            if(first) first = false;
-            else sb.append(", ");
-
-            // Add field name
-            sb.append(field.getName());
-
-            // Add equals
-            sb.append("=");
-
-            // Get value
-            try{
-                sb.append(getClassValues(field.get(object)));
-            }catch(IllegalAccessException e){
-
-                // Try again but with accessible set to true
-                field.setAccessible(true);
-                try{
-                    sb.append(getClassValues(field.get(object)));
-                }catch(IllegalAccessException ex){
-                    throw new RuntimeException(e);
-                }finally{
-                    //field.setAccessible(false); // Undo it
-                }
-            }
-
-        }
-
-
-        // End the fields
-        sb.append(")");
-
-        // Finish the string
-        return sb.toString();
-    }
 }
 
