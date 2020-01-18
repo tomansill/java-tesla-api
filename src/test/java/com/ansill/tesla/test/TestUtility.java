@@ -1,5 +1,6 @@
 package com.ansill.tesla.test;
 
+import com.ansill.tesla.low.model.ChargeState;
 import com.ansill.tesla.low.model.Vehicle;
 import com.ansill.tesla.test.fake.mock.MockModel;
 import com.ansill.validation.Validation;
@@ -57,6 +58,8 @@ public final class TestUtility{
     public static MockModel.VehicleAccount createParkingVehicle(){
         long id = new Random().nextLong();
         long vehicle_id = new Random().nextLong();
+
+        // Basic vehicle info
         var vehicle = new Vehicle(
                 id,
                 vehicle_id,
@@ -79,6 +82,52 @@ public final class TestUtility{
                 null
 
         );
+
+        // charge state
+        var chargeState = new ChargeState(
+                false,
+                new Random().nextInt(75) + 25,
+                (new Random().nextDouble() * 250.0) + 60,
+                0,
+                0,
+                false,
+                0.0,
+                80,
+                100,
+                60,
+                70,
+                20,
+                22,
+                true,
+                false,
+                "disengaged",
+                0.0,
+                false,
+                0,
+                null,
+                48,
+                0,
+                2,
+                "Disconnected",
+                "<invalid>",
+                124.1,
+                "<invalid>",
+                false,
+                "<invalid>",
+                190.59,
+                false,
+                null,
+                false,
+                0,
+                null,
+                false,
+                null,
+                0.0,
+                1245141241241L,
+                63,
+                null
+        );
+
         return new MockModel.VehicleAccount(new AtomicReference<>(vehicle));
     }
 

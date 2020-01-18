@@ -1,5 +1,6 @@
 package com.ansill.tesla.low.model;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import static com.ansill.tesla.utility.Utility.simpleToString;
@@ -20,7 +21,7 @@ public class ChargeState{
     private final int charge_limit_soc_std;
     private final double charge_miles_added_ideal;
     private final double charge_miles_added_rated;
-    private final String charge_port_cold_weather_mode;
+    private final boolean charge_port_cold_weather_mode;
     private final boolean charge_port_door_open;
     private final String charge_port_latch;
     private final double charge_rate;
@@ -41,7 +42,7 @@ public class ChargeState{
     private final String managed_charging_start_time;
     private final boolean managed_charging_user_canceled;
     private final int max_range_charger_counter;
-    private final boolean not_enough_power_to_heat;
+    private final Boolean not_enough_power_to_heat;
     private final boolean scheduled_charging_pending;
     private final String scheduled_charging_start_time;
     private final double time_to_full_charge;
@@ -63,7 +64,7 @@ public class ChargeState{
             int charge_limit_soc_std,
             double charge_miles_added_ideal,
             double charge_miles_added_rated,
-            String charge_port_cold_weather_mode,
+            boolean charge_port_cold_weather_mode,
             boolean charge_port_door_open,
             String charge_port_latch,
             double charge_rate,
@@ -84,7 +85,7 @@ public class ChargeState{
             String managed_charging_start_time,
             boolean managed_charging_user_canceled,
             int max_range_charger_counter,
-            boolean not_enough_power_to_heat,
+            Boolean not_enough_power_to_heat,
             boolean scheduled_charging_pending,
             String scheduled_charging_start_time,
             double time_to_full_charge,
@@ -179,7 +180,7 @@ public class ChargeState{
         return charge_miles_added_rated;
     }
 
-    public String getChargePortColdWeatherMode(){
+    public boolean getChargePortColdWeatherMode(){
         return charge_port_cold_weather_mode;
     }
 
@@ -263,7 +264,8 @@ public class ChargeState{
         return max_range_charger_counter;
     }
 
-    public boolean getNotEnoughPowerToHeat(){
+    @Nullable
+    public Boolean getNotEnoughPowerToHeat(){
         return not_enough_power_to_heat;
     }
 
