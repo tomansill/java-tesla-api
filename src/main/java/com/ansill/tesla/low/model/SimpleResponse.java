@@ -5,6 +5,8 @@ import com.ansill.validation.Validation;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import static com.ansill.tesla.utility.Utility.simpleToString;
+
 /** Simple Response */
 @Immutable
 public abstract class SimpleResponse<T>{
@@ -31,4 +33,10 @@ public abstract class SimpleResponse<T>{
     public T getResponse(){
         return response;
     }
+
+    @Override
+    public String toString(){
+        return simpleToString(this);
+    }
 }
+

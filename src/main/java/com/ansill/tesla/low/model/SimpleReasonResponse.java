@@ -2,6 +2,8 @@ package com.ansill.tesla.low.model;
 
 import javax.annotation.concurrent.Immutable;
 
+import static com.ansill.tesla.utility.Utility.simpleToString;
+
 @SuppressWarnings("unused")
 @Immutable
 public class SimpleReasonResponse{
@@ -20,5 +22,10 @@ public class SimpleReasonResponse{
 
     public String getReason(){
         return reason;
+    }
+
+    @Override
+    public String toString(){
+        return simpleToString(this);
     }
 }

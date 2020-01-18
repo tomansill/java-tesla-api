@@ -6,6 +6,8 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.List;
 
+import static com.ansill.tesla.utility.Utility.simpleToString;
+
 @Immutable
 public class VehiclesResponse{
 
@@ -45,5 +47,10 @@ public class VehiclesResponse{
     @Nonnull
     public List<Vehicle> getResponse(){
         return Collections.unmodifiableList(response);
+    }
+
+    @Override
+    public String toString(){
+        return simpleToString(this);
     }
 }

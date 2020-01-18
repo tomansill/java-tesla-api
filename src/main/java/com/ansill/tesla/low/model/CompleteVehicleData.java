@@ -3,7 +3,7 @@ package com.ansill.tesla.low.model;
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
-import static com.ansill.tesla.utility.Utility.getClassValues;
+import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
@@ -73,48 +73,16 @@ public class CompleteVehicleData extends Vehicle{
         return vehicle_config;
     }
 
-    @Override
-    public String toString(){
-        return getClassValues(this);
-    }
-
-    /*
-    @Override
-    public String toString(){
-        return fs(
-                "CompleteVehicleData(id={}, vehicle_id={}, vin={}, option_codes={}, color={}, tokens={}, state={}, "
-                +
-                "in_service={}, id_s={}, calendar_enabled={}, backseat_token={}, backseat_token_updated_at={}, "
-                +
-                "drive_state={}, climate_state={}, charge_state={}, gui_settings={], vehicle_state={}, vehicle_config={})",
-                id,
-                vehicle_id,
-                vin,
-                option_codes,
-                color,
-                tokens,
-                state,
-                in_service,
-                id_s,
-                calendar_enabled,
-                api_version,
-                backseat_token,
-                backseat_token_updated_at,
-                drive_state,
-                climate_state,
-                charge_state,
-                gui_settings,
-                vehicle_state,
-                vehicle_config
-        );
-    }
-     */
-
     public ChargeState getChargeState(){
         return charge_state;
     }
 
     public ClimateState getClimateState(){
         return climate_state;
+    }
+
+    @Override
+    public String toString(){
+        return simpleToString(this);
     }
 }

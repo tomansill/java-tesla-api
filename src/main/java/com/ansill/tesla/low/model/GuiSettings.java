@@ -2,7 +2,7 @@ package com.ansill.tesla.low.model;
 
 import javax.annotation.concurrent.Immutable;
 
-import static com.ansill.tesla.utility.Utility.getClassValues;
+import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
@@ -57,6 +57,6 @@ public class GuiSettings{
 
     @Override
     public String toString(){
-        return getClassValues(this);
+        return simpleToString(this);
     }
 }
