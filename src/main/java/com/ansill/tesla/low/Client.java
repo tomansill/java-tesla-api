@@ -6,6 +6,7 @@ import com.ansill.tesla.low.exception.ClientException;
 import com.ansill.tesla.low.exception.InvalidAccessTokenException;
 import com.ansill.tesla.low.exception.ReAuthenticationException;
 import com.ansill.tesla.low.exception.VehicleIDNotFoundException;
+import com.ansill.tesla.low.exception.VehicleUnavailableException;
 import com.ansill.tesla.low.model.CompleteVehicleDataResponse;
 import com.ansill.tesla.low.model.GenericErrorResponse;
 import com.ansill.tesla.low.model.SimpleReasonResponse;
@@ -387,7 +388,7 @@ public final class Client{
         // Set up request
         Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/wake_up")
                                                .addHeader("Authorization", "Bearer " + accessToken)
-                                               .post(RequestBody.create(MediaType.parse("text/plain"), ""))
+                                               .post(RequestBody.create("", MediaType.parse("text/plain")))
                                                .build();
 
         // Send request
@@ -429,7 +430,7 @@ public final class Client{
         // Set up request
         Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/command/door_unlock")
                                                .addHeader("Authorization", "Bearer " + accessToken)
-                                               .post(RequestBody.create(MediaType.parse("text/plain"), ""))
+                                               .post(RequestBody.create("", MediaType.parse("text/plain")))
                                                .build();
 
         // Send request
@@ -443,6 +444,9 @@ public final class Client{
 
                 // Unauthenticated
                 case 401 -> throw new InvalidAccessTokenException();
+
+                // Request Timeout
+                case 408 -> throw new VehicleUnavailableException();
 
                 // Not found
                 case 404 -> throw new VehicleIDNotFoundException(idString);
@@ -471,7 +475,7 @@ public final class Client{
         // Set up request
         Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/command/door_lock")
                                                .addHeader("Authorization", "Bearer " + accessToken)
-                                               .post(RequestBody.create(MediaType.parse("text/plain"), ""))
+                                               .post(RequestBody.create("", MediaType.parse("text/plain")))
                                                .build();
 
         // Send request
@@ -488,6 +492,9 @@ public final class Client{
 
                 // Not found
                 case 404 -> throw new VehicleIDNotFoundException(idString);
+
+                // Request Timeout
+                case 408 -> throw new VehicleUnavailableException();
 
                 // Unknown
                 default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
@@ -530,6 +537,9 @@ public final class Client{
 
                 // Not found
                 case 404 -> throw new VehicleIDNotFoundException(idString);
+
+                // Request Timeout
+                case 408 -> throw new VehicleUnavailableException();
 
                 // Unknown
                 default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
