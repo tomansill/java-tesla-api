@@ -1,6 +1,4 @@
-package com.ansill.tesla.high.model;
-
-import com.ansill.tesla.high.TeslaAccount;
+package com.ansill.tesla.high;
 
 import javax.annotation.Nonnull;
 
@@ -13,12 +11,13 @@ public class Vehicle{
     private final String vin;
 
     @Nonnull
-    private final TeslaAccount parent;
+    private final Account parent;
 
-    Vehicle(@Nonnull String id, @Nonnull String vin, @Nonnull TeslaAccount parent){
+    Vehicle(@Nonnull String id, @Nonnull String vin, @Nonnull Account parent){
         this.id = id;
         this.vin = vin;
         this.parent = parent;
     }
+
 
 }

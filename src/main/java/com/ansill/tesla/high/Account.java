@@ -2,7 +2,6 @@ package com.ansill.tesla.high;
 
 import com.ansill.lock.autolock.ALock;
 import com.ansill.lock.autolock.LockedAutoLock;
-import com.ansill.tesla.high.model.Vehicle;
 import com.ansill.tesla.low.Client;
 import com.ansill.tesla.low.exception.ReAuthenticationException;
 import com.ansill.tesla.low.model.SuccessfulAuthenticationResponse;
@@ -17,21 +16,36 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class TeslaAccount{
+/** Tesla Account */
+public class Account{
 
+    /** Time before credentials expires */
     @Nonnull
     private static final Duration DEFAULT_TIME_OFFSET_BEFORE_REFRESH = Duration.ofMinutes(2);
 
+    /** Low Level Client */
     @Nonnull
     private final Client client;
+
+    /** RRWL to handle client refresh cycle */
     @Nonnull
     private final ReentrantReadWriteLock rrwl = new ReentrantReadWriteLock(true);
+
+    /** Reference to the timer */
     @Nonnull
     private final AtomicReference<Timer> timer = new AtomicReference<>();
+
+    /** Current "good" credentials */
     @Nonnull
     private SuccessfulAuthenticationResponse response;
 
-    TeslaAccount(@Nonnull Client client, @Nonnull SuccessfulAuthenticationResponse response){
+    /**
+     * Creates Tesla Account and starts the refresh timer
+     *
+     * @param client   low level client
+     * @param response good credentials
+     */
+    Account(@Nonnull Client client, @Nonnull SuccessfulAuthenticationResponse response){
         this.client = client;
         this.response = response;
         resetTimer();
@@ -42,6 +56,7 @@ public class TeslaAccount{
         return client;
     }
 
+    /** Resets the timer so it will refresh credentials before its expiry time */
     private void resetTimer(){
 
         // Set up TimerTask
@@ -81,6 +96,11 @@ public class TeslaAccount{
 
     }
 
+    /**
+     * Refreshes the credentials
+     *
+     * @throws ReAuthenticationException thrown if reauthentication fails
+     */
     private void refresh() throws ReAuthenticationException{
 
         // Lock it
