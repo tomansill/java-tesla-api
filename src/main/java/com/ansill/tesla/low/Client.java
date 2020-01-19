@@ -7,11 +7,17 @@ import com.ansill.tesla.low.exception.InvalidAccessTokenException;
 import com.ansill.tesla.low.exception.ReAuthenticationException;
 import com.ansill.tesla.low.exception.VehicleIDNotFoundException;
 import com.ansill.tesla.low.exception.VehicleUnavailableException;
+import com.ansill.tesla.low.model.ChargeState;
+import com.ansill.tesla.low.model.ClimateState;
 import com.ansill.tesla.low.model.CompleteVehicleDataResponse;
+import com.ansill.tesla.low.model.DriveState;
 import com.ansill.tesla.low.model.GenericErrorResponse;
+import com.ansill.tesla.low.model.GuiSettings;
 import com.ansill.tesla.low.model.SimpleReasonResponse;
 import com.ansill.tesla.low.model.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.low.model.VehicleConfig;
 import com.ansill.tesla.low.model.VehicleResponse;
+import com.ansill.tesla.low.model.VehicleState;
 import com.ansill.tesla.low.model.VehiclesResponse;
 import com.ansill.tesla.utility.ReusableResponse;
 import com.ansill.tesla.utility.Utility;
@@ -609,18 +615,18 @@ public final class Client{
         return this.invokeSimpleCommand(accessToken, idString, "cancel_software_update");
     }
 
+
     @Nonnull
-    public CompleteVehicleDataResponse getVehicleData(@Nonnull String accessToken, @Nonnull String idString)
+    private <T> T getVehicleDataForm(
+            @Nonnull String accessToken,
+            @Nonnull String idString,
+            @Nonnull Class<T> clazz,
+            @Nonnull String path
+    )
     throws VehicleIDNotFoundException{
 
-        // Check parameters
-        Validation.assertNonnull(accessToken, "accessToken");
-
-        // Check parameters
-        Validation.assertNonnull(idString, "idString");
-
         // Set up request
-        Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/vehicle_data")
+        Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/" + path)
                                                .addHeader("Authorization", "Bearer " + accessToken)
                                                .get()
                                                .build();
@@ -632,7 +638,7 @@ public final class Client{
             return switch(response.code()){
 
                 // Success
-                case 200 -> fromJson(response, CompleteVehicleDataResponse.class);
+                case 200 -> fromJson(response, clazz);
 
                 // Unauthenticated
                 case 401 -> throw new InvalidAccessTokenException();
@@ -652,5 +658,103 @@ public final class Client{
             // Wrap and re-throw
             throw new ClientException("Unhandled Exception has occurred", e);
         }
+    }
+
+    @Nonnull
+    public CompleteVehicleDataResponse getVehicleData(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return getVehicleDataForm(accessToken, idString, CompleteVehicleDataResponse.class, "vehicle_data");
+    }
+
+    @Nonnull
+    public ChargeState getVehicleChargeState(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return getVehicleDataForm(accessToken, idString, ChargeState.class, "data_request/charge_state");
+    }
+
+    @Nonnull
+    public ClimateState getVehicleClimateState(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return getVehicleDataForm(accessToken, idString, ClimateState.class, "data_request/climate_state");
+    }
+
+    @Nonnull
+    public DriveState getVehicleDriveState(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return getVehicleDataForm(accessToken, idString, DriveState.class, "data_request/drive_state");
+    }
+
+    @Nonnull
+    public GuiSettings getVehicleGuiSettings(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return getVehicleDataForm(accessToken, idString, GuiSettings.class, "data_request/gui_settings");
+    }
+
+    @Nonnull
+    public VehicleState getVehicleVehicleState(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return getVehicleDataForm(accessToken, idString, VehicleState.class, "data_request/vehicle_state");
+    }
+
+    @Nonnull
+    public VehicleConfig getVehicleVehicleConfig(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return getVehicleDataForm(accessToken, idString, VehicleConfig.class, "data_request/vehicle_config");
     }
 }

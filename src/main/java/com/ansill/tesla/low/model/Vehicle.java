@@ -12,6 +12,7 @@ public class Vehicle{
     protected final long id;
     protected final long vehicle_id;
     protected final String vin;
+    protected final String display_name;
     protected final String option_codes;
     protected final String color;
     protected final List<String> tokens;
@@ -27,7 +28,7 @@ public class Vehicle{
             long id,
             long vehicle_id,
             String vin,
-            String option_codes,
+            String display_name, String option_codes,
             String color,
             List<String> tokens,
             String state,
@@ -41,6 +42,7 @@ public class Vehicle{
         this.id = id;
         this.vehicle_id = vehicle_id;
         this.vin = vin;
+        this.display_name = display_name;
         this.option_codes = option_codes;
         this.color = color;
         this.tokens = tokens;
@@ -108,5 +110,9 @@ public class Vehicle{
     @Override
     public String toString(){
         return simpleToString(this);
+    }
+
+    public String getDisplayName(){
+        return display_name;
     }
 }
