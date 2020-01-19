@@ -36,6 +36,7 @@ public class ChargeState{
     private final double est_battery_range;
     private final String fast_charger_brand;
     private final boolean fast_charger_present;
+    private final long minutes_to_full_charge;
     private final String fast_charger_type;
     private final double ideal_battery_range;
     private final boolean managed_charging_active;
@@ -79,7 +80,7 @@ public class ChargeState{
             double est_battery_range,
             String fast_charger_brand,
             boolean fast_charger_present,
-            String fast_charger_type,
+            long minutes_to_full_charge, String fast_charger_type,
             double ideal_battery_range,
             boolean managed_charging_active,
             String managed_charging_start_time,
@@ -121,6 +122,7 @@ public class ChargeState{
         this.est_battery_range = est_battery_range;
         this.fast_charger_brand = fast_charger_brand;
         this.fast_charger_present = fast_charger_present;
+        this.minutes_to_full_charge = minutes_to_full_charge;
         this.fast_charger_type = fast_charger_type;
         this.ideal_battery_range = ideal_battery_range;
         this.managed_charging_active = managed_charging_active;
@@ -134,6 +136,10 @@ public class ChargeState{
         this.timestamp = timestamp;
         this.usable_battery_level = usable_battery_level;
         this.user_charge_enable_request = user_charge_enable_request;
+    }
+
+    public long getMinutesToFullCharge(){
+        return minutes_to_full_charge;
     }
 
     public double getBatteryRange(){

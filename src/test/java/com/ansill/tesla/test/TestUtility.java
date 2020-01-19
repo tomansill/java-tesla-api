@@ -114,7 +114,7 @@ public final class TestUtility{
                 124.1,
                 "<invalid>",
                 false,
-                "<invalid>",
+                minutes_to_full_charge, "<invalid>",
                 190.59,
                 false,
                 null,
