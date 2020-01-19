@@ -11,6 +11,7 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 public class Vehicle{
     protected final long id;
     protected final long vehicle_id;
+    protected final long user_id;
     protected final String vin;
     protected final String display_name;
     protected final String option_codes;
@@ -27,7 +28,7 @@ public class Vehicle{
     public Vehicle(
             long id,
             long vehicle_id,
-            String vin,
+            long user_id, String vin,
             String display_name, String option_codes,
             String color,
             List<String> tokens,
@@ -41,6 +42,7 @@ public class Vehicle{
     ){
         this.id = id;
         this.vehicle_id = vehicle_id;
+        this.user_id = user_id;
         this.vin = vin;
         this.display_name = display_name;
         this.option_codes = option_codes;
@@ -53,6 +55,10 @@ public class Vehicle{
         this.api_version = api_version;
         this.backseat_token = backseat_token;
         this.backseat_token_updated_at = backseat_token_updated_at;
+    }
+
+    public long getUserId(){
+        return user_id;
     }
 
     public long getId(){

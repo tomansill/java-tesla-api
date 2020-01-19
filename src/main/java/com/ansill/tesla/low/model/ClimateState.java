@@ -57,6 +57,8 @@ public class ClimateState{
     @Nullable
     private final Boolean wiper_blade_heater; // Entry could disappear from JSON
 
+    private final int defrost_mode;
+
     public ClimateState(
             boolean battery_heater,
             boolean battery_heater_no_power,
@@ -87,7 +89,8 @@ public class ClimateState{
             @Nullable Boolean smart_preconditioning,
             @Nullable Boolean steering_wheel_heater,
             long timestamp,
-            @Nullable Boolean wiper_blade_heater
+            @Nullable Boolean wiper_blade_heater,
+            int defrost_mode
     ){
         this.battery_heater = battery_heater;
         this.battery_heater_no_power = battery_heater_no_power;
@@ -119,6 +122,11 @@ public class ClimateState{
         this.steering_wheel_heater = steering_wheel_heater;
         this.timestamp = timestamp;
         this.wiper_blade_heater = wiper_blade_heater;
+        this.defrost_mode = defrost_mode;
+    }
+
+    public int getDefrostMode(){
+        return defrost_mode;
     }
 
     public boolean getBatteryHeader(){

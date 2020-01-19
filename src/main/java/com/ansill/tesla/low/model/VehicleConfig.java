@@ -32,6 +32,7 @@ public class VehicleConfig{
     private final long timestamp;
     private final String trim_badging;
     private final String wheel_type;
+    private final boolean use_range_badging;
 
     public VehicleConfig(
             boolean can_accept_navigation_requests,
@@ -57,7 +58,8 @@ public class VehicleConfig{
             String third_row_seats,
             long timestamp,
             String trim_badging,
-            String wheel_type
+            String wheel_type,
+            boolean use_range_badging
     ){
         this.can_accept_navigation_requests = can_accept_navigation_requests;
         this.can_actuate_trunks = can_actuate_trunks;
@@ -83,6 +85,11 @@ public class VehicleConfig{
         this.timestamp = timestamp;
         this.trim_badging = trim_badging;
         this.wheel_type = wheel_type;
+        this.use_range_badging = use_range_badging;
+    }
+
+    public boolean isUseRangeBadging(){
+        return use_range_badging;
     }
 
     public boolean isCanAcceptNavigationRequests(){

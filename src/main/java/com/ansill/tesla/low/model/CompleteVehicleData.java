@@ -20,6 +20,7 @@ public class CompleteVehicleData extends Vehicle{
             long id,
             long vehicle_id,
             String vin,
+            long user_id,
             String display_name,
             String option_codes,
             String color,
@@ -38,6 +39,7 @@ public class CompleteVehicleData extends Vehicle{
         super(
                 id,
                 vehicle_id,
+                user_id,
                 vin,
                 display_name,
                 option_codes,

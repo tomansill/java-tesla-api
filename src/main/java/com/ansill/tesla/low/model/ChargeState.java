@@ -51,6 +51,8 @@ public class ChargeState{
     private final int usable_battery_level;
     private final String user_charge_enable_request;
 
+    private final boolean trip_charging;
+
     public ChargeState(
             boolean battery_heater_on,
             int battery_level,
@@ -92,7 +94,8 @@ public class ChargeState{
             double time_to_full_charge,
             long timestamp,
             int usable_battery_level,
-            String user_charge_enable_request
+            String user_charge_enable_request,
+            boolean trip_charging
     ){
         this.battery_heater_on = battery_heater_on;
         this.battery_level = battery_level;
@@ -136,7 +139,13 @@ public class ChargeState{
         this.timestamp = timestamp;
         this.usable_battery_level = usable_battery_level;
         this.user_charge_enable_request = user_charge_enable_request;
+        this.trip_charging = trip_charging;
     }
+
+    public boolean isTripCharging(){
+        return trip_charging;
+    }
+
 
     public long getMinutesToFullCharge(){
         return minutes_to_full_charge;

@@ -202,8 +202,6 @@ public final class Client{
                                                                        )
                                                                );
 
-        System.out.println(result.getClass().getName() + " " + fields);
-
         // Go every entry in the map - check if it exists in object
         for(var entry : map.entrySet()){
 

@@ -42,6 +42,12 @@ public class VehicleState{
     private final boolean sentry_mode;
     private final SoftwareUpdate software_update;
     private final SpeedLimitMode speed_limit_mode;
+    private final String autopark_state_v3;
+    private final int fd_window;
+    private final int fp_window;
+    private final int rd_window;
+    private final int rp_window;
+    private final boolean sentry_mode_available;
 
     public VehicleState(
             int api_version,
@@ -54,7 +60,8 @@ public class VehicleState{
             int dr,
             int ft,
             @Nullable Boolean homelink_nearby,
-            @Nullable Integer homelink_device_count, boolean is_user_present,
+            @Nullable Integer homelink_device_count,
+            boolean is_user_present,
             String last_autopark_error,
             boolean locked,
             MediaState media_state,
@@ -71,6 +78,12 @@ public class VehicleState{
             SoftwareUpdate software_update,
             SpeedLimitMode speed_limit_mode,
             @Nullable Integer sun_roof_percent_open,
+            String autopark_state_v3,
+            int fd_window,
+            int fp_window,
+            int rd_window,
+            int rp_window,
+            boolean sentry_mode_available,
             String sun_roof_state,
             long timestamp,
             boolean valet_mode,
@@ -105,11 +118,41 @@ public class VehicleState{
         this.software_update = software_update;
         this.speed_limit_mode = speed_limit_mode;
         this.sun_roof_percent_open = sun_roof_percent_open;
+        this.autopark_state_v3 = autopark_state_v3;
+        this.fd_window = fd_window;
+        this.fp_window = fp_window;
+        this.rd_window = rd_window;
+        this.rp_window = rp_window;
+        this.sentry_mode_available = sentry_mode_available;
         this.sun_roof_state = sun_roof_state;
         this.timestamp = timestamp;
         this.valet_mode = valet_mode;
         this.valet_pin_needed = valet_pin_needed;
         this.vehicle_name = vehicle_name;
+    }
+
+    public String getAutoparkStateV3(){
+        return autopark_state_v3;
+    }
+
+    public int getFdWindow(){
+        return fd_window;
+    }
+
+    public int getFpWindow(){
+        return fp_window;
+    }
+
+    public int getRdWindow(){
+        return rd_window;
+    }
+
+    public int getRpWindow(){
+        return rp_window;
+    }
+
+    public boolean isSentryModeAvailable(){
+        return sentry_mode_available;
     }
 
     private final String sun_roof_state;
@@ -268,13 +311,38 @@ public class VehicleState{
 
     public static class SoftwareUpdate{
 
+        private final int download_perc;
+        private final int install_perc;
+        private final String version;
+
+        private SoftwareUpdate(
+                int download_perc,
+                int install_perc,
+                String version,
+                long expected_duration_sec,
+                String status
+        ){
+            this.download_perc = download_perc;
+            this.install_perc = install_perc;
+            this.version = version;
+            this.expected_duration_sec = expected_duration_sec;
+            this.status = status;
+        }
+
+        public int getDownloadPercent(){
+            return download_perc;
+        }
+
+        public int getInstallPercent(){
+            return install_perc;
+        }
+
         private final long expected_duration_sec;
 
         private final String status;
 
-        private SoftwareUpdate(long expected_duration_sec, String status){
-            this.expected_duration_sec = expected_duration_sec;
-            this.status = status;
+        public String getVersion(){
+            return version;
         }
 
         public long getExpectedDurationSec(){

@@ -15,13 +15,16 @@ public class GuiSettings{
     private final String gui_temperature_units;
     private final long timestamp;
 
+    private final boolean show_range_units;
+
     public GuiSettings(
             boolean gui_24_hour_time,
             String gui_charge_rate_units,
             String gui_distance_units,
             String gui_range_display,
             String gui_temperature_units,
-            long timestamp
+            long timestamp,
+            boolean show_range_units
     ){
         this.gui_24_hour_time = gui_24_hour_time;
         this.gui_charge_rate_units = gui_charge_rate_units;
@@ -29,6 +32,11 @@ public class GuiSettings{
         this.gui_range_display = gui_range_display;
         this.gui_temperature_units = gui_temperature_units;
         this.timestamp = timestamp;
+        this.show_range_units = show_range_units;
+    }
+
+    public boolean isShowRangeUnits(){
+        return show_range_units;
     }
 
     public boolean getGui24HourTime(){
