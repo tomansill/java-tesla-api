@@ -24,6 +24,7 @@ import com.ansill.tesla.utility.Utility;
 import com.ansill.validation.Validation;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -34,10 +35,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static com.ansill.tesla.utility.Constants.*;
 import static com.ansill.tesla.utility.Utility.f;
@@ -45,7 +53,9 @@ import static com.ansill.tesla.utility.Utility.f;
 /** Low Level Tesla API client */
 public final class Client{
 
-    private final static Gson STRICT_GSON;
+    public final static AtomicBoolean STRICT_DESERIALIZATION = new AtomicBoolean(false);
+
+    private final static Gson GSON;
 
     static{
         // builder
@@ -55,7 +65,7 @@ public final class Client{
         // TODO
 
         // Create it
-        STRICT_GSON = gson.create();
+        GSON = gson.create();
     }
 
     /** Logger */
@@ -148,13 +158,99 @@ public final class Client{
 
     @Nonnull
     private static <T> T fromJson(@Nonnull String string, Class<T> type) throws APIProtocolException{
-        var item = STRICT_GSON.fromJson(string, type);
+        var item = GSON.fromJson(string, type);
         if(item == null) throw new APIProtocolException(f(
-                "THe JSON string is not in format of {} class. JSON message \n\"{}\"",
+                "The JSON string is not in format of {} class. JSON message \n\"{}\"",
                 type.getName(),
                 string
         ));
+        if(STRICT_DESERIALIZATION.get()) checkJSONForMissingFields(string, item);
         return item;
+    }
+
+    private static void checkJSONForMissingFields(@Nonnull String string, Object result) throws APIProtocolException{
+
+        // Deserialize JSON but to plain old map
+        Map<String,Object> map = GSON.fromJson(string, new TypeToken<Map<String,Object>>(){
+        }.getType());
+
+        // Run it
+        recursiveCheckJSONForMissingFields(map, result);
+    }
+
+    private static Set<Field> getFields(@Nonnull Class<?> item){
+
+        Set<Field> fields = new HashSet<>(Arrays.asList(item.getDeclaredFields()));
+
+        // Check if there's a parent class that is not Object
+        if(item.getSuperclass() != null){
+            fields.addAll(getFields(item.getSuperclass()));
+        }
+
+        return fields;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void recursiveCheckJSONForMissingFields(@Nonnull Map<String,Object> map, @Nonnull Object result){
+
+        // Turn fields to set
+        Map<String,Field> fields = getFields(result.getClass()).stream()
+                                                               .collect(
+                                                                       Collectors.toMap(
+                                                                               Field::getName,
+                                                                               item -> item
+                                                                       )
+                                                               );
+
+        System.out.println(result.getClass().getName() + " " + fields);
+
+        // Go every entry in the map - check if it exists in object
+        for(var entry : map.entrySet()){
+
+            if(!fields.containsKey(entry.getKey())){
+                System.err.println(f(
+                        "Class '{}' is missing a field called '{}' ({})",
+                        result.getClass().getName(),
+                        entry.getKey(),
+                        entry.getValue().getClass().getName()
+                ));
+            }
+
+            // If map, then get equivalent object and follow that in
+            if(entry.getValue() instanceof Map){
+
+                // Get inner map
+                var inner = (Map<String,Object>) entry.getValue();
+
+                // Get equivalent object
+                var field = fields.get(entry.getKey());
+                try{
+                    var value = field.get(result);
+
+                    // Now analyze that
+                    recursiveCheckJSONForMissingFields(inner, value);
+
+                }catch(IllegalAccessException e){
+
+                    // Try temporarily reduce access
+                    try{
+                        field.setAccessible(true);
+
+                        var value = field.get(result);
+
+                        // Now analyze that
+                        recursiveCheckJSONForMissingFields(inner, value);
+
+                    }catch(IllegalAccessException ex){
+                        ex.printStackTrace();
+                    }finally{
+                        field.setAccessible(false);
+                    }
+                }
+            }
+
+        }
+
     }
 
     /**
