@@ -19,7 +19,6 @@ public class ReusableResponse implements AutoCloseable{
     private String bodyString = null;
 
     public ReusableResponse(@Nonnull Response response){
-
         this.response = response;
     }
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import static com.ansill.tesla.utility.Constants.*;
 
-/** Opinionated client */
+/** Highly-Opinionated client */
 public final class Client{
 
     /** Low-level client */

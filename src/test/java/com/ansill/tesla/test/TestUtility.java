@@ -64,6 +64,7 @@ public final class TestUtility{
                 id,
                 vehicle_id,
                 generateString(32),
+                generateString(16),
                 IntStream.range(0, new Random().nextInt(32) + 1)
                          .asLongStream()
                          .mapToObj(item -> generateString(6))
