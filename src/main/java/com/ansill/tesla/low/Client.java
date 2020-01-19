@@ -23,6 +23,7 @@ import com.ansill.tesla.utility.ReusableResponse;
 import com.ansill.tesla.utility.Utility;
 import com.ansill.validation.Validation;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Optional;
 
@@ -43,11 +45,26 @@ import static com.ansill.tesla.utility.Utility.f;
 /** Low Level Tesla API client */
 public final class Client{
 
+    private final static Gson STRICT_GSON;
+
+    static{
+        // builder
+        var gson = new GsonBuilder();
+
+        // Add strict GSON that will error out if any field is missing
+        // TODO
+
+        // Create it
+        STRICT_GSON = gson.create();
+    }
+
     /** Logger */
     private static Logger LOG = LoggerFactory.getLogger(Client.class);
+
     /** Client ID to use */
     @Nonnull
     private final String clientId;
+
     /** Client secret to use */
     @Nonnull
     private final String clientSecret;
@@ -55,6 +72,8 @@ public final class Client{
     /** URL */
     @Nonnull
     private final String url;
+
+    private boolean verifySleepingState = true;
 
     /**
      * Sets up low-level client with default URL, client ID, and client secret
@@ -129,7 +148,7 @@ public final class Client{
 
     @Nonnull
     private static <T> T fromJson(@Nonnull String string, Class<T> type) throws APIProtocolException{
-        var item = new Gson().fromJson(string, type);
+        var item = STRICT_GSON.fromJson(string, type);
         if(item == null) throw new APIProtocolException(f(
                 "THe JSON string is not in format of {} class. JSON message \n\"{}\"",
                 type.getName(),
@@ -652,6 +671,35 @@ public final class Client{
                 // Unknown
                 default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
             };
+        }catch(SocketTimeoutException e){
+
+            // Possible sleeping state
+            if(!verifySleepingState){
+                throw new ClientException(
+                        "SocketTimeoutException thrown on possible sleeping vehicle and Client has been told to not attempt to verify the state",
+                        e
+                );
+            }
+
+            // Call on vehicle
+            var vehicle = this.getVehicle(accessToken, idString).orElseThrow();
+
+            // Get state - if asleep, throw VehicleUnavailableException
+            if("asleep".equals(vehicle.getResponse().getState())) throw new VehicleUnavailableException();
+
+            // Get state - if online, try again
+            if("online".equals(vehicle.getResponse().getState())) return getVehicleDataForm(
+                    accessToken,
+                    idString,
+                    clazz,
+                    path
+            );
+
+            // Else throw protocol error
+            throw new APIProtocolException(f(
+                    "Cannot determine the cause of SocketTimeoutException, received state '{}'",
+                    vehicle.getResponse().getState()
+            ));
 
         }catch(IOException e){
 
