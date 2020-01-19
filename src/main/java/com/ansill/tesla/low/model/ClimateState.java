@@ -1,5 +1,6 @@
 package com.ansill.tesla.low.model;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import static com.ansill.tesla.utility.Utility.simpleToString;
@@ -8,7 +9,7 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 @Immutable
 public class ClimateState{
 
-    private final boolean battery_header;
+    private final boolean battery_heater;
     private final boolean battery_heater_no_power;
     private final String climate_keeper_mode;
     private final double driver_temp_setting;
@@ -26,21 +27,38 @@ public class ClimateState{
     private final double passenger_temp_setting;
     private final boolean remote_heater_control_enabled;
     private final String right_temp_direction;
-    private final int seat_heater_left;
-    private final int seat_heater_rear_center;
-    private final int seat_heater_rear_left;
-    private final int seat_heater_left_back;
-    private final int seat_heater_rear_right;
-    private final int seat_heater_right_back;
-    private final int seat_heater_right;
-    private final boolean side_mirror_heaters;
-    private final boolean smart_preconditioning;
-    private final boolean steering_wheel_heater;
+
+    @Nullable
+    private final Integer seat_heater_left; // Entry could disapppear from JSON
+    @Nullable
+    private final Integer seat_heater_rear_center; // Entry could disapppear from JSON
+    @Nullable
+    private final Integer seat_heater_rear_left; // Entry could disapppear from JSON
+    @Nullable
+    private final Integer seat_heater_left_back; // Entry could disapppear from JSON
+    @Nullable
+    private final Integer seat_heater_rear_right; // Entry could disapppear from JSON
+    @Nullable
+    private final Integer seat_heater_right_back; // Entry could disapppear from JSON
+    @Nullable
+    private final Integer seat_heater_right; // Entry could disapppear from JSON
+
+    @Nullable
+    private final Boolean side_mirror_heaters; // Entry could disappear from JSON
+
+    @Nullable
+    private final Boolean smart_preconditioning; // Entry could disappear from JSON
+
+    @Nullable
+    private final Boolean steering_wheel_heater; // Entry could disappear from JSON
+
     private final long timestamp;
-    private final boolean wiper_blade_heater;
+
+    @Nullable
+    private final Boolean wiper_blade_heater; // Entry could disappear from JSON
 
     public ClimateState(
-            boolean battery_header,
+            boolean battery_heater,
             boolean battery_heater_no_power,
             String climate_keeper_mode,
             double driver_temp_setting,
@@ -58,20 +76,20 @@ public class ClimateState{
             double passenger_temp_setting,
             boolean remote_heater_control_enabled,
             String right_temp_direction,
-            int seat_heater_left,
-            int seat_heater_rear_center,
-            int seat_heater_rear_left,
-            int seat_heater_left_back,
-            int seat_heater_rear_right,
-            int seat_heater_right_back,
-            int seat_heater_right,
-            boolean side_mirror_heaters,
-            boolean smart_preconditioning,
-            boolean steering_wheel_heater,
+            @Nullable Integer seat_heater_left,
+            @Nullable Integer seat_heater_rear_center,
+            @Nullable Integer seat_heater_rear_left,
+            @Nullable Integer seat_heater_left_back,
+            @Nullable Integer seat_heater_rear_right,
+            @Nullable Integer seat_heater_right_back,
+            @Nullable Integer seat_heater_right,
+            @Nullable Boolean side_mirror_heaters,
+            @Nullable Boolean smart_preconditioning,
+            @Nullable Boolean steering_wheel_heater,
             long timestamp,
-            boolean wiper_blade_heater
+            @Nullable Boolean wiper_blade_heater
     ){
-        this.battery_header = battery_header;
+        this.battery_heater = battery_heater;
         this.battery_heater_no_power = battery_heater_no_power;
         this.climate_keeper_mode = climate_keeper_mode;
         this.driver_temp_setting = driver_temp_setting;
@@ -104,7 +122,7 @@ public class ClimateState{
     }
 
     public boolean getBatteryHeader(){
-        return battery_header;
+        return battery_heater;
     }
 
     public boolean getBatteryHeaterNoPower(){
@@ -175,43 +193,53 @@ public class ClimateState{
         return right_temp_direction;
     }
 
-    public int getSeatHeaterLeft(){
+    @Nullable
+    public Integer getSeatHeaterLeft(){
         return seat_heater_left;
     }
 
-    public int getSeatHeaterRear_center(){
+    @Nullable
+    public Integer getSeatHeaterRear_center(){
         return seat_heater_rear_center;
     }
 
-    public int getSeatHeaterRearLeft(){
+    @Nullable
+    public Integer getSeatHeaterRearLeft(){
         return seat_heater_rear_left;
     }
 
-    public int getSeatHeaterLeftBack(){
+    @Nullable
+    public Integer getSeatHeaterLeftBack(){
         return seat_heater_left_back;
     }
 
-    public int getSeatHeaterRearRight(){
+    @Nullable
+    public Integer getSeatHeaterRearRight(){
         return seat_heater_rear_right;
     }
 
-    public int getSeatHeaterRightBack(){
+    @Nullable
+    public Integer getSeatHeaterRightBack(){
         return seat_heater_right_back;
     }
 
-    public int getSeatHeaterRight(){
+    @Nullable
+    public Integer getSeatHeaterRight(){
         return seat_heater_right;
     }
 
-    public boolean getSideMirrorHeaters(){
+    @Nullable
+    public Boolean getSideMirrorHeaters(){
         return side_mirror_heaters;
     }
 
-    public boolean getSmartPreconditioning(){
+    @Nullable
+    public Boolean getSmartPreconditioning(){
         return smart_preconditioning;
     }
 
-    public boolean getSteeringWheelHeater(){
+    @Nullable
+    public Boolean getSteeringWheelHeater(){
         return steering_wheel_heater;
     }
 
@@ -219,7 +247,8 @@ public class ClimateState{
         return timestamp;
     }
 
-    public boolean getWiperBladeHeater(){
+    @Nullable
+    public Boolean getWiperBladeHeater(){
         return wiper_blade_heater;
     }
 

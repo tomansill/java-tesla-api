@@ -28,7 +28,7 @@ public class ChargeState{
     private final boolean charge_to_max_range;
     private final int charger_actual_current;
     private final String charger_phases;
-    private final int charge_pilot_current;
+    private final int charger_pilot_current;
     private final int charger_power;
     private final int charger_voltage;
     private final String charging_state;
@@ -41,7 +41,7 @@ public class ChargeState{
     private final boolean managed_charging_active;
     private final String managed_charging_start_time;
     private final boolean managed_charging_user_canceled;
-    private final int max_range_charger_counter;
+    private final int max_range_charge_counter;
     private final Boolean not_enough_power_to_heat;
     private final boolean scheduled_charging_pending;
     private final String scheduled_charging_start_time;
@@ -71,7 +71,7 @@ public class ChargeState{
             boolean charge_to_max_range,
             int charger_actual_current,
             String charger_phases,
-            int charge_pilot_current,
+            int charger_pilot_current,
             int charger_power,
             int charger_voltage,
             String charging_state,
@@ -84,7 +84,7 @@ public class ChargeState{
             boolean managed_charging_active,
             String managed_charging_start_time,
             boolean managed_charging_user_canceled,
-            int max_range_charger_counter,
+            int max_range_charge_counter,
             Boolean not_enough_power_to_heat,
             boolean scheduled_charging_pending,
             String scheduled_charging_start_time,
@@ -113,7 +113,7 @@ public class ChargeState{
         this.charge_to_max_range = charge_to_max_range;
         this.charger_actual_current = charger_actual_current;
         this.charger_phases = charger_phases;
-        this.charge_pilot_current = charge_pilot_current;
+        this.charger_pilot_current = charger_pilot_current;
         this.charger_power = charger_power;
         this.charger_voltage = charger_voltage;
         this.charging_state = charging_state;
@@ -126,7 +126,7 @@ public class ChargeState{
         this.managed_charging_active = managed_charging_active;
         this.managed_charging_start_time = managed_charging_start_time;
         this.managed_charging_user_canceled = managed_charging_user_canceled;
-        this.max_range_charger_counter = max_range_charger_counter;
+        this.max_range_charge_counter = max_range_charge_counter;
         this.not_enough_power_to_heat = not_enough_power_to_heat;
         this.scheduled_charging_pending = scheduled_charging_pending;
         this.scheduled_charging_start_time = scheduled_charging_start_time;
@@ -209,7 +209,7 @@ public class ChargeState{
     }
 
     public int getChargePilotCurrent(){
-        return charge_pilot_current;
+        return charger_pilot_current;
     }
 
     public int getChargerPower(){
@@ -261,7 +261,7 @@ public class ChargeState{
     }
 
     public int getMaxRangeChargerCounter(){
-        return max_range_charger_counter;
+        return max_range_charge_counter;
     }
 
     @Nullable

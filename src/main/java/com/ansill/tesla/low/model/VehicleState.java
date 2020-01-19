@@ -1,6 +1,7 @@
 package com.ansill.tesla.low.model;
 
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import static com.ansill.tesla.utility.Utility.simpleToString;
@@ -18,7 +19,13 @@ public class VehicleState{
     private final int df;
     private final int dr;
     private final int ft;
-    private final boolean homelink_nearby;
+
+    @Nullable
+    private final Boolean homelink_nearby; // Could disappear from json
+    @Nullable
+    private final Integer homelink_device_count; // Could disappear from json
+    @Nullable
+    private final Integer sun_roof_percent_open;  // Could disappear from json
     private final boolean is_user_present;
     private final String last_autopark_error;
     private final boolean locked;
@@ -35,12 +42,6 @@ public class VehicleState{
     private final boolean sentry_mode;
     private final SoftwareUpdate software_update;
     private final SpeedLimitMode speed_limit_mode;
-    private final int sun_roof_percent_open;
-    private final String sun_roof_state;
-    private final long timestamp;
-    private final boolean valet_mode;
-    private final boolean valet_pin_needed;
-    private final String vehicle_name;
 
     public VehicleState(
             int api_version,
@@ -52,8 +53,8 @@ public class VehicleState{
             int df,
             int dr,
             int ft,
-            boolean homelink_nearby,
-            boolean is_user_present,
+            @Nullable Boolean homelink_nearby,
+            @Nullable Integer homelink_device_count, boolean is_user_present,
             String last_autopark_error,
             boolean locked,
             MediaState media_state,
@@ -69,7 +70,7 @@ public class VehicleState{
             boolean sentry_mode,
             SoftwareUpdate software_update,
             SpeedLimitMode speed_limit_mode,
-            int sun_roof_percent_open,
+            @Nullable Integer sun_roof_percent_open,
             String sun_roof_state,
             long timestamp,
             boolean valet_mode,
@@ -86,6 +87,7 @@ public class VehicleState{
         this.dr = dr;
         this.ft = ft;
         this.homelink_nearby = homelink_nearby;
+        this.homelink_device_count = homelink_device_count;
         this.is_user_present = is_user_present;
         this.last_autopark_error = last_autopark_error;
         this.locked = locked;
@@ -108,6 +110,17 @@ public class VehicleState{
         this.valet_mode = valet_mode;
         this.valet_pin_needed = valet_pin_needed;
         this.vehicle_name = vehicle_name;
+    }
+
+    private final String sun_roof_state;
+    private final long timestamp;
+    private final boolean valet_mode;
+    private final boolean valet_pin_needed;
+    private final String vehicle_name;
+
+    @Nullable
+    public Integer getHomelinkDeviceCount(){
+        return homelink_device_count;
     }
 
     public int getApiVersion(){
@@ -146,7 +159,8 @@ public class VehicleState{
         return ft;
     }
 
-    public boolean getHomelinkNearby(){
+    @Nullable
+    public Boolean getHomelinkNearby(){
         return homelink_nearby;
     }
 
@@ -214,7 +228,8 @@ public class VehicleState{
         return speed_limit_mode;
     }
 
-    public int getSunRoofPercentOpen(){
+    @Nullable
+    public Integer getSunRoofPercentOpen(){
         return sun_roof_percent_open;
     }
 
