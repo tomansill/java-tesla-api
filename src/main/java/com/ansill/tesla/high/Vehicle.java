@@ -4,7 +4,12 @@ import com.ansill.tesla.high.exception.VehicleNotFoundException;
 import com.ansill.tesla.high.model.BatteryState;
 import com.ansill.tesla.high.model.ChargeSettings;
 import com.ansill.tesla.high.model.ChargeState;
+import com.ansill.tesla.high.model.ClimateSettings;
+import com.ansill.tesla.high.model.ClimateState;
 import com.ansill.tesla.high.model.DriveState;
+import com.ansill.tesla.high.model.GUISettings;
+import com.ansill.tesla.high.model.VehicleConfig;
+import com.ansill.tesla.high.model.VehicleSnapshot;
 import com.ansill.tesla.low.exception.VehicleIDNotFoundException;
 import com.ansill.tesla.model.CachedValue;
 import com.ansill.validation.Validation;
@@ -50,6 +55,26 @@ public class Vehicle{
     @Nonnull
     private final CachedValue<com.ansill.tesla.med.model.ChargeState> cachedChargeState;
 
+    /** Cached vehicle state */
+    @Nonnull
+    private final CachedValue<com.ansill.tesla.med.model.VehicleState> cachedVehicleState;
+
+    /** Cached vehicle state */
+    @Nonnull
+    private final CachedValue<com.ansill.tesla.med.model.GuiSettings> cachedGuiSettings;
+
+    /** Cached vehicle state */
+    @Nonnull
+    private final CachedValue<com.ansill.tesla.med.model.ClimateState> cachedClimateState;
+
+    /** Cached vehicle state */
+    @Nonnull
+    private final CachedValue<com.ansill.tesla.med.model.VehicleConfig> cachedVehicleConfig;
+
+    /** Cached complete data */
+    @Nonnull
+    private final CachedValue<com.ansill.tesla.med.model.CompleteData> cachedCompleteData;
+
     /**
      * Vehicle constructor
      *
@@ -75,6 +100,11 @@ public class Vehicle{
         this.cachedVehicle = new CachedValue<>(slowChangingDataLifetime, vehicle);
         this.cachedDriveState = new CachedValue<>(fastChangingDataLifetime);
         this.cachedChargeState = new CachedValue<>(fastChangingDataLifetime);
+        this.cachedVehicleState = new CachedValue<>(fastChangingDataLifetime);
+        this.cachedGuiSettings = new CachedValue<>(slowChangingDataLifetime);
+        this.cachedClimateState = new CachedValue<>(fastChangingDataLifetime);
+        this.cachedVehicleConfig = new CachedValue<>(slowChangingDataLifetime);
+        this.cachedCompleteData = new CachedValue<>(fastChangingDataLifetime);
     }
 
     /**
@@ -97,11 +127,33 @@ public class Vehicle{
         );
     }
 
+    /**
+     * Sets the cache lifetime of fast-changing data
+     * <p>
+     * This applies to:
+     * VehicleSnapshot
+     * DriveState
+     * ChargeState
+     * VehicleState
+     * ClimateState
+     * Vehicle
+     *
+     * @param duration lifetime
+     */
     public void setFastChangingDataCacheLifetime(@Nonnull AtomicReference<Duration> duration){
         Validation.assertNonnull(duration.get(), "duration.get()");
         fastChangingDataLifetime.set(Validation.assertNonnull(duration, "duration"));
     }
 
+    /**
+     * Sets the cache lifetime of slow-changing data
+     * <p>
+     * This applies to:
+     * GUI Settings
+     * Vehicle Config
+     *
+     * @param duration lifetime
+     */
     public void setSlowChangingDataCacheLifetime(@Nonnull AtomicReference<Duration> duration){
         Validation.assertNonnull(duration.get(), "duration.get()");
         slowChangingDataLifetime.set(Validation.assertNonnull(duration, "duration"));
@@ -115,7 +167,7 @@ public class Vehicle{
      */
     @Nonnull
     public Quantity<Length> getOdometer() throws VehicleNotFoundException{
-        return null;
+        return getMediumVehicleState().getOdometer();
     }
 
     /**
@@ -125,8 +177,6 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     public boolean isInService() throws VehicleNotFoundException{
-
-        // Get it and convert it to high level and return
         return getMediumVehicle().isInService();
     }
 
@@ -172,9 +222,41 @@ public class Vehicle{
      */
     @Nonnull
     public ChargeState getChargeState() throws VehicleNotFoundException{
-
-        // Get it and convert it to high level and return
         return ChargeState.convert(getMediumChargeState());
+    }
+
+    /**
+     * Returns vehicle config
+     *
+     * @return vehicle config
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public VehicleConfig getVehicleConfig() throws VehicleNotFoundException{
+        return VehicleConfig.convert(getMediumVehicleConfig());
+    }
+
+
+    /**
+     * Returns GUI settings
+     *
+     * @return settings
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public GUISettings getGUISettings() throws VehicleNotFoundException{
+        return GUISettings.convert(getMediumGuiSettings());
+    }
+
+    /**
+     * Returns vehicle snapshot
+     *
+     * @return snapshot
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public VehicleSnapshot getVehicleSnapshot() throws VehicleNotFoundException{
+        return VehicleSnapshot.convert(getMediumCompleteVData());
     }
 
     /**
@@ -185,9 +267,30 @@ public class Vehicle{
      */
     @Nonnull
     public BatteryState getBatteryState() throws VehicleNotFoundException{
-
-        // Get it and convert it to high level and return
         return BatteryState.convert(getMediumChargeState());
+    }
+
+    /**
+     * Returns climate settings
+     *
+     * @return climate settings
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public ClimateSettings getClimateSettings() throws VehicleNotFoundException{
+        return ClimateSettings.convert(getMediumClimateState());
+    }
+
+
+    /**
+     * Returns climate state
+     *
+     * @return climate state
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public ClimateState getClimateState() throws VehicleNotFoundException{
+        return ClimateState.convert(getMediumClimateState());
     }
 
     /**
@@ -198,8 +301,6 @@ public class Vehicle{
      */
     @Nonnull
     public ChargeSettings getChargeSettings() throws VehicleNotFoundException{
-
-        // Get it and convert it to high level and return
         return ChargeSettings.convert(getMediumChargeState());
     }
 
@@ -210,7 +311,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    public com.ansill.tesla.med.model.Vehicle getMediumVehicle() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.Vehicle getMediumVehicle() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -235,13 +336,13 @@ public class Vehicle{
     }
 
     /**
-     * Returns charge settings
+     * Returns charge state
      *
-     * @return charge settings
+     * @return charge state
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    public com.ansill.tesla.med.model.ChargeState getMediumChargeState() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.ChargeState getMediumChargeState() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -253,6 +354,189 @@ public class Vehicle{
             var state = cachedChargeState.getOrUpdate(() -> {
                 try{
                     return parent.getClient().getVehicleChargeState(parent.getToken(), id);
+                }catch(VehicleIDNotFoundException e){
+                    exceptionCatcher.set(new VehicleNotFoundException(id));
+                    return null;
+                }
+            });
+
+            // Check exception
+            if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+
+            // Return it
+            return state;
+        }
+    }
+
+
+    /**
+     * Returns gui settings
+     *
+     * @return gui settings
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    private com.ansill.tesla.med.model.GuiSettings getMediumGuiSettings() throws VehicleNotFoundException{
+
+        // Lock it
+        try(var ignored = parent.getReadLock().doLock()){
+
+            // Exception catcher
+            AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
+
+            // Retrieve from cache if any or send new call
+            var state = cachedGuiSettings.getOrUpdate(() -> {
+                try{
+                    return parent.getClient().getVehicleGuiSettings(parent.getToken(), id);
+                }catch(VehicleIDNotFoundException e){
+                    exceptionCatcher.set(new VehicleNotFoundException(id));
+                    return null;
+                }
+            });
+
+            // Check exception
+            if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+
+            // Return it
+            return state;
+        }
+    }
+
+
+    /**
+     * Returns complete data
+     *
+     * @return data
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    private com.ansill.tesla.med.model.CompleteData getMediumCompleteVData() throws VehicleNotFoundException{
+
+        // Lock it
+        try(var ignored = parent.getReadLock().doLock()){
+
+            // Exception catcher
+            AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
+
+            // Retrieve from cache if any or send new call
+            var state = cachedCompleteData.getOrUpdate(() -> {
+                try{
+
+                    // Get data
+                    var data = parent.getClient().getVehicleCompleteData(parent.getToken(), id);
+
+                    // Propagate other data
+                    cachedVehicle.update(data.getVehicle());
+                    cachedVehicleConfig.update(data.getVehicleConfig());
+                    cachedClimateState.update(data.getClimateState());
+                    cachedGuiSettings.update(data.getGuiSettings());
+                    cachedDriveState.update(data.getDriveState());
+                    cachedChargeState.update(data.getChargeState());
+                    cachedVehicleState.update(data.getVehicleState());
+
+                    // Return data
+                    return data;
+
+                }catch(VehicleIDNotFoundException e){
+                    exceptionCatcher.set(new VehicleNotFoundException(id));
+                    return null;
+                }
+            });
+
+            // Check exception
+            if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+
+            // Return it
+            return state;
+        }
+    }
+
+    /**
+     * Returns vehicle state
+     *
+     * @return vehicle state
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    private com.ansill.tesla.med.model.VehicleState getMediumVehicleState() throws VehicleNotFoundException{
+
+        // Lock it
+        try(var ignored = parent.getReadLock().doLock()){
+
+            // Exception catcher
+            AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
+
+            // Retrieve from cache if any or send new call
+            var state = cachedVehicleState.getOrUpdate(() -> {
+                try{
+                    return parent.getClient().getVehicleVehicleState(parent.getToken(), id);
+                }catch(VehicleIDNotFoundException e){
+                    exceptionCatcher.set(new VehicleNotFoundException(id));
+                    return null;
+                }
+            });
+
+            // Check exception
+            if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+
+            // Return it
+            return state;
+        }
+    }
+
+    /**
+     * Returns climate state
+     *
+     * @return climate state
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    private com.ansill.tesla.med.model.ClimateState getMediumClimateState() throws VehicleNotFoundException{
+
+        // Lock it
+        try(var ignored = parent.getReadLock().doLock()){
+
+            // Exception catcher
+            AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
+
+            // Retrieve from cache if any or send new call
+            var state = cachedClimateState.getOrUpdate(() -> {
+                try{
+                    return parent.getClient().getVehicleClimateState(parent.getToken(), id);
+                }catch(VehicleIDNotFoundException e){
+                    exceptionCatcher.set(new VehicleNotFoundException(id));
+                    return null;
+                }
+            });
+
+            // Check exception
+            if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+
+            // Return it
+            return state;
+        }
+    }
+
+
+    /**
+     * Returns vehicle config
+     *
+     * @return vehicle config
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    private com.ansill.tesla.med.model.VehicleConfig getMediumVehicleConfig() throws VehicleNotFoundException{
+
+        // Lock it
+        try(var ignored = parent.getReadLock().doLock()){
+
+            // Exception catcher
+            AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
+
+            // Retrieve from cache if any or send new call
+            var state = cachedVehicleConfig.getOrUpdate(() -> {
+                try{
+                    return parent.getClient().getVehicleVehicleConfig(parent.getToken(), id);
                 }catch(VehicleIDNotFoundException e){
                     exceptionCatcher.set(new VehicleNotFoundException(id));
                     return null;

@@ -9,8 +9,12 @@ import com.ansill.tesla.low.model.CompleteVehicleDataResponse;
 import com.ansill.tesla.med.model.AccountCredentials;
 import com.ansill.tesla.med.model.ChargeState;
 import com.ansill.tesla.med.model.ClimateState;
+import com.ansill.tesla.med.model.CompleteData;
 import com.ansill.tesla.med.model.DriveState;
+import com.ansill.tesla.med.model.GuiSettings;
 import com.ansill.tesla.med.model.Vehicle;
+import com.ansill.tesla.med.model.VehicleConfig;
+import com.ansill.tesla.med.model.VehicleState;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
@@ -439,21 +443,6 @@ public class Client{
         return DriveState.convert(client.getVehicleDriveState(accessToken, idString));
     }
 
-    /*
-    @Nonnull
-    public GuiSettings getVehicleGuiSettings(@Nonnull String accessToken, @Nonnull String idString)
-    throws VehicleIDNotFoundException{
-
-        // Check parameters
-        Validation.assertNonnull(accessToken, "accessToken");
-
-        // Check parameters
-        Validation.assertNonnull(idString, "idString");
-
-        // Get the data
-        return getVehicleDataForm(accessToken, idString, GuiSettings.class, "data_request/gui_settings");
-    }
-
     @Nonnull
     public VehicleState getVehicleVehicleState(@Nonnull String accessToken, @Nonnull String idString)
     throws VehicleIDNotFoundException{
@@ -465,7 +454,21 @@ public class Client{
         Validation.assertNonnull(idString, "idString");
 
         // Get the data
-        return getVehicleDataForm(accessToken, idString, VehicleState.class, "data_request/vehicle_state");
+        return VehicleState.convert(client.getVehicleVehicleState(accessToken, idString));
+    }
+
+    @Nonnull
+    public GuiSettings getVehicleGuiSettings(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return GuiSettings.convert(client.getVehicleGuiSettings(accessToken, idString));
     }
 
     @Nonnull
@@ -479,7 +482,21 @@ public class Client{
         Validation.assertNonnull(idString, "idString");
 
         // Get the data
-        return getVehicleDataForm(accessToken, idString, VehicleConfig.class, "data_request/vehicle_config");
+        return VehicleConfig.convert(client.getVehicleVehicleConfig(accessToken, idString));
     }
-     */
+
+
+    @Nonnull
+    public CompleteData getVehicleCompleteData(@Nonnull String accessToken, @Nonnull String idString)
+    throws VehicleIDNotFoundException{
+
+        // Check parameters
+        Validation.assertNonnull(accessToken, "accessToken");
+
+        // Check parameters
+        Validation.assertNonnull(idString, "idString");
+
+        // Get the data
+        return CompleteData.convert(client.getVehicleData(accessToken, idString).getResponse());
+    }
 }
