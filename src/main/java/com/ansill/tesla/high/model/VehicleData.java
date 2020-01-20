@@ -5,7 +5,7 @@ import javax.annotation.concurrent.Immutable;
 
 /** Complete vehicle state */
 @Immutable
-public final class Vehiclestate{
+public final class VehicleData{
 
     @Nonnull
     private final BatteryState batteryState;
@@ -16,7 +16,7 @@ public final class Vehiclestate{
     @Nonnull
     private final DriveState driveState;
 
-    private Vehiclestate(
+    private VehicleData(
             @Nonnull BatteryState batteryState,
             @Nonnull ChargeState chargeState,
             @Nonnull DriveState driveState

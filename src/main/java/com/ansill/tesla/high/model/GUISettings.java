@@ -48,9 +48,10 @@ public final class GUISettings{
     }
 
     /**
-     * Report whether door is open or not
+     * Converts medium-level to high-level object
      *
-     * @return true if door is open, otherwise false
+     * @param settings medium level object
+     * @return high-level object
      */
     @Nonnull
     public static GUISettings convert(@Nonnull com.ansill.tesla.med.model.GuiSettings settings){
