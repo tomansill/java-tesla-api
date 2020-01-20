@@ -167,7 +167,7 @@ public class Vehicle{
      */
     @Nonnull
     public Quantity<Length> getOdometer() throws VehicleNotFoundException{
-        return getMediumVehicleState().getOdometer();
+        return getRawVehicleState().getOdometer();
     }
 
     /**
@@ -177,7 +177,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     public boolean isInService() throws VehicleNotFoundException{
-        return getMediumVehicle().isInService();
+        return getRawVehicle().isInService();
     }
 
     /**
@@ -222,7 +222,7 @@ public class Vehicle{
      */
     @Nonnull
     public ChargeState getChargeState() throws VehicleNotFoundException{
-        return ChargeState.convert(getMediumChargeState());
+        return ChargeState.convert(getRawChargeState());
     }
 
     /**
@@ -233,7 +233,7 @@ public class Vehicle{
      */
     @Nonnull
     public VehicleConfig getVehicleConfig() throws VehicleNotFoundException{
-        return VehicleConfig.convert(getMediumVehicleConfig());
+        return VehicleConfig.convert(getRawVehicleConfig());
     }
 
 
@@ -245,7 +245,7 @@ public class Vehicle{
      */
     @Nonnull
     public GUISettings getGUISettings() throws VehicleNotFoundException{
-        return GUISettings.convert(getMediumGuiSettings());
+        return GUISettings.convert(getRawGuiSettings());
     }
 
     /**
@@ -256,7 +256,7 @@ public class Vehicle{
      */
     @Nonnull
     public VehicleSnapshot getVehicleSnapshot() throws VehicleNotFoundException{
-        return VehicleSnapshot.convert(getMediumCompleteVData());
+        return VehicleSnapshot.convert(getRawCompleteVehicleData());
     }
 
     /**
@@ -267,7 +267,7 @@ public class Vehicle{
      */
     @Nonnull
     public BatteryState getBatteryState() throws VehicleNotFoundException{
-        return BatteryState.convert(getMediumChargeState());
+        return BatteryState.convert(getRawChargeState());
     }
 
     /**
@@ -278,7 +278,7 @@ public class Vehicle{
      */
     @Nonnull
     public ClimateSettings getClimateSettings() throws VehicleNotFoundException{
-        return ClimateSettings.convert(getMediumClimateState());
+        return ClimateSettings.convert(getRawClimateState());
     }
 
 
@@ -290,7 +290,7 @@ public class Vehicle{
      */
     @Nonnull
     public ClimateState getClimateState() throws VehicleNotFoundException{
-        return ClimateState.convert(getMediumClimateState());
+        return ClimateState.convert(getRawClimateState());
     }
 
     /**
@@ -301,7 +301,7 @@ public class Vehicle{
      */
     @Nonnull
     public ChargeSettings getChargeSettings() throws VehicleNotFoundException{
-        return ChargeSettings.convert(getMediumChargeState());
+        return ChargeSettings.convert(getRawChargeState());
     }
 
     /**
@@ -311,7 +311,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    private com.ansill.tesla.med.model.Vehicle getMediumVehicle() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.Vehicle getRawVehicle() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -342,7 +342,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    private com.ansill.tesla.med.model.ChargeState getMediumChargeState() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.ChargeState getRawChargeState() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -376,7 +376,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    private com.ansill.tesla.med.model.GuiSettings getMediumGuiSettings() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.GuiSettings getRawGuiSettings() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -410,7 +410,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    private com.ansill.tesla.med.model.CompleteData getMediumCompleteVData() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.CompleteData getRawCompleteVehicleData() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -458,7 +458,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    private com.ansill.tesla.med.model.VehicleState getMediumVehicleState() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.VehicleState getRawVehicleState() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -491,7 +491,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    private com.ansill.tesla.med.model.ClimateState getMediumClimateState() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.ClimateState getRawClimateState() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -525,7 +525,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    private com.ansill.tesla.med.model.VehicleConfig getMediumVehicleConfig() throws VehicleNotFoundException{
+    private com.ansill.tesla.med.model.VehicleConfig getRawVehicleConfig() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -571,6 +571,6 @@ public class Vehicle{
     public String getName() throws VehicleNotFoundException{
 
         // Get it and convert it to high level and return
-        return getMediumVehicle().getDisplayName();
+        return getRawVehicle().getDisplayName();
     }
 }
