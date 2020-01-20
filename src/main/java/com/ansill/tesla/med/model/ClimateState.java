@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Quantity;
 import javax.measure.quantity.Temperature;
+import java.util.Optional;
 
 @Immutable
 public final class ClimateState{
@@ -197,9 +198,9 @@ public final class ClimateState{
         return insideTemp;
     }
 
-    @Nullable
-    public Boolean getAutoConditioningOn(){
-        return isAutoConditioningOn;
+    @Nonnull
+    public Optional<Boolean> isAutoConditioningOn(){
+        return Optional.ofNullable(isAutoConditioningOn);
     }
 
     public boolean isClimateOn(){
