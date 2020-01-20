@@ -63,7 +63,8 @@ public final class TestUtility{
         var vehicle = new Vehicle(
                 id,
                 vehicle_id,
-                user_id, generateString(32),
+                new Random().nextLong(),
+                generateString(32),
                 generateString(16),
                 IntStream.range(0, new Random().nextInt(32) + 1)
                          .asLongStream()
@@ -114,7 +115,8 @@ public final class TestUtility{
                 124.1,
                 "<invalid>",
                 false,
-                minutes_to_full_charge, "<invalid>",
+                new Random().nextInt(310),
+                "<invalid>",
                 190.59,
                 false,
                 null,
@@ -127,7 +129,7 @@ public final class TestUtility{
                 1245141241241L,
                 63,
                 null,
-                trip_charging
+                true
         );
 
         return new MockModel.VehicleAccount(new AtomicReference<>(vehicle));

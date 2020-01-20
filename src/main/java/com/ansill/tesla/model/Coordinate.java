@@ -14,7 +14,7 @@ import javax.measure.quantity.Angle;
 import static tech.units.indriya.unit.Units.RADIAN;
 
 @Immutable
-public class Coordinate{
+public final class Coordinate{
 
     private static final Unit<Angle> ANGULAR_DEGREES = new TransformedUnit<>(
             "°",
