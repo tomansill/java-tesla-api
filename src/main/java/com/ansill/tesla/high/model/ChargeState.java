@@ -18,10 +18,6 @@ public final class ChargeState{
     /** Report whether door is open or not */
     private final boolean isChargePortDoorOpen;
 
-    /** Charge settings */
-    @Nonnull
-    private final ChargeSettings chargeSettings;
-
     /** Amount of energy added in last charge (or current if currently charging */
     @Nonnull
     private final Quantity<Energy> energyAddedInLastCharge;
@@ -53,7 +49,6 @@ public final class ChargeState{
      * ChargeState constructor
      *
      * @param isChargePortDoorOpen               Report whether door is open or not
-     * @param chargeSettings                     Charge settings
      * @param energyAddedInLastCharge            Amount of energy added in last charge (or current if currently charging
      * @param idealDistanceAddedInLastCharge     Amount of ideal distance added in last charge (or current if currently charging
      * @param ratedDistanceAddedInLastCharge     Amount of rated distance added in last charge (or current if currently charging
@@ -64,7 +59,6 @@ public final class ChargeState{
      */
     private ChargeState(
             boolean isChargePortDoorOpen,
-            @Nonnull ChargeSettings chargeSettings,
             @Nonnull Quantity<Energy> energyAddedInLastCharge,
             @Nonnull Quantity<Length> idealDistanceAddedInLastCharge,
             @Nonnull Quantity<Length> ratedDistanceAddedInLastCharge,
@@ -74,7 +68,6 @@ public final class ChargeState{
             @Nullable ChargeSession chargeSession
     ){
         this.isChargePortDoorOpen = isChargePortDoorOpen;
-        this.chargeSettings = chargeSettings;
         this.energyAddedInLastCharge = energyAddedInLastCharge;
         this.idealDistanceAddedInLastCharge = idealDistanceAddedInLastCharge;
         this.ratedDistanceAddedInLastCharge = ratedDistanceAddedInLastCharge;
@@ -84,6 +77,27 @@ public final class ChargeState{
         this.chargeSession = chargeSession;
     }
 
+
+    /**
+     * Converts medium-level to high-level object
+     *
+     * @param state medium level object
+     * @return high-level object
+     */
+    @Nonnull
+    public static ChargeState convert(@Nonnull com.ansill.tesla.med.model.ChargeState state){
+        return new ChargeState(
+                state.isChargePortDoorOpen(),
+                state.getChargeEnergyAdded(),
+                state.getChargeDistanceAddedIdeal(),
+                state.getChargeDistanceAddedRated(),
+                state.isChargePortColdWeatherMode(),
+                state.getChargePortLatch(),
+                state.getChargingState(),
+                ChargeSession.convert(state)
+        );
+    }
+
     /**
      * Report whether door is open or not
      *
@@ -91,16 +105,6 @@ public final class ChargeState{
      */
     public boolean isChargePortDoorOpen(){
         return isChargePortDoorOpen;
-    }
-
-    /**
-     * Returns charge settings
-     *
-     * @return settings
-     */
-    @Nonnull
-    public ChargeSettings getChargeSettings(){
-        return chargeSettings;
     }
 
     /**

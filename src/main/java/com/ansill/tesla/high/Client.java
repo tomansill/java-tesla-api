@@ -2,6 +2,7 @@ package com.ansill.tesla.high;
 
 import com.ansill.tesla.low.exception.AuthenticationException;
 import com.ansill.tesla.low.exception.ReAuthenticationException;
+import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import static com.ansill.tesla.utility.Constants.*;
 public final class Client{
 
     /** Low-level client */
-    private final com.ansill.tesla.low.Client client;
+    private final com.ansill.tesla.med.Client client;
 
     /** Sets up high-level client with default URL, client ID, and client secret */
     public Client(){
@@ -29,7 +30,11 @@ public final class Client{
     public Client(@Nonnull String url, @Nonnull String clientId, @Nonnull String clientSecret){
 
         // Assign it
-        this.client = new com.ansill.tesla.low.Client(url, clientId, clientSecret);
+        this.client = new com.ansill.tesla.med.Client(
+                Validation.assertNonemptyString(url),
+                Validation.assertNonemptyString(clientId),
+                Validation.assertNonemptyString(clientSecret)
+        );
     }
 
     /**
@@ -42,7 +47,9 @@ public final class Client{
     @Nonnull
     public Optional<Account> authenticate(@Nonnull String emailAddress, @Nonnull String password){
         try{
-            return Optional.of(new Account(client, client.authenticate(emailAddress, password)));
+            return Optional.of(new Account(client, client.authenticate(emailAddress, password),
+                    fastChangingDataLifetime, slowChangingDataLifetime
+            ));
         }catch(AuthenticationException e){
             return Optional.empty();
         }
@@ -57,7 +64,9 @@ public final class Client{
     @Nonnull
     public Optional<Account> authenticate(@Nonnull String refreshToken){
         try{
-            return Optional.of(new Account(client, client.refreshToken(refreshToken)));
+            return Optional.of(new Account(client, client.refreshToken(refreshToken), fastChangingDataLifetime,
+                    slowChangingDataLifetime
+            ));
         }catch(ReAuthenticationException e){
             return Optional.empty();
         }
