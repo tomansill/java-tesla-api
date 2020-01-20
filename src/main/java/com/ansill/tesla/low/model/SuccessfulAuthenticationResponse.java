@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @Immutable
-public class SuccessfulAuthenticationResponse{
+public final class SuccessfulAuthenticationResponse{
 
     @Nonnull
     private final String access_token;

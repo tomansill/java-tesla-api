@@ -1,5 +1,7 @@
 package com.ansill.tesla.med.model;
 
+import com.ansill.tesla.utility.UnitUtility;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Unit;
@@ -8,7 +10,7 @@ import javax.measure.quantity.Temperature;
 import java.time.Instant;
 
 @Immutable
-public class GuiSettings{
+public final class GuiSettings{
 
     private final boolean use24HoursTime;
 
@@ -47,7 +49,19 @@ public class GuiSettings{
         this.showRangeUnits = showRangeUnits;
     }
 
-    public boolean isUse24HoursTime(){
+    public static GuiSettings convert(@Nonnull com.ansill.tesla.low.model.GuiSettings settings){
+        return new GuiSettings(
+                settings.getGui24HourTime(),
+                UnitUtility.getSpeedUnit(settings.getGuiChargeRateUnits()),
+                UnitUtility.getSpeedUnit(settings.getGuiDistanceUnits()),
+                Display.valueOf(settings.getGuiRangeDisplay()),
+                UnitUtility.getTemperatureUnit(settings.getGuiTemperatureUnits()),
+                Instant.ofEpochSecond(settings.getTimestamp()),
+                settings.isShowRangeUnits()
+        );
+    }
+
+    public boolean isUsing24HoursTime(){
         return use24HoursTime;
     }
 
@@ -76,7 +90,7 @@ public class GuiSettings{
         return timestamp;
     }
 
-    public boolean isShowRangeUnits(){
+    public boolean isShowingRangeUnits(){
         return showRangeUnits;
     }
 

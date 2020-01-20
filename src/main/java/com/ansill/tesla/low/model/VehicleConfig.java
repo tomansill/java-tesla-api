@@ -6,16 +6,24 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
-public class VehicleConfig{
+public final class VehicleConfig{
 
     private final boolean can_accept_navigation_requests;
+
     private final boolean can_actuate_trunks;
+
     private final String car_special_type;
+
     private final String car_type;
+
     private final String charge_port_type;
+
     private final boolean eu_vehicle;
+
     private final String exterior_color;
+
     private final boolean has_air_suspension;
+
     private final boolean has_ludicrous_mode;
     private final int key_version;
     private final boolean motorized_charge_port;

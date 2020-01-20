@@ -9,7 +9,7 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 
 /** Generic Error Response */
 @Immutable
-public class GenericErrorResponse{
+public final class GenericErrorResponse{
 
     /** String that describes type of error */
     @Nullable

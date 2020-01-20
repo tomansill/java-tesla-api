@@ -1,24 +1,39 @@
 package com.ansill.tesla.low.model;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Optional;
 
 import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
-public class DriveState{
+public final class DriveState{
 
     private final long gps_as_of;
+
     private final int heading;
+
     private final double latitude;
+
     private final double longitude;
+
     private final double native_latitude;
+
     private final int native_location_supported;
+
     private final double native_longitude;
+
     private final String native_type;
+
     private final int power;
+
     private final String shift_state;
-    private final String speed;
+
+    @Nullable
+    private final Integer speed;
+
     private final long timestamp;
 
     public DriveState(
@@ -32,7 +47,7 @@ public class DriveState{
             String native_type,
             int power,
             String shift_state,
-            String speed,
+            @Nullable Integer speed,
             long timestamp
     ){
         this.gps_as_of = gps_as_of;
@@ -89,8 +104,9 @@ public class DriveState{
         return shift_state;
     }
 
-    public String getSpeed(){
-        return speed;
+    @Nonnull
+    public Optional<Integer> getSpeed(){
+        return Optional.ofNullable(speed);
     }
 
     public long getTimestamp(){

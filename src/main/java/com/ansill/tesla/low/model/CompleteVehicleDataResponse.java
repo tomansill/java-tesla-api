@@ -7,7 +7,7 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 
 /** Complete Vehicle Data Response */
 @Immutable
-public class CompleteVehicleDataResponse extends SimpleResponse<CompleteVehicleData>{
+public final class CompleteVehicleDataResponse extends SimpleResponse<CompleteVehicleData>{
 
     /**
      * Response

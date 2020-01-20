@@ -1,22 +1,32 @@
 package com.ansill.tesla.low.model;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.Optional;
 
 import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
-public class ChargeState{
+public final class ChargeState{
     private final boolean battery_heater_on;
+
     private final int battery_level;
+
     private final double battery_range;
+
     private final int charge_current_request;
+
     private final int charge_current_request_max;
+
     private final boolean charge_enable_request;
+
     private final double charge_energy_added;
+
     private final int charge_limit_soc;
+
     private final int charge_limit_soc_max;
+
     private final int charge_limit_soc_min;
     private final int charge_limit_soc_std;
     private final double charge_miles_added_ideal;
@@ -279,9 +289,9 @@ public class ChargeState{
         return max_range_charge_counter;
     }
 
-    @Nullable
-    public Boolean getNotEnoughPowerToHeat(){
-        return not_enough_power_to_heat;
+    @Nonnull
+    public Optional<Boolean> getNotEnoughPowerToHeat(){
+        return Optional.ofNullable(not_enough_power_to_heat);
     }
 
     public boolean getScheduledChargingPending(){

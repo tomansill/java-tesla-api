@@ -1,6 +1,11 @@
 package com.ansill.tesla.med.model;
 
+import com.ansill.tesla.low.exception.APIProtocolException;
 import com.ansill.tesla.model.ShiftState;
+import com.ansill.tesla.model.USUnits;
+import com.ansill.tesla.utility.UnitUtility;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.Units;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -10,8 +15,10 @@ import javax.measure.quantity.Power;
 import javax.measure.quantity.Speed;
 import java.time.Instant;
 
+import static com.ansill.tesla.utility.Utility.f;
+
 @Immutable
-public class DriveState{
+public final class DriveState{
 
     private final long gpsAsOf; // TODO What is this
 
@@ -76,8 +83,27 @@ public class DriveState{
     }
 
     @Nonnull
-    public static DriveState convert(com.ansill.tesla.low.model.DriveState vehicleDriveState){
-        return null; // TODO dodododo
+    public static DriveState convert(com.ansill.tesla.low.model.DriveState state){
+        return new DriveState(
+                state.getGpsAsOf(),
+                Quantities.getQuantity(state.getHeading(), UnitUtility.ANGULAR_DEGREES),
+                Quantities.getQuantity(state.getLatitude(), UnitUtility.ANGULAR_DEGREES),
+                Quantities.getQuantity(state.getLongitude(), UnitUtility.ANGULAR_DEGREES),
+                Quantities.getQuantity(state.getNativeLatitude(), UnitUtility.ANGULAR_DEGREES),
+                state.getNativeLocationSupported(),
+                Quantities.getQuantity(state.getNativeLongitude(), UnitUtility.ANGULAR_DEGREES),
+                state.getNativeType(),
+                Quantities.getQuantity(state.getPower(), Units.WATT),
+                switch(state.getShiftState()){
+                    case "P" -> ShiftState.PARKING;
+                    case "R" -> ShiftState.REVERSE;
+                    case "D" -> ShiftState.DRIVE;
+                    case "N" -> ShiftState.NEUTRAL;
+                    default -> throw new APIProtocolException(f("Unexpected shift state '{}'", state.getShiftState()));
+                },
+                Quantities.getQuantity(state.getSpeed().orElse(0), USUnits.MILE_PER_HOUR),
+                Instant.ofEpochSecond(state.getTimestamp())
+        );
     }
 
     public long getGpsAsOf(){

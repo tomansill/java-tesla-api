@@ -9,7 +9,7 @@ import java.util.List;
 import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @Immutable
-public class VehiclesResponse{
+public final class VehiclesResponse{
 
     /** Response */
     @Nonnull

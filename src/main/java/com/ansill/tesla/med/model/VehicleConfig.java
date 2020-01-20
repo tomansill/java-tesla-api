@@ -5,16 +5,25 @@ import javax.annotation.concurrent.Immutable;
 import java.time.Instant;
 
 @Immutable
-public class VehicleConfig{
+public final class VehicleConfig{
     private final boolean canAcceptNavigationRequests;
+
     private final boolean canActuateTrunks;
+
     private final String carSpecialType;
+
     private final String carType;
+
     private final String chargePortType;
+
     private final boolean isEUVehicle;
+
     private final String exteriorColor;
+
     private final boolean hasAirSuspension;
+
     private final boolean hasLudicrousMode;
+
     private final int keyVersion;
     private final boolean motorizedChargePort;
     private final String perfConfig; // TODO what is this
@@ -85,6 +94,37 @@ public class VehicleConfig{
         this.trimBadging = trimBadging;
         this.wheelType = wheelType;
         this.useRangeBadging = useRangeBadging;
+    }
+
+    @Nonnull
+    public static VehicleConfig convert(@Nonnull com.ansill.tesla.low.model.VehicleConfig config){
+        return new VehicleConfig(
+                config.isCanAcceptNavigationRequests(),
+                config.isCanActuateTrunks(),
+                config.getCarSpecialType(),
+                config.getCarType(),
+                config.getChargePortType(),
+                config.getEuVehicle(),
+                config.getExteriorColor(),
+                config.getHasAirSuspension(),
+                config.getHasLudicrousMode(),
+                config.getKeyVersion(),
+                config.getMotorizedChargePort(),
+                config.getPerfConfig(),
+                config.isPlg(),
+                config.getRearSeatHeaters(),
+                config.getRearSeatType(),
+                config.isCanAcceptNavigationRequests(),
+                config.getRoofColor(),
+                config.getSeatType(),
+                config.getSpoilerType(),
+                config.getSunRoofInstalled(),
+                config.getThirdRowSeats(),
+                Instant.ofEpochSecond(config.getTimestamp()),
+                config.getTrimBadging(),
+                config.getWheelType(),
+                config.isUseRangeBadging()
+        );
     }
 
     public boolean isCanAcceptNavigationRequests(){

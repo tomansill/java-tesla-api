@@ -6,13 +6,18 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
-public class GuiSettings{
+public final class GuiSettings{
 
     private final boolean gui_24_hour_time;
+
     private final String gui_charge_rate_units;
+
     private final String gui_distance_units;
+
     private final String gui_range_display;
+
     private final String gui_temperature_units;
+
     private final long timestamp;
 
     private final boolean show_range_units;

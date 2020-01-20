@@ -1,5 +1,8 @@
 package com.ansill.tesla.med.model;
 
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.Units;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -7,16 +10,22 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Temperature;
 
 @Immutable
-public class ClimateState{
+public final class ClimateState{
 
     private final boolean batteryHeater;
+
     private final boolean batteryHeaterNoPower;
+
     private final String climateKeeperMode;
+
     @Nonnull
     private final Quantity<Temperature> driverTempSetting;
+
     private final int fanStatus;
+
     @Nonnull
     private final Quantity<Temperature> insideTemp;
+
     @Nullable
     private final Boolean isAutoConditioningOn;
     private final boolean isClimateOn;
@@ -126,8 +135,40 @@ public class ClimateState{
     }
 
     @Nonnull
-    public static ClimateState convert(@Nonnull com.ansill.tesla.low.model.ClimateState vehicleClimateState){
-        return null; // TODO dodo
+    public static ClimateState convert(@Nonnull com.ansill.tesla.low.model.ClimateState state){
+        return new ClimateState(
+                state.getBatteryHeater(),
+                state.getBatteryHeaterNoPower(),
+                state.getClimateKeeperMode(),
+                Quantities.getQuantity(state.getDriverTempSetting(), Units.CELSIUS),
+                state.getFanStatus(),
+                Quantities.getQuantity(state.getInsideTemp().orElse(0.0), Units.CELSIUS),
+                state.getIsAutoConditioningOn().orElse(false),
+                state.getIsClimateOn(),
+                state.getIsFrontDefrosterOn(),
+                state.getIsPreconditioning(),
+                state.getIsRearDefrosterOn(),
+                state.getLeftTempDirection(),
+                Quantities.getQuantity(state.getMaxAvailTemp(), Units.CELSIUS),
+                Quantities.getQuantity(state.getMinAvailTemp(), Units.CELSIUS),
+                Quantities.getQuantity(state.getOutsideTemp().orElse(0.0), Units.CELSIUS),
+                Quantities.getQuantity(state.getPassengerTempSetting(), Units.CELSIUS),
+                state.getRemoteHeaterControlEnabled(),
+                state.getRightTempDirection(),
+                state.getSeatHeaterLeft().orElse(null),
+                state.getSeatHeaterRearCenter().orElse(null),
+                state.getSeatHeaterRearLeft().orElse(null),
+                state.getSeatHeaterLeftBack().orElse(null),
+                state.getSeatHeaterRearRight().orElse(null),
+                state.getSeatHeaterRightBack().orElse(null),
+                state.getSeatHeaterRight().orElse(null),
+                state.getSideMirrorHeaters().orElse(null),
+                state.getSmartPreconditioning().orElse(null),
+                state.getSteeringWheelHeater().orElse(null),
+                state.getTimestamp(),
+                state.getWiperBladeHeater().orElse(null),
+                state.getDefrostMode()
+        );
     }
 
     public boolean isBatteryHeater(){

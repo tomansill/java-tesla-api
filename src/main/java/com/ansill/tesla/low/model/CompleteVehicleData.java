@@ -7,13 +7,18 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
-public class CompleteVehicleData extends Vehicle{
+public final class CompleteVehicleData extends Vehicle{
 
     private final GuiSettings gui_settings;
+
     private final DriveState drive_state;
+
     private final ChargeState charge_state;
+
     private final ClimateState climate_state;
+
     private final VehicleState vehicle_state;
+
     private final VehicleConfig vehicle_config;
 
     public CompleteVehicleData(

@@ -22,19 +22,27 @@ import java.time.Instant;
 import java.util.Optional;
 
 @Immutable
-public class ChargeState{
+public final class ChargeState{
 
     private final boolean batteryHeaterOn;
-    private final int batteryLevel;
+
+    @Nonnull
+    private final Quantity<Dimensionless> batteryLevel;
+
     @Nonnull
     private final Quantity<Length> batteryRange;
+
     @Nonnull
     private final Quantity<ElectricCurrent> chargeCurrentRequest;
+
     @Nonnull
     private final Quantity<ElectricCurrent> chargeCurrentRequestMax;
+
     private final boolean chargeEnableRequest;
+
     @Nonnull
     private final Quantity<Energy> chargeEnergyAdded;
+
     @Nonnull
     private final Quantity<Dimensionless> chargeLimitSOC;
     @Nonnull
@@ -87,22 +95,29 @@ public class ChargeState{
 
     @Nullable
     private final Boolean notEnoughPowerToHeat;
+
     private final boolean scheduledChargingPending;
+
     @Nullable
     private final Instant scheduledChargingStartTime;
+
     @Nonnull
     private final Duration timeToFullCharge;
+
     @Nonnull
     private final Instant timestamp;
+
     private final boolean tripCharging;
-    @Nonnegative
-    private final int usableBatteryLevel;
+
+    @Nonnull
+    private final Quantity<Dimensionless> usableBatteryLevel;
+
     @Nonnull
     private final String userChargeEnableRequest; // TODO what is this
 
     private ChargeState(
             boolean batteryHeaterOn,
-            int batteryLevel,
+            @Nonnull Quantity<Dimensionless> batteryLevel,
             @Nonnull Quantity<Length> batteryRange,
             @Nonnull Quantity<ElectricCurrent> chargeCurrentRequest,
             @Nonnull Quantity<ElectricCurrent> chargeCurrentRequestMax,
@@ -142,7 +157,7 @@ public class ChargeState{
             @Nonnull Duration timeToFullCharge,
             @Nonnull Instant timestamp,
             boolean tripCharging,
-            int usableBatteryLevel,
+            @Nonnull Quantity<Dimensionless> usableBatteryLevel,
             @Nonnull String userChargeEnableRequest
     ){
         this.batteryHeaterOn = batteryHeaterOn;
@@ -194,7 +209,7 @@ public class ChargeState{
     public static ChargeState convert(@Nonnull com.ansill.tesla.low.model.ChargeState chargeState){
         return new ChargeState(
                 chargeState.getBatteryHeaterOn(),
-                chargeState.getBatteryLevel(),
+                Quantities.getQuantity(chargeState.getBatteryLevel(), Units.PERCENT),
                 Quantities.getQuantity(chargeState.getBatteryRange(), USUnits.MILE),
                 Quantities.getQuantity(chargeState.getChargeCurrentRequest(), Units.AMPERE),
                 Quantities.getQuantity(chargeState.getChargeCurrentRequestMax(), Units.AMPERE),
@@ -231,13 +246,13 @@ public class ChargeState{
                 chargeState.getManagedChargingUserCanceled(),
                 chargeState.getMaxRangeChargerCounter(),
                 Duration.ofMinutes(chargeState.getMinutesToFullCharge()),
-                chargeState.getNotEnoughPowerToHeat(),
+                chargeState.getNotEnoughPowerToHeat().orElse(null),
                 chargeState.getScheduledChargingPending(),
                 Instant.parse(chargeState.getScheduledChargingStartTime()),
                 Duration.ofMinutes((int) (chargeState.getTimeToFullCharge() * 60)),
                 Instant.ofEpochSecond(chargeState.getTimestamp()),
                 chargeState.isTripCharging(),
-                chargeState.getUsableBatteryLevel(),
+                Quantities.getQuantity(chargeState.getUsableBatteryLevel(), Units.PERCENT),
                 chargeState.getUserChargeEnableRequest()
         );
     }
@@ -246,8 +261,8 @@ public class ChargeState{
         return batteryHeaterOn;
     }
 
-    @Nonnegative
-    public int getBatteryLevel(){
+    @Nonnull
+    public Quantity<Dimensionless> getBatteryLevel(){
         return batteryLevel;
     }
 
@@ -437,7 +452,8 @@ public class ChargeState{
         return tripCharging;
     }
 
-    public int getUsableBatteryLevel(){
+    @Nonnull
+    public Quantity<Dimensionless> getUsableBatteryLevel(){
         return usableBatteryLevel;
     }
 

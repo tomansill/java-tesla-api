@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Immutable
-public class AccountCredentials{
+public final class AccountCredentials{
 
     @Nonnull
     private final String accessToken;

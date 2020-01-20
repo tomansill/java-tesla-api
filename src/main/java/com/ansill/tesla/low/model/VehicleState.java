@@ -1,23 +1,33 @@
 package com.ansill.tesla.low.model;
 
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Optional;
 
 import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
-public class VehicleState{
+public final class VehicleState{
 
     private final int api_version;
+
     private final String autopark_state_v2;
+
     private final String autopark_style;
+
     private final boolean calendar_supported;
+
     private final String car_version;
+
     private final int center_display_state;
+
     private final int df;
+
     private final int dr;
+
     private final int ft;
 
     @Nullable
@@ -156,14 +166,18 @@ public class VehicleState{
     }
 
     private final String sun_roof_state;
+
     private final long timestamp;
+
     private final boolean valet_mode;
+
     private final boolean valet_pin_needed;
+
     private final String vehicle_name;
 
-    @Nullable
-    public Integer getHomelinkDeviceCount(){
-        return homelink_device_count;
+    @Nonnull
+    public Optional<Integer> getHomelinkDeviceCount(){
+        return Optional.ofNullable(homelink_device_count);
     }
 
     public int getApiVersion(){
@@ -202,9 +216,9 @@ public class VehicleState{
         return ft;
     }
 
-    @Nullable
-    public Boolean getHomelinkNearby(){
-        return homelink_nearby;
+    @Nonnull
+    public Optional<Boolean> getHomelinkNearby(){
+        return Optional.ofNullable(homelink_nearby);
     }
 
     public boolean getIsUserPresent(){
@@ -271,9 +285,9 @@ public class VehicleState{
         return speed_limit_mode;
     }
 
-    @Nullable
-    public Integer getSunRoofPercentOpen(){
-        return sun_roof_percent_open;
+    @Nonnull
+    public Optional<Integer> getSunRoofPercentOpen(){
+        return Optional.ofNullable(sun_roof_percent_open);
     }
 
     public String getSunRoofState(){

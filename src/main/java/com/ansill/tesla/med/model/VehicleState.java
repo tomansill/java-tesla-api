@@ -1,24 +1,36 @@
 package com.ansill.tesla.med.model;
 
+import com.ansill.tesla.model.USUnits;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.Units;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Quantity;
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
 import java.util.Optional;
 
 @Immutable
-public class VehicleState{
+public final class VehicleState{
 
     private final int apiVersion;
+
     @Nullable
     private final String autoparkStateV2;
+
     private final String autoparkStyle;
+
     private final boolean calendarSupported;
+
     private final String carVersion;
+
     private final int centerDisplayState; // TODO what is this
+
     private final int df;
+
     private final int dr;
     private final int ft;
     private final int pf;
@@ -125,6 +137,46 @@ public class VehicleState{
         this.rearDriverSideWindow = rearDriverSideWindow;
         this.rearPassengerSideWindow = rearPassengerSideWindow;
         this.sentryModeAvailable = sentryModeAvailable;
+    }
+
+    @Nonnull
+    public static VehicleState convert(@Nonnull com.ansill.tesla.low.model.VehicleState state){
+        return new VehicleState(
+                state.getApiVersion(),
+                state.getAutoparkStateV2(),
+                state.getAutoparkStyle(),
+                state.getCalendarSupported(),
+                state.getCarVersion(),
+                state.getCenterDisplayState(),
+                state.getDf(),
+                state.getDr(),
+                state.getFt(),
+                state.getPf(),
+                state.getPr(),
+                state.getRt(),
+                state.getHomelinkNearby(),
+                state.getHomelinkDeviceCount(),
+                state.getSunRoofPercentOpen(),
+                state.getIsUserPresent(),
+                state.getLastAutoparkError(),
+                state.getLocked(),
+                MediaState.convert(state.getMediaState()),
+                state.getNotificationsSupported(),
+                Quantities.getQuantity(state.getOdometer(), USUnits.MILE),
+                state.getParsed_calendarSupported(),
+                state.getRemoteStart(),
+                state.getRemoteStartEnabled(),
+                state.getRemoteStartSupported(),
+                state.getSentryMode(),
+                SoftwareUpdate.convert(state.getSoftwareUpdate()),
+                SpeedLimitMode.convert(state.getSpeedLimitMode()),
+                state.getAutoparkStateV3(),
+                state.getFdWindow(),
+                state.getFdWindow(),
+                state.getFdWindow(),
+                state.getFdWindow(),
+                state.isSentryModeAvailable()
+        );
     }
 
     public int getApiVersion(){
@@ -281,6 +333,11 @@ public class VehicleState{
             this.remoteControlEnabled = remoteControlEnabled;
         }
 
+        @Nonnull
+        public static MediaState convert(@Nonnull com.ansill.tesla.low.model.VehicleState.MediaState state){
+            return new MediaState(state.isRemoteControlEnabled());
+        }
+
         public boolean isRemoteControlEnabled(){
             return remoteControlEnabled;
         }
@@ -289,23 +346,41 @@ public class VehicleState{
     @Immutable
     public static class SoftwareUpdate{
 
-        private final int downloadPercent;
-        private final int installPercent;
+        @Nonnull
+        private final Quantity<Dimensionless> downloadPercent;
+
+        @Nonnull
+        private final Quantity<Dimensionless> installPercent;
 
         @Nonnull
         private final String version;
 
-        public SoftwareUpdate(int downloadPercent, int installPercent, @Nonnull String version){
+        public SoftwareUpdate(
+                @Nonnull Quantity<Dimensionless> downloadPercent,
+                @Nonnull Quantity<Dimensionless> installPercent,
+                @Nonnull String version
+        ){
             this.downloadPercent = downloadPercent;
             this.installPercent = installPercent;
             this.version = version;
         }
 
-        public int getInstallPercent(){
+        @Nonnull
+        public static SoftwareUpdate convert(@Nonnull com.ansill.tesla.low.model.VehicleState.SoftwareUpdate update){
+            return new SoftwareUpdate(
+                    Quantities.getQuantity(update.getDownloadPercent(), Units.PERCENT),
+                    Quantities.getQuantity(update.getInstallPercent(), Units.PERCENT),
+                    update.getVersion()
+            );
+        }
+
+        @Nonnull
+        public Quantity<Dimensionless> getInstallPercent(){
             return installPercent;
         }
 
-        public int getDownloadPercent(){
+        @Nonnull
+        public Quantity<Dimensionless> getDownloadPercent(){
             return downloadPercent;
         }
 
@@ -339,6 +414,17 @@ public class VehicleState{
             this.maximumSpeedLimit = maximumSpeedLimit;
             this.minimumSpeedLimit = minimumSpeedLimit;
             this.pinCodeSet = pinCodeSet;
+        }
+
+        @Nonnull
+        public static SpeedLimitMode convert(@Nonnull com.ansill.tesla.low.model.VehicleState.SpeedLimitMode mode){
+            return new SpeedLimitMode(
+                    mode.getActive(),
+                    Quantities.getQuantity(mode.getCurrentLimitMph(), USUnits.MILE_PER_HOUR),
+                    Quantities.getQuantity(mode.getMaxLimitMph(), USUnits.MILE_PER_HOUR),
+                    Quantities.getQuantity(mode.getMinLimitMph(), USUnits.MILE_PER_HOUR),
+                    mode.getPinCodeSet()
+            );
         }
 
         public boolean isActive(){

@@ -1,37 +1,61 @@
 package com.ansill.tesla.low.model;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Optional;
 
 import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
-public class ClimateState{
+public final class ClimateState{
 
     private final boolean battery_heater;
+
     private final boolean battery_heater_no_power;
+
     private final String climate_keeper_mode;
+
     private final double driver_temp_setting;
+
     private final int fan_status;
-    private final String inside_temp;
-    private final String is_auto_conditioning_on;
+
+    @Nullable
+    private final Double inside_temp;
+
+    @Nullable
+    private final Boolean is_auto_conditioning_on;
+
     private final boolean is_climate_on;
+
     private final boolean is_front_defroster_on;
+
     private final boolean is_preconditioning;
+
     private final boolean is_rear_defroster_on;
+
     private final String left_temp_direction;
+
     private final double max_avail_temp;
+
     private final double min_avail_temp;
-    private final String outside_temp;
+
+    @Nullable
+    private final Double outside_temp;
+
     private final double passenger_temp_setting;
+
     private final boolean remote_heater_control_enabled;
+
     private final String right_temp_direction;
 
     @Nullable
     private final Integer seat_heater_left; // Entry could disapppear from JSON
+
     @Nullable
     private final Integer seat_heater_rear_center; // Entry could disapppear from JSON
+
     @Nullable
     private final Integer seat_heater_rear_left; // Entry could disapppear from JSON
     @Nullable
@@ -65,8 +89,8 @@ public class ClimateState{
             String climate_keeper_mode,
             double driver_temp_setting,
             int fan_status,
-            String inside_temp,
-            String is_auto_conditioning_on,
+            @Nullable Double inside_temp,
+            @Nullable Boolean is_auto_conditioning_on,
             boolean is_climate_on,
             boolean is_front_defroster_on,
             boolean is_preconditioning,
@@ -74,7 +98,7 @@ public class ClimateState{
             String left_temp_direction,
             double max_avail_temp,
             double min_avail_temp,
-            String outside_temp,
+            @Nullable Double outside_temp,
             double passenger_temp_setting,
             boolean remote_heater_control_enabled,
             String right_temp_direction,
@@ -129,7 +153,7 @@ public class ClimateState{
         return defrost_mode;
     }
 
-    public boolean getBatteryHeader(){
+    public boolean getBatteryHeater(){
         return battery_heater;
     }
 
@@ -149,12 +173,13 @@ public class ClimateState{
         return fan_status;
     }
 
-    public String getInsideTemp(){
-        return inside_temp;
+    @Nonnull
+    public Optional<Double> getInsideTemp(){
+        return Optional.ofNullable(inside_temp);
     }
 
-    public String getIsAutoConditioningOn(){
-        return is_auto_conditioning_on;
+    public Optional<Boolean> getIsAutoConditioningOn(){
+        return Optional.ofNullable(is_auto_conditioning_on);
     }
 
     public boolean getIsClimateOn(){
@@ -185,8 +210,9 @@ public class ClimateState{
         return min_avail_temp;
     }
 
-    public String getOutsideTemp(){
-        return outside_temp;
+    @Nonnull
+    public Optional<Double> getOutsideTemp(){
+        return Optional.ofNullable(outside_temp);
     }
 
     public double getPassengerTempSetting(){
@@ -201,63 +227,63 @@ public class ClimateState{
         return right_temp_direction;
     }
 
-    @Nullable
-    public Integer getSeatHeaterLeft(){
-        return seat_heater_left;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterLeft(){
+        return Optional.ofNullable(seat_heater_left);
     }
 
-    @Nullable
-    public Integer getSeatHeaterRear_center(){
-        return seat_heater_rear_center;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRearCenter(){
+        return Optional.ofNullable(seat_heater_rear_center);
     }
 
-    @Nullable
-    public Integer getSeatHeaterRearLeft(){
-        return seat_heater_rear_left;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRearLeft(){
+        return Optional.ofNullable(seat_heater_rear_left);
     }
 
-    @Nullable
-    public Integer getSeatHeaterLeftBack(){
-        return seat_heater_left_back;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterLeftBack(){
+        return Optional.ofNullable(seat_heater_left_back);
     }
 
-    @Nullable
-    public Integer getSeatHeaterRearRight(){
-        return seat_heater_rear_right;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRearRight(){
+        return Optional.ofNullable(seat_heater_rear_right);
     }
 
-    @Nullable
-    public Integer getSeatHeaterRightBack(){
-        return seat_heater_right_back;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRightBack(){
+        return Optional.ofNullable(seat_heater_right_back);
     }
 
-    @Nullable
-    public Integer getSeatHeaterRight(){
-        return seat_heater_right;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRight(){
+        return Optional.ofNullable(seat_heater_right);
     }
 
-    @Nullable
-    public Boolean getSideMirrorHeaters(){
-        return side_mirror_heaters;
+    @Nonnull
+    public Optional<Boolean> getSideMirrorHeaters(){
+        return Optional.ofNullable(side_mirror_heaters);
     }
 
-    @Nullable
-    public Boolean getSmartPreconditioning(){
-        return smart_preconditioning;
+    @Nonnull
+    public Optional<Boolean> getSmartPreconditioning(){
+        return Optional.ofNullable(smart_preconditioning);
     }
 
-    @Nullable
-    public Boolean getSteeringWheelHeater(){
-        return steering_wheel_heater;
+    @Nonnull
+    public Optional<Boolean> getSteeringWheelHeater(){
+        return Optional.ofNullable(steering_wheel_heater);
     }
 
     public long getTimestamp(){
         return timestamp;
     }
 
-    @Nullable
-    public Boolean getWiperBladeHeater(){
-        return wiper_blade_heater;
+    @Nonnull
+    public Optional<Boolean> getWiperBladeHeater(){
+        return Optional.ofNullable(wiper_blade_heater);
     }
 
     @Override

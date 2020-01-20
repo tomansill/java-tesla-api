@@ -6,9 +6,10 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable
-public class SimpleReasonResponse{
+public final class SimpleReasonResponse{
 
     private final boolean result;
+
     private final String reason;
 
     public SimpleReasonResponse(boolean result, String reason){

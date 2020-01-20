@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Immutable
-public class Vehicle{
+public final class Vehicle{
 
     @Nonnull
     private final String id;
