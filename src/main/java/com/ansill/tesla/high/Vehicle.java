@@ -258,7 +258,6 @@ public class Vehicle{
      * Returns vehicle's VIN
      *
      * @return VIN
-     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
     public String getVIN(){
