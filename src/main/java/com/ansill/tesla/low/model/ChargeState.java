@@ -1,6 +1,7 @@
 package com.ansill.tesla.low.model;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Optional;
 
@@ -45,20 +46,36 @@ public final class ChargeState{
     private final String conn_charge_cable;
     private final double est_battery_range;
     private final String fast_charger_brand;
+
     private final boolean fast_charger_present;
+
     private final long minutes_to_full_charge;
+
     private final String fast_charger_type;
+
     private final double ideal_battery_range;
+
     private final boolean managed_charging_active;
+
     private final String managed_charging_start_time;
+
     private final boolean managed_charging_user_canceled;
+
     private final int max_range_charge_counter;
+
     private final Boolean not_enough_power_to_heat;
+
     private final boolean scheduled_charging_pending;
+
+    @Nullable
     private final String scheduled_charging_start_time;
+
     private final double time_to_full_charge;
+
     private final long timestamp;
+
     private final int usable_battery_level;
+
     private final String user_charge_enable_request;
 
     private final boolean trip_charging;
@@ -100,7 +117,7 @@ public final class ChargeState{
             int max_range_charge_counter,
             Boolean not_enough_power_to_heat,
             boolean scheduled_charging_pending,
-            String scheduled_charging_start_time,
+            @Nullable String scheduled_charging_start_time,
             double time_to_full_charge,
             long timestamp,
             int usable_battery_level,
@@ -298,8 +315,9 @@ public final class ChargeState{
         return scheduled_charging_pending;
     }
 
-    public String getScheduledChargingStartTime(){
-        return scheduled_charging_start_time;
+    @Nonnull
+    public Optional<String> getScheduledChargingStartTime(){
+        return Optional.ofNullable(scheduled_charging_start_time);
     }
 
     public double getTimeToFullCharge(){

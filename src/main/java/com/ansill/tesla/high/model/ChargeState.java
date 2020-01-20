@@ -7,8 +7,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Quantity;
-import javax.measure.quantity.Energy;
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Power;
 import java.util.Optional;
 
 /** Charge state */
@@ -20,7 +20,7 @@ public final class ChargeState{
 
     /** Amount of energy added in last charge (or current if currently charging */
     @Nonnull
-    private final Quantity<Energy> energyAddedInLastCharge;
+    private final Quantity<Power> energyAddedInLastCharge;
 
     /** Amount of ideal distance added in last charge (or current if currently charging */
     @Nonnull
@@ -59,7 +59,7 @@ public final class ChargeState{
      */
     private ChargeState(
             boolean isChargePortDoorOpen,
-            @Nonnull Quantity<Energy> energyAddedInLastCharge,
+            @Nonnull Quantity<Power> energyAddedInLastCharge,
             @Nonnull Quantity<Length> idealDistanceAddedInLastCharge,
             @Nonnull Quantity<Length> ratedDistanceAddedInLastCharge,
             boolean isChargePortColdWeatherModeEnabled,
@@ -113,7 +113,7 @@ public final class ChargeState{
      * @return amount of energy
      */
     @Nonnull
-    public Quantity<Energy> getEnergyAddedInLastCharge(){
+    public Quantity<Power> getEnergyAddedInLastCharge(){
         return energyAddedInLastCharge;
     }
 

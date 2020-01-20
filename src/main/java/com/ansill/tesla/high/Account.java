@@ -93,7 +93,7 @@ public class Account{
      */
     @Nonnull
     String getToken(){
-        return credentials.getRefreshToken();
+        return credentials.getAccessToken();
     }
 
     /**

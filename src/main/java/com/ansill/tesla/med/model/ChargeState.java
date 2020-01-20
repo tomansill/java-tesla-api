@@ -14,7 +14,6 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Energy;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Power;
 import java.time.Duration;
@@ -41,7 +40,7 @@ public final class ChargeState{
     private final boolean chargeEnableRequest;
 
     @Nonnull
-    private final Quantity<Energy> chargeEnergyAdded;
+    private final Quantity<Power> chargeEnergyAdded;
 
     @Nonnull
     private final Quantity<Dimensionless> chargeLimitSOC;
@@ -122,7 +121,7 @@ public final class ChargeState{
             @Nonnull Quantity<ElectricCurrent> chargeCurrentRequest,
             @Nonnull Quantity<ElectricCurrent> chargeCurrentRequestMax,
             boolean chargeEnableRequest,
-            @Nonnull Quantity<Energy> chargeEnergyAdded,
+            @Nonnull Quantity<Power> chargeEnergyAdded,
             @Nonnull Quantity<Dimensionless> chargeLimitSOC,
             @Nonnull Quantity<Dimensionless> chargeLimitSOCMax,
             @Nonnull Quantity<Dimensionless> chargeLimitSOCMin,
@@ -216,7 +215,7 @@ public final class ChargeState{
                 chargeState.isChargeEnableRequest(),
                 Quantities.getQuantity(
                         chargeState.getChargeEnergyAdded(),
-                        Units.WATT.multiply(1000.00).asType(Energy.class) // To kilowatts
+                        Units.WATT.multiply(1000.00).asType(Power.class)
                 ),
                 Quantities.getQuantity(chargeState.getChargeLimitSoc(), Units.PERCENT),
                 Quantities.getQuantity(chargeState.getChargeLimitSocMax(), Units.PERCENT),
@@ -234,7 +233,7 @@ public final class ChargeState{
                 Quantities.getQuantity(chargeState.getChargePilotCurrent(), Units.AMPERE),
                 Quantities.getQuantity(chargeState.getChargerPower(), Units.WATT),
                 Quantities.getQuantity(chargeState.getChargerVoltage(), Units.VOLT),
-                ChargingState.valueOf(chargeState.getChargingState()),
+                ChargingState.valueOf(chargeState.getChargingState().toUpperCase()),
                 chargeState.getConnChargeCable(),
                 Quantities.getQuantity(chargeState.getEstBatteryRange(), USUnits.MILE),
                 chargeState.getFastChargerBrand(),
@@ -248,7 +247,7 @@ public final class ChargeState{
                 Duration.ofMinutes(chargeState.getMinutesToFullCharge()),
                 chargeState.getNotEnoughPowerToHeat().orElse(null),
                 chargeState.getScheduledChargingPending(),
-                Instant.parse(chargeState.getScheduledChargingStartTime()),
+                chargeState.getScheduledChargingStartTime().map(Instant::parse).orElse(null),
                 Duration.ofMinutes((int) (chargeState.getTimeToFullCharge() * 60)),
                 Instant.ofEpochSecond(chargeState.getTimestamp()),
                 chargeState.isTripCharging(),
@@ -286,7 +285,7 @@ public final class ChargeState{
     }
 
     @Nonnull
-    public Quantity<Energy> getChargeEnergyAdded(){
+    public Quantity<Power> getChargeEnergyAdded(){
         return chargeEnergyAdded;
     }
 

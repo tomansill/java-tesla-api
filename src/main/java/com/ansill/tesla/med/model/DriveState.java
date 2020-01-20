@@ -94,7 +94,7 @@ public final class DriveState{
                 Quantities.getQuantity(state.getNativeLongitude(), UnitUtility.ANGULAR_DEGREES),
                 state.getNativeType(),
                 Quantities.getQuantity(state.getPower(), Units.WATT),
-                switch(state.getShiftState()){
+                switch(state.getShiftState().orElse("P")){
                     case "P" -> ShiftState.PARKING;
                     case "R" -> ShiftState.REVERSE;
                     case "D" -> ShiftState.DRIVE;

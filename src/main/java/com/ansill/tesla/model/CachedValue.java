@@ -77,12 +77,23 @@ public class CachedValue<T>{
                 }
             };
 
-            // Create timer
-            timer = new Timer();
-            timer.schedule(
-                    tt,
-                    Duration.between(Instant.now(), lastCached.plus(lifetime.get().get()).plus(VACUUM_DELAY)).toMillis()
-            );
+            // Calculate delay
+            var delay = Duration.between(Instant.now(), lastCached.plus(lifetime.get().get()).plus(VACUUM_DELAY))
+                                .toMillis();
+
+            // Skip if zero or negative
+            if(delay <= 0) value = null;
+
+                // Otherwise create timer and schedule it
+            else{
+
+                // Create timer
+                timer = new Timer();
+                timer.schedule(
+                        tt,
+                        delay
+                );
+            }
         }
 
         // Replace timer and get old one

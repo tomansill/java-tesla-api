@@ -9,7 +9,7 @@ import static com.ansill.tesla.utility.Utility.simpleToString;
 
 /** Simple Response */
 @Immutable
-public abstract class SimpleResponse<T>{
+public class SimpleResponse<T>{
 
     /** Response */
     @Nonnull
@@ -20,7 +20,7 @@ public abstract class SimpleResponse<T>{
      *
      * @param response response
      */
-    public SimpleResponse(@Nonnull T response){
+    protected SimpleResponse(@Nonnull T response){
         this.response = Validation.assertNonnull(response);
     }
 

@@ -29,6 +29,7 @@ public final class DriveState{
 
     private final int power;
 
+    @Nullable
     private final String shift_state;
 
     @Nullable
@@ -46,7 +47,7 @@ public final class DriveState{
             double native_longitude,
             String native_type,
             int power,
-            String shift_state,
+            @Nullable String shift_state,
             @Nullable Integer speed,
             long timestamp
     ){
@@ -100,8 +101,9 @@ public final class DriveState{
         return power;
     }
 
-    public String getShiftState(){
-        return shift_state;
+    @Nonnull
+    public Optional<String> getShiftState(){
+        return Optional.ofNullable(shift_state);
     }
 
     @Nonnull

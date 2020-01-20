@@ -55,7 +55,7 @@ public final class GuiSettings{
                 settings.getGui24HourTime(),
                 UnitUtility.getSpeedUnit(settings.getGuiChargeRateUnits()),
                 UnitUtility.getSpeedUnit(settings.getGuiDistanceUnits()),
-                Display.valueOf(settings.getGuiRangeDisplay()),
+                Display.valueOf(settings.getGuiRangeDisplay().toUpperCase()),
                 UnitUtility.getTemperatureUnit(settings.getGuiTemperatureUnits()),
                 Instant.ofEpochSecond(settings.getTimestamp()),
                 settings.isShowRangeUnits()

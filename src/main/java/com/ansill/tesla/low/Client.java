@@ -14,6 +14,7 @@ import com.ansill.tesla.low.model.DriveState;
 import com.ansill.tesla.low.model.GenericErrorResponse;
 import com.ansill.tesla.low.model.GuiSettings;
 import com.ansill.tesla.low.model.SimpleReasonResponse;
+import com.ansill.tesla.low.model.SimpleResponse;
 import com.ansill.tesla.low.model.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.low.model.VehicleConfig;
 import com.ansill.tesla.low.model.VehicleResponse;
@@ -139,6 +140,24 @@ public final class Client{
     }
 
     @Nonnull
+    private static <T> T fromJson(@Nonnull ReusableResponse response, TypeToken<T> typeToken)
+    throws APIProtocolException, ClientException{
+
+        try{
+
+            // Get body
+            String body = response.getBodyAsString()
+                                  .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
+
+            // Forward it
+            return fromJson(body, typeToken);
+
+        }catch(IOException e){
+            throw new ClientException("Failed to parse content of response body", e);
+        }
+    }
+
+    @Nonnull
     private static <T> T fromJson(@Nonnull Response response, Class<T> type)
     throws APIProtocolException, ClientException{
 
@@ -162,6 +181,19 @@ public final class Client{
         if(item == null) throw new APIProtocolException(f(
                 "The JSON string is not in format of {} class. JSON message \n\"{}\"",
                 type.getName(),
+                string
+        ));
+        if(STRICT_DESERIALIZATION.get()) checkJSONForMissingFields(string, item);
+        return item;
+    }
+
+    @SuppressWarnings("unchecked") // Shouldn't have problem with casting
+    @Nonnull
+    private static <T> T fromJson(@Nonnull String string, TypeToken<T> typeToken) throws APIProtocolException{
+        var item = (T) GSON.fromJson(string, typeToken.getType());
+        if(item == null) throw new APIProtocolException(f(
+                "The JSON string is not in format of {} class. JSON message \n\"{}\"",
+                typeToken.getType().getTypeName(),
                 string
         ));
         if(STRICT_DESERIALIZATION.get()) checkJSONForMissingFields(string, item);
@@ -207,10 +239,13 @@ public final class Client{
 
             if(!fields.containsKey(entry.getKey())){
                 System.err.println(f(
-                        "Class '{}' is missing a field called '{}' ({})",
+                        "Class '{}' is missing a field called '{}' ({}), Stacktrace: {}",
                         result.getClass().getName(),
                         entry.getKey(),
-                        entry.getValue().getClass().getName()
+                        entry.getValue().getClass().getName(),
+                        Arrays.stream(Thread.currentThread().getStackTrace())
+                              .map(StackTraceElement::toString)
+                              .collect(Collectors.joining("\n"))
                 ));
             }
 
@@ -733,7 +768,7 @@ public final class Client{
     private <T> T getVehicleDataForm(
             @Nonnull String accessToken,
             @Nonnull String idString,
-            @Nonnull Class<T> clazz,
+            @Nonnull TypeToken<T> typeToken,
             @Nonnull String path
     )
     throws VehicleIDNotFoundException{
@@ -751,7 +786,7 @@ public final class Client{
             return switch(response.code()){
 
                 // Success
-                case 200 -> fromJson(response, clazz);
+                case 200 -> fromJson(response, typeToken);
 
                 // Unauthenticated
                 case 401 -> throw new InvalidAccessTokenException();
@@ -785,7 +820,7 @@ public final class Client{
             if("online".equals(vehicle.getResponse().getState())) return getVehicleDataForm(
                     accessToken,
                     idString,
-                    clazz,
+                    typeToken,
                     path
             );
 
@@ -812,8 +847,12 @@ public final class Client{
         // Check parameters
         Validation.assertNonnull(idString, "idString");
 
+        // Type
+        var type = new TypeToken<CompleteVehicleDataResponse>(){
+        };
+
         // Get the data
-        return getVehicleDataForm(accessToken, idString, CompleteVehicleDataResponse.class, "vehicle_data");
+        return getVehicleDataForm(accessToken, idString, type, "vehicle_data");
     }
 
     @Nonnull
@@ -826,8 +865,12 @@ public final class Client{
         // Check parameters
         Validation.assertNonnull(idString, "idString");
 
+        // Type
+        var typeToken = new TypeToken<SimpleResponse<ChargeState>>(){
+        };
+
         // Get the data
-        return getVehicleDataForm(accessToken, idString, ChargeState.class, "data_request/charge_state");
+        return getVehicleDataForm(accessToken, idString, typeToken, "data_request/charge_state").getResponse();
     }
 
     @Nonnull
@@ -840,8 +883,12 @@ public final class Client{
         // Check parameters
         Validation.assertNonnull(idString, "idString");
 
+        // Type
+        var typeToken = new TypeToken<SimpleResponse<ClimateState>>(){
+        };
+
         // Get the data
-        return getVehicleDataForm(accessToken, idString, ClimateState.class, "data_request/climate_state");
+        return getVehicleDataForm(accessToken, idString, typeToken, "data_request/climate_state").getResponse();
     }
 
     @Nonnull
@@ -854,8 +901,12 @@ public final class Client{
         // Check parameters
         Validation.assertNonnull(idString, "idString");
 
+        // Type
+        var typeToken = new TypeToken<SimpleResponse<DriveState>>(){
+        };
+
         // Get the data
-        return getVehicleDataForm(accessToken, idString, DriveState.class, "data_request/drive_state");
+        return getVehicleDataForm(accessToken, idString, typeToken, "data_request/drive_state").getResponse();
     }
 
     @Nonnull
@@ -868,8 +919,12 @@ public final class Client{
         // Check parameters
         Validation.assertNonnull(idString, "idString");
 
+        // Type
+        var typeToken = new TypeToken<SimpleResponse<GuiSettings>>(){
+        };
+
         // Get the data
-        return getVehicleDataForm(accessToken, idString, GuiSettings.class, "data_request/gui_settings");
+        return getVehicleDataForm(accessToken, idString, typeToken, "data_request/gui_settings").getResponse();
     }
 
     @Nonnull
@@ -882,8 +937,12 @@ public final class Client{
         // Check parameters
         Validation.assertNonnull(idString, "idString");
 
+        // Type
+        var typeToken = new TypeToken<SimpleResponse<VehicleState>>(){
+        };
+
         // Get the data
-        return getVehicleDataForm(accessToken, idString, VehicleState.class, "data_request/vehicle_state");
+        return getVehicleDataForm(accessToken, idString, typeToken, "data_request/vehicle_state").getResponse();
     }
 
     @Nonnull
@@ -896,7 +955,11 @@ public final class Client{
         // Check parameters
         Validation.assertNonnull(idString, "idString");
 
+        // Type
+        var typeToken = new TypeToken<SimpleResponse<VehicleConfig>>(){
+        };
+
         // Get the data
-        return getVehicleDataForm(accessToken, idString, VehicleConfig.class, "data_request/vehicle_config");
+        return getVehicleDataForm(accessToken, idString, typeToken, "data_request/vehicle_config").getResponse();
     }
 }
