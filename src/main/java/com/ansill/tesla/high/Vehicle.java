@@ -6,6 +6,7 @@ import com.ansill.tesla.high.model.ChargeSettings;
 import com.ansill.tesla.high.model.ChargeState;
 import com.ansill.tesla.high.model.DriveState;
 import com.ansill.tesla.low.exception.VehicleIDNotFoundException;
+import com.ansill.tesla.model.CachedValue;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
