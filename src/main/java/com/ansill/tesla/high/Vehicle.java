@@ -114,7 +114,7 @@ public class Vehicle{
      * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    public Quantity<Length> getOdometer(){
+    public Quantity<Length> getOdometer() throws VehicleNotFoundException{
         return null;
     }
 
@@ -126,26 +126,8 @@ public class Vehicle{
      */
     public boolean isInService() throws VehicleNotFoundException{
 
-        // Lock it
-        try(var ignored = parent.getReadLock().doLock()){
-
-            // Exception catcher
-            AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
-
-            // Retrieve from cache if any or send new call
-            var state = cachedVehicle.getOrUpdate(() -> {
-                var item = parent.getClient().getVehicle(parent.getToken(), id);
-                if(item.isPresent()) return item.get();
-                exceptionCatcher.set(new VehicleNotFoundException(id));
-                return null;
-            });
-
-            // Check exception
-            if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
-
-            // Get it and convert it to high level and return
-            return state.isInService();
-        }
+        // Get it and convert it to high level and return
+        return getMediumVehicle().isInService();
     }
 
     /**
@@ -222,6 +204,37 @@ public class Vehicle{
     }
 
     /**
+     * Returns vehicle
+     *
+     * @return charge settings
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public com.ansill.tesla.med.model.Vehicle getMediumVehicle() throws VehicleNotFoundException{
+
+        // Lock it
+        try(var ignored = parent.getReadLock().doLock()){
+
+            // Exception catcher
+            AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
+
+            // Retrieve from cache if any or send new call
+            var state = cachedVehicle.getOrUpdate(() -> {
+                var item = parent.getClient().getVehicle(parent.getToken(), id);
+                if(item.isPresent()) return item.get();
+                exceptionCatcher.set(new VehicleNotFoundException(id));
+                return null;
+            });
+
+            // Check exception
+            if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+
+            // Return it
+            return state;
+        }
+    }
+
+    /**
      * Returns charge settings
      *
      * @return charge settings
@@ -273,25 +286,7 @@ public class Vehicle{
     @Nonnull
     public String getName() throws VehicleNotFoundException{
 
-        // Lock it
-        try(var ignored = parent.getReadLock().doLock()){
-
-            // Exception catcher
-            AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
-
-            // Retrieve from cache if any or send new call
-            var state = cachedVehicle.getOrUpdate(() -> {
-                var item = parent.getClient().getVehicle(parent.getToken(), id);
-                if(item.isPresent()) return item.get();
-                exceptionCatcher.set(new VehicleNotFoundException(id));
-                return null;
-            });
-
-            // Check exception
-            if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
-
-            // Get it and convert it to high level and return
-            return state.getDisplayName();
-        }
+        // Get it and convert it to high level and return
+        return getMediumVehicle().getDisplayName();
     }
 }

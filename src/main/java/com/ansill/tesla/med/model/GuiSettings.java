@@ -49,6 +49,7 @@ public final class GuiSettings{
         this.showRangeUnits = showRangeUnits;
     }
 
+    @Nonnull
     public static GuiSettings convert(@Nonnull com.ansill.tesla.low.model.GuiSettings settings){
         return new GuiSettings(
                 settings.getGui24HourTime(),
