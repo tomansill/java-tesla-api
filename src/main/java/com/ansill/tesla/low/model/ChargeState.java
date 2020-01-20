@@ -187,7 +187,7 @@ public class ChargeState{
         return charge_limit_soc_std;
     }
 
-    public double getChargeMilesAdded_ideal(){
+    public double getChargeMilesAddedIdeal(){
         return charge_miles_added_ideal;
     }
 

@@ -1,9 +1,14 @@
 package com.ansill.tesla.med.model;
 
+import com.ansill.tesla.model.USUnits;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.Units;
+
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.measure.Quantity;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Length;
@@ -14,17 +19,18 @@ import java.util.Optional;
 
 @Immutable
 public class ChargeState{
+
     private final boolean batteryHeaterOn;
     private final int batteryLevel;
     @Nonnull
-    private final Length batteryRange;
+    private final Quantity<Length> batteryRange;
     @Nonnull
-    private final ElectricCurrent chargeCurrentRequest;
+    private final Quantity<ElectricCurrent> chargeCurrentRequest;
     @Nonnull
-    private final ElectricCurrent chargeCurrentRequestMax;
+    private final Quantity<ElectricCurrent> chargeCurrentRequestMax;
     private final boolean chargeEnableRequest;
     @Nonnull
-    private final Power chargeEnergyAdded;
+    private final Quantity<Power> chargeEnergyAdded;
     @Nonnegative
     private final int chargeLimitSOC;
     @Nonnegative
@@ -34,39 +40,39 @@ public class ChargeState{
     @Nonnegative
     private final int chargeLimitSOCSTD;
     @Nonnull
-    private final Length chargeDistanceAddedIdeal;
+    private final Quantity<Length> chargeDistanceAddedIdeal;
     @Nonnull
-    private final Length chargeDistanceAddedRated;
+    private final Quantity<Length> chargeDistanceAddedRated;
     private final boolean chargePortColdWeatherMode;
     private final boolean chargePortDoorOpen;
     @Nonnull
     private final Latch chargePortLatch;
     @Nonnull
-    private final ElectricCurrent chargeRate;
+    private final Quantity<ElectricCurrent> chargeRate;
     private final boolean chargeToMaxRange;
     @Nonnull
-    private final ElectricCurrent chargerActualCurrent;
+    private final Quantity<ElectricCurrent> chargerActualCurrent;
     @Nullable
     private final String chargerPhases; // TODO find all possible enums
     @Nonnull
-    private final ElectricCurrent chargerPilotCurrent;
+    private final Quantity<ElectricCurrent> chargerPilotCurrent;
     @Nonnull
-    private final Power chargerPower;
+    private final Quantity<Power> chargerPower;
     @Nonnull
-    private final ElectricPotential chargerVoltage;
+    private final Quantity<ElectricPotential> chargerVoltage;
     @Nonnull
     private final Object chargingState; // TODO find all possible enums - also, what is this?
     @Nonnull
     private final String connChargeCable;
     @Nonnull
-    private final Length estimatedBatteryRange; // Originally "est_battery_range"
+    private final Quantity<Length> estimatedBatteryRange; // Originally "est_battery_range"
     @Nonnull
     private final String fastChargerBrand;
     private final boolean fastChargerPresent;
     @Nonnull
     private final String fastChargerType;
     @Nonnull
-    private final Length idealBatteryRange;
+    private final Quantity<Length> idealBatteryRange;
     private final boolean managedChargingActive;
     @Nonnull
     private final String managedChargingStartTime; // TODO what is this
@@ -74,7 +80,9 @@ public class ChargeState{
     private final int maxRangeChargeCounter; // TODO what is this
     @Nonnull
     private final Duration durationToFullCharge;
-    private final boolean notEnoughPowerToHeat;
+
+    @Nullable
+    private final Boolean notEnoughPowerToHeat;
     private final boolean scheduledChargingPending;
     @Nullable
     private final Instant scheduledChargingStartTime;
@@ -88,43 +96,43 @@ public class ChargeState{
     @Nonnull
     private final String userChargeEnableRequest; // TODO what is this
 
-    public ChargeState(
+    private ChargeState(
             boolean batteryHeaterOn,
             int batteryLevel,
-            @Nonnull Length batteryRange,
-            @Nonnull ElectricCurrent chargeCurrentRequest,
-            @Nonnull ElectricCurrent chargeCurrentRequestMax,
+            @Nonnull Quantity<Length> batteryRange,
+            @Nonnull Quantity<ElectricCurrent> chargeCurrentRequest,
+            @Nonnull Quantity<ElectricCurrent> chargeCurrentRequestMax,
             boolean chargeEnableRequest,
-            @Nonnull Power chargeEnergyAdded,
+            @Nonnull Quantity<Power> chargeEnergyAdded,
             int chargeLimitSOC,
             int chargeLimitSOCMax,
             int chargeLimitSOCMin,
             int chargeLimitSOCSTD,
-            @Nonnull Length chargeDistanceAddedIdeal,
-            @Nonnull Length chargeDistanceAddedRated,
+            @Nonnull Quantity<Length> chargeDistanceAddedIdeal,
+            @Nonnull Quantity<Length> chargeDistanceAddedRated,
             boolean chargePortColdWeatherMode,
             boolean chargePortDoorOpen,
             @Nonnull Latch chargePortLatch,
-            @Nonnull ElectricCurrent chargeRate,
+            @Nonnull Quantity<ElectricCurrent> chargeRate,
             boolean chargeToMaxRange,
-            @Nonnull ElectricCurrent chargerActualCurrent,
+            @Nonnull Quantity<ElectricCurrent> chargerActualCurrent,
             @Nullable String chargerPhases,
-            @Nonnull ElectricCurrent chargerPilotCurrent,
-            @Nonnull Power chargerPower,
-            @Nonnull ElectricPotential chargerVoltage,
+            @Nonnull Quantity<ElectricCurrent> chargerPilotCurrent,
+            @Nonnull Quantity<Power> chargerPower,
+            @Nonnull Quantity<ElectricPotential> chargerVoltage,
             @Nonnull Object chargingState,
             @Nonnull String connChargeCable,
-            @Nonnull Length estimatedBatteryRange,
+            @Nonnull Quantity<Length> estimatedBatteryRange,
             @Nonnull String fastChargerBrand,
             boolean fastChargerPresent,
             @Nonnull String fastChargerType,
-            @Nonnull Length idealBatteryRange,
+            @Nonnull Quantity<Length> idealBatteryRange,
             boolean managedChargingActive,
             @Nonnull String managedChargingStartTime,
             boolean managedChargingUserCanceled,
             int maxRangeChargeCounter,
             @Nonnull Duration durationToFullCharge,
-            boolean notEnoughPowerToHeat,
+            @Nullable Boolean notEnoughPowerToHeat,
             boolean scheduledChargingPending,
             @Nullable Instant scheduledChargingStartTime,
             @Nonnull Duration timeToFullCharge,
@@ -178,6 +186,58 @@ public class ChargeState{
         this.userChargeEnableRequest = userChargeEnableRequest;
     }
 
+    @Nonnull
+    public static ChargeState convert(@Nonnull com.ansill.tesla.low.model.ChargeState chargeState){
+        return new ChargeState(
+                chargeState.getBatteryHeaterOn(),
+                chargeState.getBatteryLevel(),
+                Quantities.getQuantity(chargeState.getBatteryRange(), USUnits.MILE),
+                Quantities.getQuantity(chargeState.getChargeCurrentRequest(), Units.AMPERE),
+                Quantities.getQuantity(chargeState.getChargeCurrentRequestMax(), Units.AMPERE),
+                chargeState.isChargeEnableRequest(),
+                Quantities.getQuantity(
+                        chargeState.getChargeEnergyAdded(),
+                        Units.WATT.multiply(1000.00).asType(Power.class)
+                ),
+                chargeState.getChargeLimitSoc(),
+                chargeState.getChargeLimitSocMax(),
+                chargeState.getChargeLimitSocMin(),
+                chargeState.getChargeLimitSocStd(),
+                Quantities.getQuantity(chargeState.getChargeMilesAddedIdeal(), USUnits.MILE),
+                Quantities.getQuantity(chargeState.getChargeMilesAddedRated(), USUnits.MILE),
+                chargeState.getChargePortColdWeatherMode(),
+                chargeState.getChargePortDoorOpen(),
+                Latch.valueOf(chargeState.getChargePortLatch().toUpperCase()),
+                Quantities.getQuantity(chargeState.getChargeRate(), Units.AMPERE),
+                chargeState.getChargeToMaxRange(),
+                Quantities.getQuantity(chargeState.getChargerActualCurrent(), Units.AMPERE),
+                chargeState.getChargerPhases(),
+                Quantities.getQuantity(chargeState.getChargePilotCurrent(), Units.AMPERE),
+                Quantities.getQuantity(chargeState.getChargerPower(), Units.WATT),
+                Quantities.getQuantity(chargeState.getChargerVoltage(), Units.VOLT),
+                null, // TODO here,
+                chargeState.getConnChargeCable(),
+                Quantities.getQuantity(chargeState.getEstBatteryRange(), USUnits.MILE),
+                chargeState.getFastChargerBrand(),
+                chargeState.getFastChargerPresent(),
+                chargeState.getFastChargerType(),
+                Quantities.getQuantity(chargeState.getIdealBatteryRange(), USUnits.MILE),
+                chargeState.getManagedChargingActive(),
+                chargeState.getManagedChargingStartTime(),
+                chargeState.getManagedChargingUserCanceled(),
+                chargeState.getMaxRangeChargerCounter(),
+                Duration.ofMinutes(chargeState.getMinutesToFullCharge()),
+                chargeState.getNotEnoughPowerToHeat(),
+                chargeState.getScheduledChargingPending(),
+                Instant.parse(chargeState.getScheduledChargingStartTime()),
+                Duration.ofMinutes((int) (chargeState.getTimeToFullCharge() * 60)),
+                Instant.ofEpochSecond(chargeState.getTimestamp()),
+                chargeState.isTripCharging(),
+                chargeState.getUsableBatteryLevel(),
+                chargeState.getUserChargeEnableRequest()
+        );
+    }
+
     public boolean isBatteryHeaterOn(){
         return batteryHeaterOn;
     }
@@ -188,17 +248,17 @@ public class ChargeState{
     }
 
     @Nonnull
-    public Length getBatteryRange(){
+    public Quantity<Length> getBatteryRange(){
         return batteryRange;
     }
 
     @Nonnull
-    public ElectricCurrent getChargeCurrentRequest(){
+    public Quantity<ElectricCurrent> getChargeCurrentRequest(){
         return chargeCurrentRequest;
     }
 
     @Nonnull
-    public ElectricCurrent getChargeCurrentRequestMax(){
+    public Quantity<ElectricCurrent> getChargeCurrentRequestMax(){
         return chargeCurrentRequestMax;
     }
 
@@ -207,7 +267,7 @@ public class ChargeState{
     }
 
     @Nonnull
-    public Power getChargeEnergyAdded(){
+    public Quantity<Power> getChargeEnergyAdded(){
         return chargeEnergyAdded;
     }
 
@@ -232,12 +292,12 @@ public class ChargeState{
     }
 
     @Nonnull
-    public Length getChargeDistanceAddedIdeal(){
+    public Quantity<Length> getChargeDistanceAddedIdeal(){
         return chargeDistanceAddedIdeal;
     }
 
     @Nonnull
-    public Length getChargeDistanceAddedRated(){
+    public Quantity<Length> getChargeDistanceAddedRated(){
         return chargeDistanceAddedRated;
     }
 
@@ -255,7 +315,7 @@ public class ChargeState{
     }
 
     @Nonnull
-    public ElectricCurrent getChargeRate(){
+    public Quantity<ElectricCurrent> getChargeRate(){
         return chargeRate;
     }
 
@@ -264,7 +324,7 @@ public class ChargeState{
     }
 
     @Nonnull
-    public ElectricCurrent getChargerActualCurrent(){
+    public Quantity<ElectricCurrent> getChargerActualCurrent(){
         return chargerActualCurrent;
     }
 
@@ -274,17 +334,17 @@ public class ChargeState{
     }
 
     @Nonnull
-    public ElectricCurrent getChargerPilotCurrent(){
+    public Quantity<ElectricCurrent> getChargerPilotCurrent(){
         return chargerPilotCurrent;
     }
 
     @Nonnull
-    public Power getChargerPower(){
+    public Quantity<Power> getChargerPower(){
         return chargerPower;
     }
 
     @Nonnull
-    public ElectricPotential getChargerVoltage(){
+    public Quantity<ElectricPotential> getChargerVoltage(){
         return chargerVoltage;
     }
 
@@ -299,7 +359,7 @@ public class ChargeState{
     }
 
     @Nonnull
-    public Length getEstimatedBatteryRange(){
+    public Quantity<Length> getEstimatedBatteryRange(){
         return estimatedBatteryRange;
     }
 
@@ -318,7 +378,7 @@ public class ChargeState{
     }
 
     @Nonnull
-    public Length getIdealBatteryRange(){
+    public Quantity<Length> getIdealBatteryRange(){
         return idealBatteryRange;
     }
 
@@ -345,8 +405,9 @@ public class ChargeState{
         return durationToFullCharge;
     }
 
-    public boolean isNotEnoughPowerToHeat(){
-        return notEnoughPowerToHeat;
+    @Nonnull
+    public Optional<Boolean> isNotEnoughPowerToHeat(){
+        return Optional.ofNullable(notEnoughPowerToHeat);
     }
 
     public boolean isScheduledChargingPending(){
