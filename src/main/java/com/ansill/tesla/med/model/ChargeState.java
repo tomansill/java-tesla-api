@@ -1,5 +1,6 @@
 package com.ansill.tesla.med.model;
 
+import com.ansill.tesla.model.ChargingState;
 import com.ansill.tesla.model.LatchState;
 import com.ansill.tesla.model.USUnits;
 import tech.units.indriya.quantity.Quantities;
@@ -13,6 +14,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Energy;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Power;
 import java.time.Duration;
@@ -32,7 +34,7 @@ public class ChargeState{
     private final Quantity<ElectricCurrent> chargeCurrentRequestMax;
     private final boolean chargeEnableRequest;
     @Nonnull
-    private final Quantity<Power> chargeEnergyAdded;
+    private final Quantity<Energy> chargeEnergyAdded;
     @Nonnull
     private final Quantity<Dimensionless> chargeLimitSOC;
     @Nonnull
@@ -63,7 +65,7 @@ public class ChargeState{
     @Nonnull
     private final Quantity<ElectricPotential> chargerVoltage;
     @Nonnull
-    private final Object chargingState; // TODO find all possible enums - also, what is this?
+    private final ChargingState chargingState;
     @Nonnull
     private final String connChargeCable;
     @Nonnull
@@ -105,7 +107,7 @@ public class ChargeState{
             @Nonnull Quantity<ElectricCurrent> chargeCurrentRequest,
             @Nonnull Quantity<ElectricCurrent> chargeCurrentRequestMax,
             boolean chargeEnableRequest,
-            @Nonnull Quantity<Power> chargeEnergyAdded,
+            @Nonnull Quantity<Energy> chargeEnergyAdded,
             @Nonnull Quantity<Dimensionless> chargeLimitSOC,
             @Nonnull Quantity<Dimensionless> chargeLimitSOCMax,
             @Nonnull Quantity<Dimensionless> chargeLimitSOCMin,
@@ -122,7 +124,7 @@ public class ChargeState{
             @Nonnull Quantity<ElectricCurrent> chargerPilotCurrent,
             @Nonnull Quantity<Power> chargerPower,
             @Nonnull Quantity<ElectricPotential> chargerVoltage,
-            @Nonnull Object chargingState,
+            @Nonnull ChargingState chargingState,
             @Nonnull String connChargeCable,
             @Nonnull Quantity<Length> estimatedBatteryRange,
             @Nonnull String fastChargerBrand,
@@ -199,7 +201,7 @@ public class ChargeState{
                 chargeState.isChargeEnableRequest(),
                 Quantities.getQuantity(
                         chargeState.getChargeEnergyAdded(),
-                        Units.WATT.multiply(1000.00).asType(Power.class) // To kilowatts
+                        Units.WATT.multiply(1000.00).asType(Energy.class) // To kilowatts
                 ),
                 Quantities.getQuantity(chargeState.getChargeLimitSoc(), Units.PERCENT),
                 Quantities.getQuantity(chargeState.getChargeLimitSocMax(), Units.PERCENT),
@@ -217,7 +219,7 @@ public class ChargeState{
                 Quantities.getQuantity(chargeState.getChargePilotCurrent(), Units.AMPERE),
                 Quantities.getQuantity(chargeState.getChargerPower(), Units.WATT),
                 Quantities.getQuantity(chargeState.getChargerVoltage(), Units.VOLT),
-                null, // TODO here,
+                ChargingState.valueOf(chargeState.getChargingState()),
                 chargeState.getConnChargeCable(),
                 Quantities.getQuantity(chargeState.getEstBatteryRange(), USUnits.MILE),
                 chargeState.getFastChargerBrand(),
@@ -269,7 +271,7 @@ public class ChargeState{
     }
 
     @Nonnull
-    public Quantity<Power> getChargeEnergyAdded(){
+    public Quantity<Energy> getChargeEnergyAdded(){
         return chargeEnergyAdded;
     }
 
@@ -351,7 +353,7 @@ public class ChargeState{
     }
 
     @Nonnull
-    public Object getChargingState(){
+    public ChargingState getChargingState(){
         return chargingState;
     }
 

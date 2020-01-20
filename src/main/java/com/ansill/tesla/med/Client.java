@@ -5,9 +5,11 @@ import com.ansill.tesla.low.exception.ClientException;
 import com.ansill.tesla.low.exception.InvalidAccessTokenException;
 import com.ansill.tesla.low.exception.ReAuthenticationException;
 import com.ansill.tesla.low.exception.VehicleIDNotFoundException;
-import com.ansill.tesla.low.model.ChargeState;
 import com.ansill.tesla.low.model.CompleteVehicleDataResponse;
 import com.ansill.tesla.med.model.AccountCredentials;
+import com.ansill.tesla.med.model.ChargeState;
+import com.ansill.tesla.med.model.ClimateState;
+import com.ansill.tesla.med.model.DriveState;
 import com.ansill.tesla.med.model.Vehicle;
 import com.ansill.validation.Validation;
 
@@ -405,10 +407,10 @@ public class Client{
         Validation.assertNonnull(idString, "idString");
 
         // Get the data
-        return client.getVehicleChargeState(accessToken, idString);
+        return ChargeState.convert(client.getVehicleChargeState(accessToken, idString));
     }
 
-    /*
+
     @Nonnull
     public ClimateState getVehicleClimateState(@Nonnull String accessToken, @Nonnull String idString)
     throws VehicleIDNotFoundException{
@@ -420,7 +422,7 @@ public class Client{
         Validation.assertNonnull(idString, "idString");
 
         // Get the data
-        return getVehicleDataForm(accessToken, idString, ClimateState.class, "data_request/climate_state");
+        return ClimateState.convert(client.getVehicleClimateState(accessToken, idString));
     }
 
     @Nonnull
@@ -434,9 +436,10 @@ public class Client{
         Validation.assertNonnull(idString, "idString");
 
         // Get the data
-        return getVehicleDataForm(accessToken, idString, DriveState.class, "data_request/drive_state");
+        return DriveState.convert(client.getVehicleDriveState(accessToken, idString));
     }
 
+    /*
     @Nonnull
     public GuiSettings getVehicleGuiSettings(@Nonnull String accessToken, @Nonnull String idString)
     throws VehicleIDNotFoundException{

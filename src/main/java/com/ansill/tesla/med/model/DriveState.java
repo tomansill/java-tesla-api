@@ -75,6 +75,11 @@ public class DriveState{
         this.timestamp = timestamp;
     }
 
+    @Nonnull
+    public static DriveState convert(com.ansill.tesla.low.model.DriveState vehicleDriveState){
+        return null; // TODO dodododo
+    }
+
     public long getGpsAsOf(){
         return gpsAsOf;
     }

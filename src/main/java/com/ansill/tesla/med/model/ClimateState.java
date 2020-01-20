@@ -125,6 +125,11 @@ public class ClimateState{
         this.defrostMode = defrostMode;
     }
 
+    @Nonnull
+    public static ClimateState convert(@Nonnull com.ansill.tesla.low.model.ClimateState vehicleClimateState){
+        return null; // TODO dodo
+    }
+
     public boolean isBatteryHeater(){
         return batteryHeater;
     }
