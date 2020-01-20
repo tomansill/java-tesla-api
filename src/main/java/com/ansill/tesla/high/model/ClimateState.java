@@ -35,6 +35,8 @@ public final class ClimateState{
     private final boolean isFrontWindowDefrosterTurnedOn;
 
     /**
+     * ClimateState constructor
+     *
      * @param fanSpeedStatus                 Fan speed from levels 0 and up
      * @param insideTemperature              Temperature inside the vehicle
      * @param outsideTemperature             Temperature outside of the vehicle
