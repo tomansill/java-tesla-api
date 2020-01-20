@@ -68,6 +68,14 @@ public class Account{
         resetTimer();
     }
 
+    public void setGlobalFastChangingDataLifetime(@Nonnull Duration duration){
+        fastChangingDataLifetime.set(new AtomicReference<>(duration));
+    }
+
+    public void setGlobalSlowChangingDataLifetime(@Nonnull Duration duration){
+        slowChangingDataLifetime.set(new AtomicReference<>(duration));
+    }
+
     /**
      * Returns medium-level client
      *

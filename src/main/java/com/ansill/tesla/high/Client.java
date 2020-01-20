@@ -5,12 +5,28 @@ import com.ansill.tesla.low.exception.ReAuthenticationException;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
+import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.ansill.tesla.utility.Constants.*;
 
 /** Highly-Opinionated client */
 public final class Client{
+
+    /** Default fast changing data lifetime - used to stop too-frequent polling */
+    private static final Duration DEFAULT_FAST_CHANGING_DATA_LIFETIME = Duration.ofSeconds(5);
+
+    /** Default fast changing data lifetime - used to stop too-frequent polling */
+    private static final Duration DEFAULT_SLOW_CHANGING_DATA_LIFETIME = Duration.ofMinutes(1);
+
+    /** Global setting */
+    private static final AtomicReference<Duration> GLOBAL_FAST_CHANGING_DATA_LIFETIME = new AtomicReference<>(
+            DEFAULT_FAST_CHANGING_DATA_LIFETIME);
+
+    /** Global setting */
+    private static final AtomicReference<Duration> GLOBAL_SLOW_CHANGING_DATA_LIFETIME = new AtomicReference<>(
+            DEFAULT_SLOW_CHANGING_DATA_LIFETIME);
 
     /** Low-level client */
     private final com.ansill.tesla.med.Client client;
@@ -18,6 +34,22 @@ public final class Client{
     /** Sets up high-level client with default URL, client ID, and client secret */
     public Client(){
         this(URL, CLIENT_ID, CLIENT_SECRET);
+    }
+
+    public void setGlobalFastChangingDataLifetime(@Nonnull Duration duration){
+        GLOBAL_FAST_CHANGING_DATA_LIFETIME.set(duration);
+    }
+
+    public void setGlobalSlowChangingDataLifetime(@Nonnull Duration duration){
+        GLOBAL_SLOW_CHANGING_DATA_LIFETIME.set(duration);
+    }
+
+    public void resetGlobalFastChangingDataLifetime(){
+        GLOBAL_FAST_CHANGING_DATA_LIFETIME.set(DEFAULT_FAST_CHANGING_DATA_LIFETIME);
+    }
+
+    public void resetGlobalSlowChangingDataLifetime(){
+        GLOBAL_SLOW_CHANGING_DATA_LIFETIME.set(DEFAULT_SLOW_CHANGING_DATA_LIFETIME);
     }
 
     /**
@@ -47,8 +79,11 @@ public final class Client{
     @Nonnull
     public Optional<Account> authenticate(@Nonnull String emailAddress, @Nonnull String password){
         try{
-            return Optional.of(new Account(client, client.authenticate(emailAddress, password),
-                    fastChangingDataLifetime, slowChangingDataLifetime
+            return Optional.of(new Account(
+                    client,
+                    client.authenticate(emailAddress, password),
+                    new AtomicReference<>(GLOBAL_FAST_CHANGING_DATA_LIFETIME),
+                    new AtomicReference<>(GLOBAL_SLOW_CHANGING_DATA_LIFETIME)
             ));
         }catch(AuthenticationException e){
             return Optional.empty();
@@ -64,8 +99,11 @@ public final class Client{
     @Nonnull
     public Optional<Account> authenticate(@Nonnull String refreshToken){
         try{
-            return Optional.of(new Account(client, client.refreshToken(refreshToken), fastChangingDataLifetime,
-                    slowChangingDataLifetime
+            return Optional.of(new Account(
+                    client,
+                    client.refreshToken(refreshToken),
+                    new AtomicReference<>(GLOBAL_FAST_CHANGING_DATA_LIFETIME),
+                    new AtomicReference<>(GLOBAL_SLOW_CHANGING_DATA_LIFETIME)
             ));
         }catch(ReAuthenticationException e){
             return Optional.empty();

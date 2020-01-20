@@ -1,8 +1,6 @@
 package com.ansill.tesla.high.model;
 
 import com.ansill.tesla.med.model.ChargeState;
-import tech.units.indriya.quantity.Quantities;
-import tech.units.indriya.unit.Units;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -77,8 +75,8 @@ public final class BatteryState{
 
         return new BatteryState(
                 heatingState,
-                Quantities.getQuantity(state.getBatteryLevel(), Units.PERCENT),
-                Quantities.getQuantity(state.getUsableBatteryLevel(), Units.PERCENT),
+                state.getBatteryLevel(),
+                state.getUsableBatteryLevel(),
                 state.getBatteryRange(),
                 state.getIdealBatteryRange(),
                 state.getEstimatedBatteryRange()
