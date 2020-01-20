@@ -1,5 +1,6 @@
 package com.ansill.tesla.med.model;
 
+import com.ansill.tesla.model.LatchState;
 import com.ansill.tesla.model.USUnits;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
@@ -9,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Quantity;
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Length;
@@ -31,14 +33,14 @@ public class ChargeState{
     private final boolean chargeEnableRequest;
     @Nonnull
     private final Quantity<Power> chargeEnergyAdded;
-    @Nonnegative
-    private final int chargeLimitSOC;
-    @Nonnegative
-    private final int chargeLimitSOCMax;
-    @Nonnegative
-    private final int chargeLimitSOCMin;
-    @Nonnegative
-    private final int chargeLimitSOCSTD;
+    @Nonnull
+    private final Quantity<Dimensionless> chargeLimitSOC;
+    @Nonnull
+    private final Quantity<Dimensionless> chargeLimitSOCMax;
+    @Nonnull
+    private final Quantity<Dimensionless> chargeLimitSOCMin;
+    @Nonnull
+    private final Quantity<Dimensionless> chargeLimitSOCStandard;
     @Nonnull
     private final Quantity<Length> chargeDistanceAddedIdeal;
     @Nonnull
@@ -46,7 +48,7 @@ public class ChargeState{
     private final boolean chargePortColdWeatherMode;
     private final boolean chargePortDoorOpen;
     @Nonnull
-    private final Latch chargePortLatch;
+    private final LatchState chargePortLatch;
     @Nonnull
     private final Quantity<ElectricCurrent> chargeRate;
     private final boolean chargeToMaxRange;
@@ -104,15 +106,15 @@ public class ChargeState{
             @Nonnull Quantity<ElectricCurrent> chargeCurrentRequestMax,
             boolean chargeEnableRequest,
             @Nonnull Quantity<Power> chargeEnergyAdded,
-            int chargeLimitSOC,
-            int chargeLimitSOCMax,
-            int chargeLimitSOCMin,
-            int chargeLimitSOCSTD,
+            @Nonnull Quantity<Dimensionless> chargeLimitSOC,
+            @Nonnull Quantity<Dimensionless> chargeLimitSOCMax,
+            @Nonnull Quantity<Dimensionless> chargeLimitSOCMin,
+            @Nonnull Quantity<Dimensionless> chargeLimitSOCStandard,
             @Nonnull Quantity<Length> chargeDistanceAddedIdeal,
             @Nonnull Quantity<Length> chargeDistanceAddedRated,
             boolean chargePortColdWeatherMode,
             boolean chargePortDoorOpen,
-            @Nonnull Latch chargePortLatch,
+            @Nonnull LatchState chargePortLatch,
             @Nonnull Quantity<ElectricCurrent> chargeRate,
             boolean chargeToMaxRange,
             @Nonnull Quantity<ElectricCurrent> chargerActualCurrent,
@@ -151,7 +153,7 @@ public class ChargeState{
         this.chargeLimitSOC = chargeLimitSOC;
         this.chargeLimitSOCMax = chargeLimitSOCMax;
         this.chargeLimitSOCMin = chargeLimitSOCMin;
-        this.chargeLimitSOCSTD = chargeLimitSOCSTD;
+        this.chargeLimitSOCStandard = chargeLimitSOCStandard;
         this.chargeDistanceAddedIdeal = chargeDistanceAddedIdeal;
         this.chargeDistanceAddedRated = chargeDistanceAddedRated;
         this.chargePortColdWeatherMode = chargePortColdWeatherMode;
@@ -197,17 +199,17 @@ public class ChargeState{
                 chargeState.isChargeEnableRequest(),
                 Quantities.getQuantity(
                         chargeState.getChargeEnergyAdded(),
-                        Units.WATT.multiply(1000.00).asType(Power.class)
+                        Units.WATT.multiply(1000.00).asType(Power.class) // To kilowatts
                 ),
-                chargeState.getChargeLimitSoc(),
-                chargeState.getChargeLimitSocMax(),
-                chargeState.getChargeLimitSocMin(),
-                chargeState.getChargeLimitSocStd(),
+                Quantities.getQuantity(chargeState.getChargeLimitSoc(), Units.PERCENT),
+                Quantities.getQuantity(chargeState.getChargeLimitSocMax(), Units.PERCENT),
+                Quantities.getQuantity(chargeState.getChargeLimitSocMin(), Units.PERCENT),
+                Quantities.getQuantity(chargeState.getChargeLimitSocStd(), Units.PERCENT),
                 Quantities.getQuantity(chargeState.getChargeMilesAddedIdeal(), USUnits.MILE),
                 Quantities.getQuantity(chargeState.getChargeMilesAddedRated(), USUnits.MILE),
                 chargeState.getChargePortColdWeatherMode(),
                 chargeState.getChargePortDoorOpen(),
-                Latch.valueOf(chargeState.getChargePortLatch().toUpperCase()),
+                LatchState.valueOf(chargeState.getChargePortLatch().toUpperCase()),
                 Quantities.getQuantity(chargeState.getChargeRate(), Units.AMPERE),
                 chargeState.getChargeToMaxRange(),
                 Quantities.getQuantity(chargeState.getChargerActualCurrent(), Units.AMPERE),
@@ -271,24 +273,24 @@ public class ChargeState{
         return chargeEnergyAdded;
     }
 
-    @Nonnegative
-    public int getChargeLimitSOC(){
+    @Nonnull
+    public Quantity<Dimensionless> getChargeLimitSOC(){
         return chargeLimitSOC;
     }
 
-    @Nonnegative
-    public int getChargeLimitSOCMax(){
+    @Nonnull
+    public Quantity<Dimensionless> getChargeLimitSOCMax(){
         return chargeLimitSOCMax;
     }
 
-    @Nonnegative
-    public int getChargeLimitSOCMin(){
+    @Nonnull
+    public Quantity<Dimensionless> getChargeLimitSOCMin(){
         return chargeLimitSOCMin;
     }
 
-    @Nonnegative
-    public int getChargeLimitSOCSTD(){
-        return chargeLimitSOCSTD;
+    @Nonnull
+    public Quantity<Dimensionless> getChargeLimitSOCStandard(){
+        return chargeLimitSOCStandard;
     }
 
     @Nonnull
@@ -310,7 +312,7 @@ public class ChargeState{
     }
 
     @Nonnull
-    public Latch getChargePortLatch(){
+    public LatchState getChargePortLatch(){
         return chargePortLatch;
     }
 
@@ -440,10 +442,5 @@ public class ChargeState{
     @Nonnull
     public String getUserChargeEnableRequest(){
         return userChargeEnableRequest;
-    }
-
-    public enum Latch{ // TODO check if this is exhaustive list
-        DISENGAGED,
-        ENGAGED
     }
 }

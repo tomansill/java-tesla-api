@@ -1,9 +1,12 @@
 package com.ansill.tesla.med.model;
 
+import com.ansill.tesla.model.ShiftState;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Quantity;
 import javax.measure.quantity.Angle;
+import javax.measure.quantity.Power;
 import javax.measure.quantity.Speed;
 import java.time.Instant;
 
@@ -32,10 +35,11 @@ public class DriveState{
     @Nonnull
     private final String nativeType; // TODO what are the possible values?
 
-    private final int power; // TODO what is this?
+    @Nonnull
+    private final Quantity<Power> power;
 
     @Nonnull
-    private final Shift shiftState;
+    private final ShiftState shiftState;
 
     @Nonnull
     private final Quantity<Speed> speed;
@@ -52,8 +56,8 @@ public class DriveState{
             int nativeLocationSupported,
             @Nonnull Quantity<Angle> nativeLongitude,
             @Nonnull String nativeType,
-            int power,
-            @Nonnull Shift shiftState,
+            @Nonnull Quantity<Power> power,
+            @Nonnull ShiftState shiftState,
             @Nonnull Quantity<Speed> speed,
             @Nonnull Instant timestamp
     ){
@@ -109,12 +113,13 @@ public class DriveState{
         return nativeType;
     }
 
-    public int getPower(){
+    @Nonnull
+    public Quantity<Power> getPower(){
         return power;
     }
 
     @Nonnull
-    public Shift getShiftState(){
+    public ShiftState getShiftState(){
         return shiftState;
     }
 
@@ -126,12 +131,5 @@ public class DriveState{
     @Nonnull
     public Instant getTimestamp(){
         return timestamp;
-    }
-
-    public enum Shift{
-        PARKING,
-        DRIVE,
-        NEUTRAL,
-        REVERSE
     }
 }

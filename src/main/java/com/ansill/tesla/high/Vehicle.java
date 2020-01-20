@@ -1,6 +1,8 @@
 package com.ansill.tesla.high;
 
 import javax.annotation.Nonnull;
+import javax.measure.Quantity;
+import javax.measure.quantity.Length;
 
 public class Vehicle{
 
@@ -19,5 +21,8 @@ public class Vehicle{
         this.parent = parent;
     }
 
-
+    @Nonnull
+    public Quantity<Length> getOdometer(){
+        return null;
+    }
 }
