@@ -83,6 +83,7 @@ public class Vehicle{
      * @param vehicle vehicle
      * @param parent  parent to call upon
      * @return vehicle
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
     static Vehicle convert(@Nonnull com.ansill.tesla.med.model.Vehicle vehicle, @Nonnull Account parent){
@@ -110,12 +111,19 @@ public class Vehicle{
      * Gets odometer
      *
      * @return odometer
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
     public Quantity<Length> getOdometer(){
         return null;
     }
 
+    /**
+     * Checks if the vehicle is in service
+     *
+     * @return true if vehicle is in service, false if it is not
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
     public boolean isInService() throws VehicleNotFoundException{
 
         // Lock it
@@ -144,9 +152,10 @@ public class Vehicle{
      * Returns drive state
      *
      * @return drive state
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    public DriveState getDriveState() throws VehicleIDNotFoundException{
+    public DriveState getDriveState() throws VehicleNotFoundException{
 
         // Lock it
         com.ansill.tesla.med.model.DriveState state;
@@ -177,9 +186,10 @@ public class Vehicle{
      * Returns charge state
      *
      * @return charge state
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    public ChargeState getChargeState() throws VehicleIDNotFoundException{
+    public ChargeState getChargeState() throws VehicleNotFoundException{
 
         // Get it and convert it to high level and return
         return ChargeState.convert(getMediumChargeState());
@@ -189,9 +199,10 @@ public class Vehicle{
      * Returns battery state
      *
      * @return battery state
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    public BatteryState getBatteryState() throws VehicleIDNotFoundException{
+    public BatteryState getBatteryState() throws VehicleNotFoundException{
 
         // Get it and convert it to high level and return
         return BatteryState.convert(getMediumChargeState());
@@ -201,9 +212,10 @@ public class Vehicle{
      * Returns charge settings
      *
      * @return charge settings
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    public ChargeSettings getChargeSettings() throws VehicleIDNotFoundException{
+    public ChargeSettings getChargeSettings() throws VehicleNotFoundException{
 
         // Get it and convert it to high level and return
         return ChargeSettings.convert(getMediumChargeState());
@@ -213,9 +225,10 @@ public class Vehicle{
      * Returns charge settings
      *
      * @return charge settings
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
-    public com.ansill.tesla.med.model.ChargeState getMediumChargeState() throws VehicleIDNotFoundException{
+    public com.ansill.tesla.med.model.ChargeState getMediumChargeState() throws VehicleNotFoundException{
 
         // Lock it
         try(var ignored = parent.getReadLock().doLock()){
@@ -245,6 +258,7 @@ public class Vehicle{
      * Returns vehicle's VIN
      *
      * @return VIN
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
     public String getVIN(){
@@ -255,6 +269,7 @@ public class Vehicle{
      * Returns vehicle's name
      *
      * @return name
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
      */
     @Nonnull
     public String getName() throws VehicleNotFoundException{
