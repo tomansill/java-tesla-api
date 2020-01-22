@@ -9,14 +9,12 @@ import javax.measure.quantity.Length;
 @Immutable
 public final class VehicleState{
 
-    ///** Flag to indicate whether notifications is supporte */
+    ///** Flag to indicate whether notifications is supported */
     //private final boolean notificationsSupport; // TODO do we need this?
 
-    /** Flag to report if Sentry is turned on */
-    private final boolean sentryMode;
-
-    /** Flag to report if Sentry is available */
-    private final boolean sentryModeAvailable;
+    /** Sentry mode state */
+    @Nonnull
+    private final SentryModeState sentryModeState;
 
     /** Odometer */
     @Nonnull
@@ -35,23 +33,23 @@ public final class VehicleState{
     /**
      * VehicleState constructor
      *
-     * @param sentryMode          Flag to report if Sentry is turned on
+     * @param sentryModeActive    Flag to report if Sentry is turned on
      * @param sentryModeAvailable Flag to report if Sentry is available
+     * @param sentryModeState
      * @param odometer            Odometer
      * @param locked              Flag to report if the vehicle is locked or not
      * @param userPresent         Flag to report if user is in the car
      * @param vehicleVersion      Vehicle version
      */
     VehicleState(
-            boolean sentryMode,
+            boolean sentryModeActive,
             boolean sentryModeAvailable,
-            @Nonnull Quantity<Length> odometer,
+            @Nonnull SentryModeState sentryModeState, @Nonnull Quantity<Length> odometer,
             boolean locked,
             boolean userPresent,
             @Nonnull String vehicleVersion
     ){
-        this.sentryMode = sentryMode;
-        this.sentryModeAvailable = sentryModeAvailable;
+        this.sentryModeState = sentryModeState;
         this.odometer = odometer;
         this.locked = locked;
         this.userPresent = userPresent;
@@ -69,29 +67,12 @@ public final class VehicleState{
         return new VehicleState(
                 state.isSentryMode(),
                 state.isSentryModeAvailable(),
+                !state.isSentryModeAvailable() ? SentryModeState.NOT_AVAILABLE : state.isSentryMode() ? SentryModeState.ACTIVE : SentryModeState.INACTIVE,
                 state.getOdometer(),
                 state.isLocked(),
                 state.isUserPresent(),
                 state.getCarVersion()
         );
-    }
-
-    /**
-     * Reports whether if Sentry is active
-     *
-     * @return true if active, false if it is inactive
-     */
-    public boolean isSentryActive(){
-        return sentryMode;
-    }
-
-    /**
-     * Reports whether if Sentry mode is available
-     *
-     * @return true if available, false if it is unavailable
-     */
-    public boolean isSentryModeAvailable(){
-        return sentryModeAvailable;
     }
 
     /**
@@ -130,5 +111,15 @@ public final class VehicleState{
     @Nonnull
     public String getVehicleVersion(){
         return vehicleVersion;
+    }
+
+    /**
+     * Returns sentry mode state
+     *
+     * @return state
+     */
+    @Nonnull
+    public SentryModeState getSentryModeState(){
+        return sentryModeState;
     }
 }
