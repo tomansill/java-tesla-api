@@ -2,6 +2,7 @@ package com.ansill.tesla.high;
 
 import com.ansill.tesla.high.exception.VehicleNotFoundException;
 import com.ansill.tesla.high.model.BatteryState;
+import com.ansill.tesla.high.model.ChargeAdded;
 import com.ansill.tesla.high.model.ChargeSettings;
 import com.ansill.tesla.high.model.ChargeState;
 import com.ansill.tesla.high.model.ClimateSettings;
@@ -223,6 +224,17 @@ public class Vehicle{
     @Nonnull
     public ChargeState getChargeState() throws VehicleNotFoundException{
         return ChargeState.convert(getRawChargeState());
+    }
+
+    /**
+     * Returns charge added information
+     *
+     * @return charge added information
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public ChargeAdded getChargeAdded() throws VehicleNotFoundException{
+        return ChargeAdded.convert(getRawChargeState());
     }
 
     /**

@@ -6,9 +6,6 @@ import com.ansill.tesla.model.LatchState;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.measure.Quantity;
-import javax.measure.quantity.Length;
-import javax.measure.quantity.Power;
 import java.util.Optional;
 
 /** Charge state */
@@ -17,18 +14,6 @@ public final class ChargeState{
 
     /** Report whether door is open or not */
     private final boolean isChargePortDoorOpen;
-
-    /** Amount of energy added in last charge (or current if currently charging */
-    @Nonnull
-    private final Quantity<Power> energyAddedInLastCharge;
-
-    /** Amount of ideal distance added in last charge (or current if currently charging */
-    @Nonnull
-    private final Quantity<Length> idealDistanceAddedInLastCharge;
-
-    /** Amount of rated distance added in last charge (or current if currently charging */
-    @Nonnull
-    private final Quantity<Length> ratedDistanceAddedInLastCharge;
 
     /** Flag to indicate if charge port is currently on cold weather mode */
     private final boolean isChargePortColdWeatherModeEnabled;
@@ -49,9 +34,6 @@ public final class ChargeState{
      * ChargeState constructor
      *
      * @param isChargePortDoorOpen               Report whether door is open or not
-     * @param energyAddedInLastCharge            Amount of energy added in last charge (or current if currently charging
-     * @param idealDistanceAddedInLastCharge     Amount of ideal distance added in last charge (or current if currently charging
-     * @param ratedDistanceAddedInLastCharge     Amount of rated distance added in last charge (or current if currently charging
      * @param isChargePortColdWeatherModeEnabled Flag to indicate if charge port is currently on cold weather mode
      * @param latchState                         Latch mode
      * @param chargingState                      Charging state
@@ -59,24 +41,17 @@ public final class ChargeState{
      */
     private ChargeState(
             boolean isChargePortDoorOpen,
-            @Nonnull Quantity<Power> energyAddedInLastCharge,
-            @Nonnull Quantity<Length> idealDistanceAddedInLastCharge,
-            @Nonnull Quantity<Length> ratedDistanceAddedInLastCharge,
             boolean isChargePortColdWeatherModeEnabled,
             @Nonnull LatchState latchState,
             @Nonnull ChargingState chargingState,
             @Nullable ChargeSession chargeSession
     ){
         this.isChargePortDoorOpen = isChargePortDoorOpen;
-        this.energyAddedInLastCharge = energyAddedInLastCharge;
-        this.idealDistanceAddedInLastCharge = idealDistanceAddedInLastCharge;
-        this.ratedDistanceAddedInLastCharge = ratedDistanceAddedInLastCharge;
         this.isChargePortColdWeatherModeEnabled = isChargePortColdWeatherModeEnabled;
         this.latchState = latchState;
         this.chargingState = chargingState;
         this.chargeSession = chargeSession;
     }
-
 
     /**
      * Converts medium-level to high-level object
@@ -88,9 +63,6 @@ public final class ChargeState{
     public static ChargeState convert(@Nonnull com.ansill.tesla.med.model.ChargeState state){
         return new ChargeState(
                 state.isChargePortDoorOpen(),
-                state.getChargeEnergyAdded(),
-                state.getChargeDistanceAddedIdeal(),
-                state.getChargeDistanceAddedRated(),
                 state.isChargePortColdWeatherMode(),
                 state.getChargePortLatch(),
                 state.getChargingState(),
@@ -105,36 +77,6 @@ public final class ChargeState{
      */
     public boolean isChargePortDoorOpen(){
         return isChargePortDoorOpen;
-    }
-
-    /**
-     * Returns amount of energy added in last charge (or current charge if currently charging)
-     *
-     * @return amount of energy
-     */
-    @Nonnull
-    public Quantity<Power> getEnergyAddedInLastCharge(){
-        return energyAddedInLastCharge;
-    }
-
-    /**
-     * Returns ideal distance added in last charge (or current charge if currently charging)
-     *
-     * @return distance
-     */
-    @Nonnull
-    public Quantity<Length> getIdealDistanceAddedInLastCharge(){
-        return idealDistanceAddedInLastCharge;
-    }
-
-    /**
-     * Returns rated distance added in last charge (or current charge if currently charging)
-     *
-     * @return distance
-     */
-    @Nonnull
-    public Quantity<Length> getRatedDistanceAddedInLastCharge(){
-        return ratedDistanceAddedInLastCharge;
     }
 
     /**
