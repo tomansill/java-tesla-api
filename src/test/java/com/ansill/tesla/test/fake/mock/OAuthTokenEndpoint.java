@@ -1,6 +1,6 @@
 package com.ansill.tesla.test.fake.mock;
 
-import com.ansill.tesla.low.model.GenericErrorResponse;
+import com.ansill.tesla.api.low.model.GenericErrorResponse;
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.ansill.tesla.api.utility.Utility.f;
 import static com.ansill.tesla.test.TestUtility.generateString;
-import static com.ansill.tesla.utility.Utility.f;
 
 public class OAuthTokenEndpoint implements Handler{
 

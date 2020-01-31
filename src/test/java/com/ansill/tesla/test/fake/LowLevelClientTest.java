@@ -1,10 +1,10 @@
 package com.ansill.tesla.test.fake;
 
-import com.ansill.tesla.low.Client;
-import com.ansill.tesla.low.exception.AuthenticationException;
-import com.ansill.tesla.low.exception.ClientException;
-import com.ansill.tesla.low.exception.InvalidAccessTokenException;
-import com.ansill.tesla.low.exception.ReAuthenticationException;
+import com.ansill.tesla.api.low.Client;
+import com.ansill.tesla.api.low.exception.AuthenticationException;
+import com.ansill.tesla.api.low.exception.ClientException;
+import com.ansill.tesla.api.low.exception.InvalidAccessTokenException;
+import com.ansill.tesla.api.low.exception.ReAuthenticationException;
 import com.ansill.tesla.test.TestUtility;
 import com.ansill.tesla.test.fake.mock.MockModel;
 import com.ansill.tesla.test.fake.mock.MockServer;

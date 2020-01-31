@@ -1,7 +1,7 @@
 package com.ansill.tesla.test;
 
-import com.ansill.tesla.low.model.ChargeState;
-import com.ansill.tesla.low.model.Vehicle;
+import com.ansill.tesla.api.low.model.ChargeState;
+import com.ansill.tesla.api.low.model.Vehicle;
 import com.ansill.tesla.test.fake.mock.MockModel;
 import com.ansill.validation.Validation;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-import static com.ansill.tesla.utility.Utility.f;
+import static com.ansill.tesla.api.utility.Utility.f;
 
 public final class TestUtility{
 

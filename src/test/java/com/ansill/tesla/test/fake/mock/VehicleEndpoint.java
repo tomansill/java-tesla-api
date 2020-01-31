@@ -1,6 +1,6 @@
 package com.ansill.tesla.test.fake.mock;
 
-import com.ansill.tesla.low.model.GenericErrorResponse;
+import com.ansill.tesla.api.low.model.GenericErrorResponse;
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;

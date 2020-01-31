@@ -1,9 +1,9 @@
 package com.ansill.tesla.test.fake.mock;
 
-import com.ansill.tesla.low.exception.InvalidAccessTokenException;
-import com.ansill.tesla.low.model.SuccessfulAuthenticationResponse;
-import com.ansill.tesla.low.model.Vehicle;
-import com.ansill.tesla.low.model.VehiclesResponse;
+import com.ansill.tesla.api.low.exception.InvalidAccessTokenException;
+import com.ansill.tesla.api.low.model.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.api.low.model.Vehicle;
+import com.ansill.tesla.api.low.model.VehiclesResponse;
 
 import java.time.Duration;
 import java.time.Instant;

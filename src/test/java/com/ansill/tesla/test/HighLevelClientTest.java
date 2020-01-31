@@ -1,8 +1,8 @@
 package com.ansill.tesla.test;
 
-import com.ansill.tesla.high.Client;
-import com.ansill.tesla.low.exception.APIProtocolException;
-import com.ansill.tesla.low.exception.AuthenticationException;
+import com.ansill.tesla.api.high.Client;
+import com.ansill.tesla.api.low.exception.APIProtocolException;
+import com.ansill.tesla.api.low.exception.AuthenticationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +13,8 @@ import java.io.Reader;
 import java.util.Optional;
 import java.util.Properties;
 
-import static com.ansill.tesla.utility.Constants.*;
-import static com.ansill.tesla.utility.Utility.f;
+import static com.ansill.tesla.api.utility.Constants.*;
+import static com.ansill.tesla.api.utility.Utility.f;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HighLevelClientTest{
@@ -51,7 +51,7 @@ class HighLevelClientTest{
     void testValidAuthentication() throws IOException, AuthenticationException{
 
         // Use default
-        com.ansill.tesla.low.Client client = new com.ansill.tesla.low.Client();
+        com.ansill.tesla.api.low.Client client = new com.ansill.tesla.api.low.Client();
 
         // Send it
         assertNotEquals(Optional.empty(), client.authenticate(username, password));
