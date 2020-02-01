@@ -1,7 +1,7 @@
 package com.ansill.tesla.api.model;
 
 public enum ShiftState{
-    PARKING,
+    PARK,
     DRIVE,
     NEUTRAL,
     REVERSE
