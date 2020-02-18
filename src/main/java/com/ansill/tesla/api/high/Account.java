@@ -8,6 +8,7 @@ import com.ansill.tesla.api.med.model.AccountCredentials;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /** Tesla Account */
@@ -40,12 +42,18 @@ public class Account{
     /** Lifetime for fast-changing data */
     @Nonnull
     private final AtomicReference<AtomicReference<Duration>> fastChangingDataLifetime;
+
     /** Lifetime for fast-changing data */
     @Nonnull
     private final AtomicReference<AtomicReference<Duration>> slowChangingDataLifetime;
+
     /** Current "good" credentials */
     @Nonnull
     private AccountCredentials credentials;
+
+    /** Refresh subscription */
+    @Nullable
+    private RefreshSubscription refreshSubscription = null;
 
     /**
      * Creates Tesla Account and starts the refresh timer
@@ -145,6 +153,22 @@ public class Account{
     }
 
     /**
+     * Subscribes on account credentials refresh
+     *
+     * @param consumer consumer that consumes new credentials
+     * @param onError  runnable that runs when there's an error
+     */
+    public void subscribeToCredentialsRefresh(
+            @Nonnull Consumer<AccountCredentials> consumer,
+            @Nonnull Consumer<ReAuthenticationException> onError
+    ){
+        this.refreshSubscription = new RefreshSubscription(
+                Validation.assertNonnull(consumer),
+                Validation.assertNonnull(onError)
+        );
+    }
+
+    /**
      * Refreshes the credentials
      *
      * @throws ReAuthenticationException thrown if re-authentication fails
@@ -156,6 +180,17 @@ public class Account{
 
             // Refresh it and update response
             credentials = client.refreshToken(credentials.getRefreshToken());
+
+            // Fire subscription if exists
+            if(refreshSubscription != null) refreshSubscription.getConsumer().accept(credentials);
+
+        }catch(ReAuthenticationException exception){
+
+            // Fire subscription if exists
+            if(refreshSubscription != null) refreshSubscription.getOnError().accept(exception);
+
+            // Resume the exception throwing
+            throw exception;
         }
 
         // Reset the timer
@@ -246,4 +281,5 @@ public class Account{
     AtomicReference<AtomicReference<Duration>> getSlowChangingDataLifetime(){
         return slowChangingDataLifetime;
     }
+
 }
