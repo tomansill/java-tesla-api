@@ -69,10 +69,30 @@ public class Account{
             @Nonnull AtomicReference<AtomicReference<Duration>> fastChangingDataLifetime,
             @Nonnull AtomicReference<AtomicReference<Duration>> slowChangingDataLifetime
     ){
+        this(client, credentials, fastChangingDataLifetime, slowChangingDataLifetime, null);
+    }
+
+
+    /**
+     * Creates Tesla Account and starts the refresh timer
+     *
+     * @param client                   low level client
+     * @param credentials              good credentials
+     * @param fastChangingDataLifetime lifetime for fast-changing data
+     * @param slowChangingDataLifetime lifetime for slow-changing data
+     */
+    Account(
+            @Nonnull Client client,
+            @Nonnull AccountCredentials credentials,
+            @Nonnull AtomicReference<AtomicReference<Duration>> fastChangingDataLifetime,
+            @Nonnull AtomicReference<AtomicReference<Duration>> slowChangingDataLifetime,
+            @Nullable RefreshSubscription subscription
+    ){
         this.client = client;
         this.credentials = credentials;
         this.fastChangingDataLifetime = fastChangingDataLifetime;
         this.slowChangingDataLifetime = slowChangingDataLifetime;
+        this.refreshSubscription = subscription;
         resetTimer();
     }
 
