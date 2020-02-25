@@ -9,6 +9,7 @@ import com.ansill.tesla.api.high.model.ClimateSettings;
 import com.ansill.tesla.api.high.model.ClimateState;
 import com.ansill.tesla.api.high.model.DriveState;
 import com.ansill.tesla.api.high.model.GUISettings;
+import com.ansill.tesla.api.high.model.SentryModeState;
 import com.ansill.tesla.api.high.model.VehicleConfig;
 import com.ansill.tesla.api.high.model.VehicleSnapshot;
 import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
@@ -200,7 +201,10 @@ public class Vehicle{
             // Retrieve from cache if any or send new call
             state = cachedDriveState.getOrUpdate(() -> {
                 try{
-                    return parent.getClient().getVehicleDriveState(parent.getToken(), id);
+                    return parent.performOnClientWithVehicleException(client -> client.getVehicleDriveState(
+                            parent.getToken(),
+                            id
+                    ));
                 }catch(VehicleIDNotFoundException e){
                     exceptionCatcher.set(new VehicleNotFoundException(id));
                     return null;
@@ -333,7 +337,7 @@ public class Vehicle{
 
             // Retrieve from cache if any or send new call
             var state = cachedVehicle.getOrUpdate(() -> {
-                var item = parent.getClient().getVehicle(parent.getToken(), id);
+                var item = parent.performOnClient(client -> client.getVehicle(parent.getToken(), id));
                 if(item.isPresent()) return item.get();
                 exceptionCatcher.set(new VehicleNotFoundException(id));
                 return null;
@@ -365,7 +369,10 @@ public class Vehicle{
             // Retrieve from cache if any or send new call
             var state = cachedChargeState.getOrUpdate(() -> {
                 try{
-                    return parent.getClient().getVehicleChargeState(parent.getToken(), id);
+                    return parent.performOnClientWithVehicleException(client -> client.getVehicleChargeState(
+                            parent.getToken(),
+                            id
+                    ));
                 }catch(VehicleIDNotFoundException e){
                     exceptionCatcher.set(new VehicleNotFoundException(id));
                     return null;
@@ -399,7 +406,10 @@ public class Vehicle{
             // Retrieve from cache if any or send new call
             var state = cachedGuiSettings.getOrUpdate(() -> {
                 try{
-                    return parent.getClient().getVehicleGuiSettings(parent.getToken(), id);
+                    return parent.performOnClientWithVehicleException(client -> client.getVehicleGuiSettings(
+                            parent.getToken(),
+                            id
+                    ));
                 }catch(VehicleIDNotFoundException e){
                     exceptionCatcher.set(new VehicleNotFoundException(id));
                     return null;
@@ -435,7 +445,8 @@ public class Vehicle{
                 try{
 
                     // Get data
-                    var data = parent.getClient().getVehicleCompleteData(parent.getToken(), id);
+                    var data = parent.performOnClientWithVehicleException(client -> client.getVehicleCompleteData(parent
+                            .getToken(), id));
 
                     // Propagate other data
                     cachedVehicle.update(data.getVehicle());
@@ -481,7 +492,10 @@ public class Vehicle{
             // Retrieve from cache if any or send new call
             var state = cachedVehicleState.getOrUpdate(() -> {
                 try{
-                    return parent.getClient().getVehicleVehicleState(parent.getToken(), id);
+                    return parent.performOnClientWithVehicleException(client -> client.getVehicleVehicleState(
+                            parent.getToken(),
+                            id
+                    ));
                 }catch(VehicleIDNotFoundException e){
                     exceptionCatcher.set(new VehicleNotFoundException(id));
                     return null;
@@ -514,7 +528,10 @@ public class Vehicle{
             // Retrieve from cache if any or send new call
             var state = cachedClimateState.getOrUpdate(() -> {
                 try{
-                    return parent.getClient().getVehicleClimateState(parent.getToken(), id);
+                    return parent.performOnClientWithVehicleException(client -> client.getVehicleClimateState(
+                            parent.getToken(),
+                            id
+                    ));
                 }catch(VehicleIDNotFoundException e){
                     exceptionCatcher.set(new VehicleNotFoundException(id));
                     return null;
@@ -548,7 +565,10 @@ public class Vehicle{
             // Retrieve from cache if any or send new call
             var state = cachedVehicleConfig.getOrUpdate(() -> {
                 try{
-                    return parent.getClient().getVehicleVehicleConfig(parent.getToken(), id);
+                    return parent.performOnClientWithVehicleException(client -> client.getVehicleVehicleConfig(
+                            parent.getToken(),
+                            id
+                    ));
                 }catch(VehicleIDNotFoundException e){
                     exceptionCatcher.set(new VehicleNotFoundException(id));
                     return null;
@@ -584,5 +604,55 @@ public class Vehicle{
 
         // Get it and convert it to high level and return
         return getRawVehicle().getDisplayName();
+    }
+
+    /**
+     * Returns vehicle's lock state
+     *
+     * @return true if vehicle is locked, false if it is not
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    public boolean isLocked() throws VehicleNotFoundException{
+
+        // Get it and convert it to high level and return
+        return getRawVehicleState().isLocked();
+    }
+
+    /**
+     * Returns if an user is in the car
+     *
+     * @return true if user is inside, false if it is not
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    public boolean isUserPresent() throws VehicleNotFoundException{
+
+        // Get it and convert it to high level and return
+        return getRawVehicleState().isUserPresent();
+    }
+
+    /**
+     * Returns sentry mode state
+     *
+     * @return sentry mode state
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public SentryModeState getSentryModeState() throws VehicleNotFoundException{
+
+        // Get it and convert it to high level and return
+        return !getRawVehicleState().isSentryModeAvailable() ? SentryModeState.NOT_AVAILABLE : getRawVehicleState().isSentryMode() ? SentryModeState.ACTIVE : SentryModeState.INACTIVE;
+    }
+
+    /**
+     * Returns vehicle version
+     *
+     * @return true if sentry mode is available, false if it is not
+     * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+     */
+    @Nonnull
+    public String getVersion() throws VehicleNotFoundException{
+
+        // Get it and convert it to high level and return
+        return getRawVehicleState().getCarVersion();
     }
 }

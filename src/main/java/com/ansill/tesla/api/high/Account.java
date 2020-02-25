@@ -3,6 +3,7 @@ package com.ansill.tesla.api.high;
 import com.ansill.lock.autolock.ALock;
 import com.ansill.lock.autolock.AutoLock;
 import com.ansill.tesla.api.low.exception.ReAuthenticationException;
+import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
 import com.ansill.tesla.api.med.Client;
 import com.ansill.tesla.api.med.model.AccountCredentials;
 import com.ansill.validation.Validation;
@@ -15,13 +16,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /** Tesla Account */
-public class Account{
+public class Account implements AutoCloseable{
 
     /** Time before credentials expires */
     @Nonnull
@@ -51,9 +54,13 @@ public class Account{
     @Nonnull
     private AccountCredentials credentials;
 
+    /** Closed flag */
+    @Nonnull
+    private final AtomicBoolean closed = new AtomicBoolean(false);
+
     /** Refresh subscription */
     @Nullable
-    private RefreshSubscription refreshSubscription = null;
+    private RefreshSubscription refreshSubscription;
 
     /**
      * Creates Tesla Account and starts the refresh timer
@@ -102,16 +109,6 @@ public class Account{
 
     public void setGlobalSlowChangingDataLifetime(@Nonnull Duration duration){
         slowChangingDataLifetime.set(new AtomicReference<>(duration));
-    }
-
-    /**
-     * Returns medium-level client
-     *
-     * @return client
-     */
-    @Nonnull
-    Client getClient(){
-        return client;
     }
 
     /**
@@ -195,6 +192,9 @@ public class Account{
      */
     private void refresh() throws ReAuthenticationException{
 
+        // Ensure that it's not closed
+        if(this.closed.get()) throw new IllegalStateException("Account is closed!");
+
         // Lock it
         try(var ignored = new ALock(rrwl.writeLock()).doLock()){
 
@@ -221,15 +221,12 @@ public class Account{
     @Nonnull
     public Set<Vehicle> getVehicles(){
 
-        // Lock it
-        try(var ignored = this.getReadLock().doLock()){
-
-            // Call it
-            return client.getVehicles(credentials.getAccessToken())
-                         .stream()
-                         .map(vehicle -> Vehicle.convert(vehicle, this))
-                         .collect(Collectors.toUnmodifiableSet());
-        }
+        // Perform it
+        return performOnClient(client -> client.getVehicles(credentials.getAccessToken())
+                                               .stream()
+                                               .map(vehicle -> Vehicle.convert(vehicle, this))
+                                               .collect(Collectors.toUnmodifiableSet())
+        );
     }
 
     @Nonnull
@@ -238,16 +235,13 @@ public class Account{
         // Assert name
         Validation.assertNonemptyString(name);
 
-        // Lock it
-        try(var ignored = this.getReadLock().doLock()){
-
-            // Call it
-            return client.getVehicles(credentials.getAccessToken())
-                         .stream()
-                         .map(vehicle -> Vehicle.convert(vehicle, this))
-                         .filter(item -> item.getName().equals(name))
-                         .findAny();
-        }
+        // Perform it
+        return performOnClient(client -> client.getVehicles(credentials.getAccessToken())
+                                               .stream()
+                                               .map(vehicle -> Vehicle.convert(vehicle, this))
+                                               .filter(item -> item.getName().equals(name))
+                                               .findAny()
+        );
     }
 
     @Nonnull
@@ -256,12 +250,9 @@ public class Account{
         // Assert id
         Validation.assertNonemptyString(id);
 
-        // Lock it
-        try(var ignored = this.getReadLock().doLock()){
-
-            // Call it
-            return client.getVehicle(credentials.getAccessToken(), id).map(item -> Vehicle.convert(item, this));
-        }
+        // Perform it
+        return performOnClient(client -> client.getVehicle(credentials.getAccessToken(), id)
+                                               .map(item -> Vehicle.convert(item, this)));
     }
 
     @Nonnull
@@ -270,16 +261,13 @@ public class Account{
         // Assert vin
         Validation.assertNonemptyString(vin);
 
-        // Lock it
-        try(var ignored = this.getReadLock().doLock()){
-
-            // Call it
-            return client.getVehicles(credentials.getAccessToken())
-                         .stream()
-                         .map(vehicle -> Vehicle.convert(vehicle, this))
-                         .filter(item -> item.getVIN().equals(vin))
-                         .findAny();
-        }
+        // Perform it
+        return performOnClient(client -> client.getVehicles(credentials.getAccessToken())
+                                               .stream()
+                                               .map(vehicle -> Vehicle.convert(vehicle, this))
+                                               .filter(item -> item.getVIN().equals(vin))
+                                               .findAny()
+        );
     }
 
     /**
@@ -302,4 +290,54 @@ public class Account{
         return slowChangingDataLifetime;
     }
 
+    /**
+     * Performs a function on client
+     *
+     * @param function function
+     * @param <T>      return value type
+     * @return return value
+     */
+    <T> T performOnClient(@Nonnull Function<Client,T> function){
+
+        // Ensure that it's not closed
+        if(this.closed.get()) throw new IllegalStateException("Account is closed!");
+
+        // Lock it
+        try(var ignored = this.getReadLock().doLock()){
+
+            // Run it
+            return function.apply(this.client);
+
+        }
+    }
+
+    /**
+     * Performs a function on client
+     *
+     * @param function function
+     * @param <T>      return value type
+     * @return return value
+     * @throws VehicleIDNotFoundException thrown if vehicle cannot be found
+     */
+    <T> T performOnClientWithVehicleException(@Nonnull FunctionWithVehicleException<Client,T> function)
+    throws VehicleIDNotFoundException{
+
+        // Ensure that it's not closed
+        if(this.closed.get()) throw new IllegalStateException("Account is closed!");
+
+        // Lock it
+        try(var ignored = this.getReadLock().doLock()){
+
+            // Run it
+            return function.apply(this.client);
+
+        }
+    }
+
+    @Override
+    public void close(){
+        if(!closed.compareAndSet(false, true)) return;
+        var timer = this.timer.getAndSet(null);
+        if(timer != null) timer.cancel();
+    }
 }
