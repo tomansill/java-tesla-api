@@ -22,162 +22,163 @@ import static com.ansill.tesla.api.utility.Utility.f;
 
 public final class TestUtility{
 
-    private static final Set<Integer> RESERVED_PORTS = new HashSet<>();
-    private static AtomicReference<Random> RANDOM_GENERATOR = new AtomicReference<>(null);
+  private static final Set<Integer> RESERVED_PORTS = new HashSet<>();
+
+  private static AtomicReference<Random> RANDOM_GENERATOR = new AtomicReference<>(null);
 
 
-    // No instantiation allowed
-    private TestUtility(){
-        throw new AssertionError(f("No {} instances for you!", this.getClass().getName()));
+  // No instantiation allowed
+  private TestUtility(){
+    throw new AssertionError(f("No {} instances for you!", this.getClass().getName()));
+  }
+
+  @SuppressWarnings("SameParameterValue")
+  @Nonnegative
+  public static synchronized int getNextOpenPort(@Nonnegative int start){
+
+    // Loop until maximum possible
+    for(int port = start; port < Short.MAX_VALUE; port++){
+
+      // Make sure not already reserved
+      if(RESERVED_PORTS.contains(port)) continue;
+
+      // Check if it's open
+      if(!isPortOpen(port)) continue;
+
+      // If it is indeed open, reserve it
+      RESERVED_PORTS.add(port);
+
+      // Return it
+      return port;
     }
 
-    @SuppressWarnings("SameParameterValue")
-    @Nonnegative
-    public static synchronized int getNextOpenPort(@Nonnegative int start){
+    // Throw it
+    throw new RuntimeException("Cannot find any open ports!");
+  }
 
-        // Loop until maximum possible
-        for(int port = start; port < Short.MAX_VALUE; port++){
+  public static MockModel.VehicleAccount createParkingVehicle(){
+    long id = new Random().nextLong();
+    long vehicle_id = new Random().nextLong();
 
-            // Make sure not already reserved
-            if(RESERVED_PORTS.contains(port)) continue;
+    // Basic vehicle info
+    var vehicle = new Vehicle(
+      id,
+      vehicle_id,
+      new Random().nextLong(),
+      generateString(32),
+      generateString(16),
+      IntStream.range(0, new Random().nextInt(32) + 1)
+               .asLongStream()
+               .mapToObj(item -> generateString(6))
+               .collect(Collectors.joining(",")),
+      null, // Always null...
+      IntStream.range(0, new Random().nextInt(2) + 1)
+               .asLongStream()
+               .mapToObj(item -> generateString(16))
+               .collect(Collectors.toList()),
+      "online",
+      false,
+      id + "",
+      true,
+      6,
+      null,
+      null
 
-            // Check if it's open
-            if(!isPortOpen(port)) continue;
+    );
 
-            // If it is indeed open, reserve it
-            RESERVED_PORTS.add(port);
+    // charge state
+    var chargeState = new ChargeState(
+      false,
+      new Random().nextInt(75) + 25,
+      (new Random().nextDouble() * 250.0) + 60,
+      0,
+      0,
+      false,
+      0.0,
+      80,
+      100,
+      60,
+      70,
+      20,
+      22,
+      true,
+      false,
+      "disengaged",
+      0.0,
+      false,
+      0,
+      null,
+      48,
+      0,
+      2,
+      "Disconnected",
+      "<invalid>",
+      124.1,
+      "<invalid>",
+      false,
+      new Random().nextInt(310),
+      "<invalid>",
+      190.59,
+      false,
+      null,
+      false,
+      0,
+      null,
+      false,
+      null,
+      0.0,
+      1245141241241L,
+      63,
+      null,
+      true
+    );
 
-            // Return it
-            return port;
-        }
+    return new MockModel.VehicleAccount(new AtomicReference<>(vehicle));
+  }
 
-        // Throw it
-        throw new RuntimeException("Cannot find any open ports!");
+  public static synchronized void unreservePort(@Nonnegative int port){
+    RESERVED_PORTS.remove(port);
+  }
+
+  public static boolean isPortOpen(@Nonnegative int port){
+    try(ServerSocket ignored = new ServerSocket(port)){
+      return true;
+    }catch(IOException e){
+      return false;
     }
+  }
 
-    public static MockModel.VehicleAccount createParkingVehicle(){
-        long id = new Random().nextLong();
-        long vehicle_id = new Random().nextLong();
+  @Nonnull
+  public static String generateEmailAddress(){
+    return generateString(getRandom().nextInt(12) + 1) + "@" + generateString(getRandom().nextInt(8) + 1) + ".com";
+  }
 
-        // Basic vehicle info
-        var vehicle = new Vehicle(
-                id,
-                vehicle_id,
-                new Random().nextLong(),
-                generateString(32),
-                generateString(16),
-                IntStream.range(0, new Random().nextInt(32) + 1)
-                         .asLongStream()
-                         .mapToObj(item -> generateString(6))
-                         .collect(Collectors.joining(",")),
-                null, // Always null...
-                IntStream.range(0, new Random().nextInt(2) + 1)
-                         .asLongStream()
-                         .mapToObj(item -> generateString(16))
-                         .collect(Collectors.toList()),
-                "online",
-                false,
-                id + "",
-                true,
-                6,
-                null,
-                null
+  @Nonnull
+  private static Random getRandom(){
+    return RANDOM_GENERATOR.updateAndGet(item -> item == null ? new SecureRandom() : item);
+  }
 
-        );
+  @Nonnull
+  public static String generateString(@Nonnegative long length){
 
-        // charge state
-        var chargeState = new ChargeState(
-                false,
-                new Random().nextInt(75) + 25,
-                (new Random().nextDouble() * 250.0) + 60,
-                0,
-                0,
-                false,
-                0.0,
-                80,
-                100,
-                60,
-                70,
-                20,
-                22,
-                true,
-                false,
-                "disengaged",
-                0.0,
-                false,
-                0,
-                null,
-                48,
-                0,
-                2,
-                "Disconnected",
-                "<invalid>",
-                124.1,
-                "<invalid>",
-                false,
-                new Random().nextInt(310),
-                "<invalid>",
-                190.59,
-                false,
-                null,
-                false,
-                0,
-                null,
-                false,
-                null,
-                0.0,
-                1245141241241L,
-                63,
-                null,
-                true
-        );
+    // Check length
+    Validation.assertNaturalNumber(length, "length");
 
-        return new MockModel.VehicleAccount(new AtomicReference<>(vehicle));
-    }
+    // Set up characterset
+    String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    String fullalphabet = alphabet + alphabet.toLowerCase() + "123456789";
 
-    public static synchronized void unreservePort(@Nonnegative int port){
-        RESERVED_PORTS.remove(port);
-    }
+    // Set up random generator
+    Random random = getRandom();
 
-    public static boolean isPortOpen(@Nonnegative int port){
-        try(ServerSocket ignored = new ServerSocket(port)){
-            return true;
-        }catch(IOException e){
-            return false;
-        }
-    }
+    // Set up string builder
+    StringBuilder sb = new StringBuilder();
 
-    @Nonnull
-    public static String generateEmailAddress(){
-        return generateString(getRandom().nextInt(12) + 1) + "@" + generateString(getRandom().nextInt(8) + 1) + ".com";
-    }
+    // Build random string
+    LongStream.range(0, length).forEach(i -> sb.append(fullalphabet.charAt(random.nextInt(fullalphabet.length()))));
 
-    @Nonnull
-    private static Random getRandom(){
-        return RANDOM_GENERATOR.updateAndGet(item -> item == null ? new SecureRandom() : item);
-    }
+    // Return the string
+    return sb.toString();
 
-    @Nonnull
-    public static String generateString(@Nonnegative long length){
-
-        // Check length
-        Validation.assertNaturalNumber(length, "length");
-
-        // Set up characterset
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String fullalphabet = alphabet + alphabet.toLowerCase() + "123456789";
-
-        // Set up random generator
-        Random random = getRandom();
-
-        // Set up string builder
-        StringBuilder sb = new StringBuilder();
-
-        // Build random string
-        LongStream.range(0, length).forEach(i -> sb.append(fullalphabet.charAt(random.nextInt(fullalphabet.length()))));
-
-        // Return the string
-        return sb.toString();
-
-    }
+  }
 }

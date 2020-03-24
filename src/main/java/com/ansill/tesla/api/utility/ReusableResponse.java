@@ -12,40 +12,40 @@ import static com.ansill.tesla.api.utility.Utility.simpleToString;
 /** Reusable version of Response - allows us to read response body many times */
 public class ReusableResponse implements AutoCloseable{
 
-    @Nonnull
-    final Response response;
+  @Nonnull
+  final Response response;
 
-    @Nullable
-    private String bodyString = null;
+  @Nullable
+  private String bodyString = null;
 
-    public ReusableResponse(@Nonnull Response response){
-        this.response = response;
+  public ReusableResponse(@Nonnull Response response){
+    this.response = response;
+  }
+
+  public int code(){
+    return response.code();
+  }
+
+  @Nonnull
+  public synchronized Optional<String> getBodyAsString() throws IOException{
+    if(bodyString != null) return Optional.of(bodyString);
+    bodyString = Utility.getStringFromResponseBody(response).orElse(null);
+    return Optional.ofNullable(bodyString);
+  }
+
+  @Override
+  public void close(){
+    bodyString = null;
+    response.close();
+  }
+
+  @Override
+  public String toString(){
+    try{
+      getBodyAsString();
+    }catch(IOException e){
+      e.printStackTrace();
     }
-
-    public int code(){
-        return response.code();
-    }
-
-    @Nonnull
-    public synchronized Optional<String> getBodyAsString() throws IOException{
-        if(bodyString != null) return Optional.of(bodyString);
-        bodyString = Utility.getStringFromResponseBody(response).orElse(null);
-        return Optional.ofNullable(bodyString);
-    }
-
-    @Override
-    public void close(){
-        bodyString = null;
-        response.close();
-    }
-
-    @Override
-    public String toString(){
-        try{
-            getBodyAsString();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        return simpleToString(this);
-    }
+    return simpleToString(this);
+  }
 }

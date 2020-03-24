@@ -8,31 +8,31 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class OAuthRevokeEndpoint implements Handler{
 
-    private final AtomicReference<MockModel> model;
+  private final AtomicReference<MockModel> model;
 
-    public OAuthRevokeEndpoint(AtomicReference<MockModel> model){
-        this.model = model;
+  public OAuthRevokeEndpoint(AtomicReference<MockModel> model){
+    this.model = model;
+  }
+
+  @Override
+  public void handle(@NotNull Context context) throws Exception{
+
+    // Get map
+    var map = context.formParamMap();
+
+    // Ensure other minimum stuff is supplied
+    if(!map.containsKey("token")){
+      context.status(200);
+      return;
     }
 
-    @Override
-    public void handle(@NotNull Context context) throws Exception{
+    // Get token
+    var token = map.get("token").iterator().next();
 
-        // Get map
-        var map = context.formParamMap();
+    // Run it
+    model.get().revoke(token);
 
-        // Ensure other minimum stuff is supplied
-        if(!map.containsKey("token")){
-            context.status(200);
-            return;
-        }
-
-        // Get token
-        var token = map.get("token").iterator().next();
-
-        // Run it
-        model.get().revoke(token);
-
-        // Return something
-        context.status(200);
-    }
+    // Return something
+    context.status(200);
+  }
 }

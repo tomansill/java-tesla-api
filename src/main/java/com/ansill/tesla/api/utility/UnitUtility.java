@@ -21,56 +21,56 @@ import static tech.units.indriya.unit.Units.RADIAN;
  */
 public final class UnitUtility{
 
-    public static final Unit<Angle> ANGULAR_DEGREES = new TransformedUnit<>(
-            "°",
-            RADIAN,
-            RADIAN,
-            MultiplyConverter.ofPiExponent(1).concatenate(MultiplyConverter.ofRational(1, 180))
-    );
+  public static final Unit<Angle> ANGULAR_DEGREES = new TransformedUnit<>(
+    "°",
+    RADIAN,
+    RADIAN,
+    MultiplyConverter.ofPiExponent(1).concatenate(MultiplyConverter.ofRational(1, 180))
+  );
 
-    private UnitUtility(){
-        throw new AssertionError(f("No {} instances for you!", this.getClass().getName()));
-    }
+  private UnitUtility(){
+    throw new AssertionError(f("No {} instances for you!", this.getClass().getName()));
+  }
 
-    @Nonnull
-    public static Unit<Speed> getSpeedUnit(@Nonnull String unit){
+  @Nonnull
+  public static Unit<Speed> getSpeedUnit(@Nonnull String unit){
 
-        // Split on /
-        var split = unit.split("/");
+    // Split on /
+    var split = unit.split("/");
 
-        // Assert
-        if(split.length != 2) throw new IllegalArgumentException(f("The unit '{}' is missing '/'!", unit));
+    // Assert
+    if(split.length != 2) throw new IllegalArgumentException(f("The unit '{}' is missing '/'!", unit));
 
-        // Get length
-        Unit<Length> len = switch(split[0]){
-            case "mi" -> USUnits.MILE;
-            case "km" -> Units.METRE.multiply(1000).asType(Length.class);
-            case "m" -> Units.METRE;
-            case "ft" -> USUnits.MILE.divide(5280).asType(Length.class);
-            default -> throw new RuntimeException(f("Unknown unit '{}' - full rate unit '{}'", split[0], unit));
-        };
+    // Get length
+    Unit<Length> len = switch(split[0]){
+      case "mi" -> USUnits.MILE;
+      case "km" -> Units.METRE.multiply(1000).asType(Length.class);
+      case "m" -> Units.METRE;
+      case "ft" -> USUnits.MILE.divide(5280).asType(Length.class);
+      default -> throw new RuntimeException(f("Unknown unit '{}' - full rate unit '{}'", split[0], unit));
+    };
 
-        // Get time
-        Unit<Time> time = switch(split[1]){
-            case "hr" -> Units.HOUR;
-            case "m" -> Units.MINUTE;
-            case "s" -> Units.SECOND;
-            default -> throw new RuntimeException(f("Unknown unit '{}' - full rate unit '{}'", split[1], unit));
-        };
+    // Get time
+    Unit<Time> time = switch(split[1]){
+      case "hr" -> Units.HOUR;
+      case "m" -> Units.MINUTE;
+      case "s" -> Units.SECOND;
+      default -> throw new RuntimeException(f("Unknown unit '{}' - full rate unit '{}'", split[1], unit));
+    };
 
-        // Return speed
-        return len.divide(time).asType(Speed.class);
-    }
+    // Return speed
+    return len.divide(time).asType(Speed.class);
+  }
 
-    @Nonnull
-    public static Unit<Temperature> getTemperatureUnit(@Nonnull String unit){
-        return switch(unit){
-            case "F" -> USUnits.FAHRENHEIT;
-            case "C" -> Units.CELSIUS;
-            case "K" -> Units.KELVIN;
-            default -> throw new RuntimeException(f("Unknown unit '{}'", unit));
-        };
-    }
+  @Nonnull
+  public static Unit<Temperature> getTemperatureUnit(@Nonnull String unit){
+    return switch(unit){
+      case "F" -> USUnits.FAHRENHEIT;
+      case "C" -> Units.CELSIUS;
+      case "K" -> Units.KELVIN;
+      default -> throw new RuntimeException(f("Unknown unit '{}'", unit));
+    };
+  }
 
 }
 

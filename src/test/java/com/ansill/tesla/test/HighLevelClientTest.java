@@ -19,71 +19,71 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HighLevelClientTest{
 
-    private static final File CREDENTIALS_FILE = new File("ignored/tesla-credentials.properties");
+  private static final File CREDENTIALS_FILE = new File("ignored/tesla-credentials.properties");
 
-    private static String username = "";
+  private static String username = "";
 
-    private static String password = "";
+  private static String password = "";
 
-    private static String test_vehicle = "";
+  private static String test_vehicle = "";
 
-    @BeforeAll
-    static void askCredentials() throws IOException{
+  @BeforeAll
+  static void askCredentials() throws IOException{
 
-        // Ensure file exists
-        if(!CREDENTIALS_FILE.exists())
-            throw new RuntimeException(f("File located at '{}' does not exist!", CREDENTIALS_FILE.getPath()));
+    // Ensure file exists
+    if(!CREDENTIALS_FILE.exists())
+      throw new RuntimeException(f("File located at '{}' does not exist!", CREDENTIALS_FILE.getPath()));
 
-        // Open it up
-        Properties properties = new Properties();
-        try(Reader reader = new FileReader(CREDENTIALS_FILE)){
-            properties.load(reader);
-        }
-
-        // Obtain attributes
-        username = properties.getProperty("username");
-        if(username == null) throw new RuntimeException(f("Expecting '{}' in the property file", "username"));
-        password = properties.getProperty("password");
-        if(password == null) throw new RuntimeException(f("Expecting '{}' in the property file", "password"));
+    // Open it up
+    Properties properties = new Properties();
+    try(Reader reader = new FileReader(CREDENTIALS_FILE)){
+      properties.load(reader);
     }
 
-    @Test
-    void testValidAuthentication() throws IOException, AuthenticationException{
+    // Obtain attributes
+    username = properties.getProperty("username");
+    if(username == null) throw new RuntimeException(f("Expecting '{}' in the property file", "username"));
+    password = properties.getProperty("password");
+    if(password == null) throw new RuntimeException(f("Expecting '{}' in the property file", "password"));
+  }
 
-        // Use default
-        com.ansill.tesla.api.low.Client client = new com.ansill.tesla.api.low.Client();
+  @Test
+  void testValidAuthentication() throws IOException, AuthenticationException{
 
-        // Send it
-        assertNotEquals(Optional.empty(), client.authenticate(username, password));
-    }
+    // Use default
+    com.ansill.tesla.api.low.Client client = new com.ansill.tesla.api.low.Client();
 
-    @Test
-    void testInvalidAuthenticationWithWrongPassword() throws IOException{
+    // Send it
+    assertNotEquals(Optional.empty(), client.authenticate(username, password));
+  }
 
-        // Use default
-        Client client = new Client();
+  @Test
+  void testInvalidAuthenticationWithWrongPassword() throws IOException{
 
-        // Send it
-        assertEquals(Optional.empty(), client.authenticate(username, password + "a"));
-    }
+    // Use default
+    Client client = new Client();
 
-    @Test
-    void testInvalidAuthenticationWithWrongURL(){
+    // Send it
+    assertEquals(Optional.empty(), client.authenticate(username, password + "a"));
+  }
 
-        // Use custom
-        Client client = new Client("http://www.example.com/", CLIENT_ID, CLIENT_SECRET);
+  @Test
+  void testInvalidAuthenticationWithWrongURL(){
 
-        // Send it
-        assertThrows(APIProtocolException.class, () -> client.authenticate(username, password));
-    }
+    // Use custom
+    Client client = new Client("http://www.example.com/", CLIENT_ID, CLIENT_SECRET);
 
-    @Test
-    void testInvalidAuthenticationWithWrongClientID(){
+    // Send it
+    assertThrows(APIProtocolException.class, () -> client.authenticate(username, password));
+  }
 
-        // Use custom
-        Client client = new Client(URL, CLIENT_ID + "awfw", CLIENT_SECRET);
+  @Test
+  void testInvalidAuthenticationWithWrongClientID(){
 
-        // Send it
-        assertThrows(APIProtocolException.class, () -> client.authenticate(username, password));
-    }
+    // Use custom
+    Client client = new Client(URL, CLIENT_ID + "awfw", CLIENT_SECRET);
+
+    // Send it
+    assertThrows(APIProtocolException.class, () -> client.authenticate(username, password));
+  }
 }

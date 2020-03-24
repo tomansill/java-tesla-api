@@ -13,134 +13,139 @@ import javax.measure.quantity.Length;
 @Immutable
 public final class BatteryState{
 
-    /** Battery heating state */
-    @Nonnull
-    private final BatteryHeatingState batteryHeatingState;
-    /** Battery percentage from 0 to 100 */
-    @Nonnull
-    private final Quantity<Dimensionless> batteryCapacityPercentage;
-    /** Usable battery percentage from 0 to 100 */
-    @Nonnull
-    private final Quantity<Dimensionless> usableBatteryCapacityPercentage;
-    /** The vehicle's range with current battery capacity */
-    @Nonnull
-    private final Quantity<Length> batteryRange;
-    /** The vehicle's range with ideal battery capacity */
-    @Nonnull
-    private final Quantity<Length> idealBatteryRange;
-    /** The vehicle's range with estimated battery capacity */
-    @Nonnull
-    private final Quantity<Length> estimatedBatteryRange;
+  /** Battery heating state */
+  @Nonnull
+  private final BatteryHeatingState batteryHeatingState;
 
-    /**
-     * BatteryState constructor
-     *
-     * @param batteryHeatingState             battery heating state
-     * @param batteryCapacityPercentage       battery capacity percentage
-     * @param usableBatteryCapacityPercentage usable battery capacity percentage
-     * @param batteryRange                    battery range
-     * @param idealBatteryRange               ideal battery range
-     * @param estimatedBatteryRange           estimated battery range
-     */
-    private BatteryState(
-            @Nonnull BatteryHeatingState batteryHeatingState,
-            @Nonnull Quantity<Dimensionless> batteryCapacityPercentage,
-            @Nonnull Quantity<Dimensionless> usableBatteryCapacityPercentage,
-            @Nonnull Quantity<Length> batteryRange,
-            @Nonnull Quantity<Length> idealBatteryRange,
-            @Nonnull Quantity<Length> estimatedBatteryRange
-    ){
-        this.batteryHeatingState = batteryHeatingState;
-        this.batteryCapacityPercentage = batteryCapacityPercentage;
-        this.usableBatteryCapacityPercentage = usableBatteryCapacityPercentage;
-        this.batteryRange = batteryRange;
-        this.idealBatteryRange = idealBatteryRange;
-        this.estimatedBatteryRange = estimatedBatteryRange;
-    }
+  /** Battery percentage from 0 to 100 */
+  @Nonnull
+  private final Quantity<Dimensionless> batteryCapacityPercentage;
 
-    /**
-     * Converts medium-level ChargeState to high-level BatteryState
-     *
-     * @param state medium-level ChargeState
-     * @return BatteryState
-     */
-    @Nonnull
-    public static BatteryState convert(@Nonnull ChargeState state){
+  /** Usable battery percentage from 0 to 100 */
+  @Nonnull
+  private final Quantity<Dimensionless> usableBatteryCapacityPercentage;
 
-        // Determine which state for battery heating state
-        BatteryHeatingState heatingState = state.isBatteryHeaterOn() ? BatteryHeatingState.HEATING : BatteryHeatingState.INACTIVE;
-        if(state.isNotEnoughPowerToHeat().isPresent() && state.isNotEnoughPowerToHeat().get())
-            heatingState = BatteryHeatingState.NOT_ENOUGH_POWER;
-        else heatingState = BatteryHeatingState.UNAVAILABLE;
+  /** The vehicle's range with current battery capacity */
+  @Nonnull
+  private final Quantity<Length> batteryRange;
 
-        return new BatteryState(
-                heatingState,
-                state.getBatteryLevel(),
-                state.getUsableBatteryLevel(),
-                state.getBatteryRange(),
-                state.getIdealBatteryRange(),
-                state.getEstimatedBatteryRange()
-        );
-    }
+  /** The vehicle's range with ideal battery capacity */
+  @Nonnull
+  private final Quantity<Length> idealBatteryRange;
 
-    /**
-     * Returns battery heating state
-     *
-     * @return state
-     */
-    @Nonnull
-    public BatteryHeatingState getBatteryHeatingState(){
-        return batteryHeatingState;
-    }
+  /** The vehicle's range with estimated battery capacity */
+  @Nonnull
+  private final Quantity<Length> estimatedBatteryRange;
 
-    /**
-     * Returns percentage of battery capacity
-     *
-     * @return percentage
-     */
-    @Nonnull
-    public Quantity<Dimensionless> getBatteryCapacityPercentage(){
-        return batteryCapacityPercentage;
-    }
+  /**
+   * BatteryState constructor
+   *
+   * @param batteryHeatingState             battery heating state
+   * @param batteryCapacityPercentage       battery capacity percentage
+   * @param usableBatteryCapacityPercentage usable battery capacity percentage
+   * @param batteryRange                    battery range
+   * @param idealBatteryRange               ideal battery range
+   * @param estimatedBatteryRange           estimated battery range
+   */
+  private BatteryState(
+    @Nonnull BatteryHeatingState batteryHeatingState,
+    @Nonnull Quantity<Dimensionless> batteryCapacityPercentage,
+    @Nonnull Quantity<Dimensionless> usableBatteryCapacityPercentage,
+    @Nonnull Quantity<Length> batteryRange,
+    @Nonnull Quantity<Length> idealBatteryRange,
+    @Nonnull Quantity<Length> estimatedBatteryRange
+  ){
+    this.batteryHeatingState = batteryHeatingState;
+    this.batteryCapacityPercentage = batteryCapacityPercentage;
+    this.usableBatteryCapacityPercentage = usableBatteryCapacityPercentage;
+    this.batteryRange = batteryRange;
+    this.idealBatteryRange = idealBatteryRange;
+    this.estimatedBatteryRange = estimatedBatteryRange;
+  }
 
-    /**
-     * Returns percentage of usable battery capacity
-     *
-     * @return percentage
-     */
-    @Nonnull
-    public Quantity<Dimensionless> getUsableBatteryCapacityPercentage(){
-        return usableBatteryCapacityPercentage;
-    }
+  /**
+   * Converts medium-level ChargeState to high-level BatteryState
+   *
+   * @param state medium-level ChargeState
+   * @return BatteryState
+   */
+  @Nonnull
+  public static BatteryState convert(@Nonnull ChargeState state){
 
-    /**
-     * Returns battery range
-     *
-     * @return battery range
-     */
-    @Nonnull
-    public Quantity<Length> getBatteryRange(){
-        return batteryRange;
-    }
+    // Determine which state for battery heating state
+    BatteryHeatingState heatingState = state.isBatteryHeaterOn() ? BatteryHeatingState.HEATING : BatteryHeatingState.INACTIVE;
+    if(state.isNotEnoughPowerToHeat().isPresent() && state.isNotEnoughPowerToHeat().get())
+      heatingState = BatteryHeatingState.NOT_ENOUGH_POWER;
+    else heatingState = BatteryHeatingState.UNAVAILABLE;
 
-    /**
-     * Returns ideal battery range
-     *
-     * @return battery range
-     */
-    @Nonnull
-    public Quantity<Length> getIdealBatteryRange(){
-        return idealBatteryRange;
-    }
+    return new BatteryState(
+      heatingState,
+      state.getBatteryLevel(),
+      state.getUsableBatteryLevel(),
+      state.getBatteryRange(),
+      state.getIdealBatteryRange(),
+      state.getEstimatedBatteryRange()
+    );
+  }
 
-    /**
-     * Returns ideal battery range
-     *
-     * @return battery range
-     */
-    @Nonnull
-    public Quantity<Length> getEstimatedBatteryRange(){
-        return estimatedBatteryRange;
-    }
+  /**
+   * Returns battery heating state
+   *
+   * @return state
+   */
+  @Nonnull
+  public BatteryHeatingState getBatteryHeatingState(){
+    return batteryHeatingState;
+  }
+
+  /**
+   * Returns percentage of battery capacity
+   *
+   * @return percentage
+   */
+  @Nonnull
+  public Quantity<Dimensionless> getBatteryCapacityPercentage(){
+    return batteryCapacityPercentage;
+  }
+
+  /**
+   * Returns percentage of usable battery capacity
+   *
+   * @return percentage
+   */
+  @Nonnull
+  public Quantity<Dimensionless> getUsableBatteryCapacityPercentage(){
+    return usableBatteryCapacityPercentage;
+  }
+
+  /**
+   * Returns battery range
+   *
+   * @return battery range
+   */
+  @Nonnull
+  public Quantity<Length> getBatteryRange(){
+    return batteryRange;
+  }
+
+  /**
+   * Returns ideal battery range
+   *
+   * @return battery range
+   */
+  @Nonnull
+  public Quantity<Length> getIdealBatteryRange(){
+    return idealBatteryRange;
+  }
+
+  /**
+   * Returns ideal battery range
+   *
+   * @return battery range
+   */
+  @Nonnull
+  public Quantity<Length> getEstimatedBatteryRange(){
+    return estimatedBatteryRange;
+  }
 
 }

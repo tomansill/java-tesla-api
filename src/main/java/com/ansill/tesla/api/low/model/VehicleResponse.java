@@ -9,17 +9,17 @@ import static com.ansill.tesla.api.utility.Utility.simpleToString;
 @Immutable
 public final class VehicleResponse extends SimpleResponse<Vehicle>{
 
-    /**
-     * Response
-     *
-     * @param response response
-     */
-    public VehicleResponse(@Nonnull Vehicle response){
-        super(response);
-    }
+  /**
+   * Response
+   *
+   * @param response response
+   */
+  public VehicleResponse(@Nonnull Vehicle response){
+    super(response);
+  }
 
-    @Override
-    public String toString(){
-        return simpleToString(this);
-    }
+  @Override
+  public String toString(){
+    return simpleToString(this);
+  }
 }

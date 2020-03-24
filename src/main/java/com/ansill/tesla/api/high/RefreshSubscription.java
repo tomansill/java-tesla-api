@@ -11,45 +11,45 @@ import java.util.function.Consumer;
 @Immutable
 class RefreshSubscription{
 
-    /** Consumer that consumes new account credentials */
-    @Nonnull
-    private final Consumer<AccountCredentials> consumer;
+  /** Consumer that consumes new account credentials */
+  @Nonnull
+  private final Consumer<AccountCredentials> consumer;
 
-    /** Consumer that processes on error */
-    @Nonnull
-    private final Consumer<ReAuthenticationException> onError;
+  /** Consumer that processes on error */
+  @Nonnull
+  private final Consumer<ReAuthenticationException> onError;
 
-    /**
-     * RefreshSubscription constructor
-     *
-     * @param consumer consumer that consumes new account credentials
-     * @param onError  consumer that consumes errors
-     */
-    RefreshSubscription(
-            @Nonnull Consumer<AccountCredentials> consumer,
-            @Nonnull Consumer<ReAuthenticationException> onError
-    ){
-        this.consumer = consumer;
-        this.onError = onError;
-    }
+  /**
+   * RefreshSubscription constructor
+   *
+   * @param consumer consumer that consumes new account credentials
+   * @param onError  consumer that consumes errors
+   */
+  RefreshSubscription(
+    @Nonnull Consumer<AccountCredentials> consumer,
+    @Nonnull Consumer<ReAuthenticationException> onError
+  ){
+    this.consumer = consumer;
+    this.onError = onError;
+  }
 
-    /**
-     * Returns credentials consumer
-     *
-     * @return consumer
-     */
-    @Nonnull
-    public Consumer<AccountCredentials> getConsumer(){
-        return consumer;
-    }
+  /**
+   * Returns credentials consumer
+   *
+   * @return consumer
+   */
+  @Nonnull
+  public Consumer<AccountCredentials> getConsumer(){
+    return consumer;
+  }
 
-    /**
-     * Returns error consumer
-     *
-     * @return consumer
-     */
-    @Nonnull
-    public Consumer<ReAuthenticationException> getOnError(){
-        return onError;
-    }
+  /**
+   * Returns error consumer
+   *
+   * @return consumer
+   */
+  @Nonnull
+  public Consumer<ReAuthenticationException> getOnError(){
+    return onError;
+  }
 }

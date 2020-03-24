@@ -13,304 +13,328 @@ import java.util.Optional;
 @Immutable
 public final class ClimateState{
 
-    private final boolean batteryHeater;
+  private final boolean batteryHeater;
 
-    private final boolean batteryHeaterNoPower;
+  private final boolean batteryHeaterNoPower;
 
-    private final String climateKeeperMode;
+  private final String climateKeeperMode;
 
-    @Nonnull
-    private final Quantity<Temperature> driverTempSetting;
+  @Nonnull
+  private final Quantity<Temperature> driverTempSetting;
 
-    private final int fanStatus;
+  private final int fanStatus;
 
-    @Nonnull
-    private final Quantity<Temperature> insideTemp;
+  @Nonnull
+  private final Quantity<Temperature> insideTemp;
 
-    @Nullable
-    private final Boolean isAutoConditioningOn;
-    private final boolean isClimateOn;
-    private final boolean isFrontDefrosterOn;
-    private final boolean isPreconditioning;
-    private final boolean isRearDefrosterOn;
-    private final String leftTempDirection; // TODO ???
-    @Nonnull
-    private final Quantity<Temperature> maxAvailTemp;
-    @Nonnull
-    private final Quantity<Temperature> minAvailTemp;
-    @Nonnull
-    private final Quantity<Temperature> outsideTemp;
-    @Nonnull
-    private final Quantity<Temperature> passengerTempSetting;
-    private final boolean remoteHeaterControlEnabled;
-    private final String rightTempDirection; // TODO ???
-    @Nullable
-    private final Integer seatHeaterLeft; // Entry could disappear from JSON
-    @Nullable
-    private final Integer seatHeaterRearCenter; // Entry could disappear from JSON
-    @Nullable
-    private final Integer seatHeaterRearLeft; // Entry could disappear from JSON
-    @Nullable
-    private final Integer seatHeaterLeftBack; // Entry could disappear from JSON
-    @Nullable
-    private final Integer seatHeaterRearRight; // Entry could disappear from JSON
-    @Nullable
-    private final Integer seatHeaterRightBack; // Entry could disappear from JSON
-    @Nullable
-    private final Integer seatHeaterRight; // Entry could disappear from JSON
-    @Nullable
-    private final Boolean sideMirrorHeaters; // Entry could disappear from JSON
-    @Nullable
-    private final Boolean smartPreconditioning; // Entry could disappear from JSON
-    @Nullable
-    private final Boolean steeringWheelHeater; // Entry could disappear from JSON
-    private final long timestamp;
-    @Nullable
-    private final Boolean wiperBladeHeater; // Entry could disappear from JSON
-    private final int defrostMode;
+  @Nullable
+  private final Boolean isAutoConditioningOn;
 
-    public ClimateState(
-            boolean batteryHeater,
-            boolean batteryHeaterNoPower,
-            String climateKeeperMode,
-            @Nonnull Quantity<Temperature> driverTempSetting,
-            int fanStatus,
-            @Nonnull Quantity<Temperature> insideTemp,
-            @Nullable Boolean isAutoConditioningOn,
-            boolean isClimateOn,
-            boolean isFrontDefrosterOn,
-            boolean isPreconditioning,
-            boolean isRearDefrosterOn,
-            String leftTempDirection,
-            @Nonnull Quantity<Temperature> maxAvailTemp,
-            @Nonnull Quantity<Temperature> minAvailTemp,
-            @Nonnull Quantity<Temperature> outsideTemp,
-            @Nonnull Quantity<Temperature> passengerTempSetting,
-            boolean remoteHeaterControlEnabled,
-            String rightTempDirection,
-            @Nullable Integer seatHeaterLeft,
-            @Nullable Integer seatHeaterRearCenter,
-            @Nullable Integer seatHeaterRearLeft,
-            @Nullable Integer seatHeaterLeftBack,
-            @Nullable Integer seatHeaterRearRight,
-            @Nullable Integer seatHeaterRightBack,
-            @Nullable Integer seatHeaterRight,
-            @Nullable Boolean sideMirrorHeaters,
-            @Nullable Boolean smartPreconditioning,
-            @Nullable Boolean steeringWheelHeater,
-            long timestamp,
-            @Nullable Boolean wiperBladeHeater,
-            int defrostMode
-    ){
-        this.batteryHeater = batteryHeater;
-        this.batteryHeaterNoPower = batteryHeaterNoPower;
-        this.climateKeeperMode = climateKeeperMode;
-        this.driverTempSetting = driverTempSetting;
-        this.fanStatus = fanStatus;
-        this.insideTemp = insideTemp;
-        this.isAutoConditioningOn = isAutoConditioningOn;
-        this.isClimateOn = isClimateOn;
-        this.isFrontDefrosterOn = isFrontDefrosterOn;
-        this.isPreconditioning = isPreconditioning;
-        this.isRearDefrosterOn = isRearDefrosterOn;
-        this.leftTempDirection = leftTempDirection;
-        this.maxAvailTemp = maxAvailTemp;
-        this.minAvailTemp = minAvailTemp;
-        this.outsideTemp = outsideTemp;
-        this.passengerTempSetting = passengerTempSetting;
-        this.remoteHeaterControlEnabled = remoteHeaterControlEnabled;
-        this.rightTempDirection = rightTempDirection;
-        this.seatHeaterLeft = seatHeaterLeft;
-        this.seatHeaterRearCenter = seatHeaterRearCenter;
-        this.seatHeaterRearLeft = seatHeaterRearLeft;
-        this.seatHeaterLeftBack = seatHeaterLeftBack;
-        this.seatHeaterRearRight = seatHeaterRearRight;
-        this.seatHeaterRightBack = seatHeaterRightBack;
-        this.seatHeaterRight = seatHeaterRight;
-        this.sideMirrorHeaters = sideMirrorHeaters;
-        this.smartPreconditioning = smartPreconditioning;
-        this.steeringWheelHeater = steeringWheelHeater;
-        this.timestamp = timestamp;
-        this.wiperBladeHeater = wiperBladeHeater;
-        this.defrostMode = defrostMode;
-    }
+  private final boolean isClimateOn;
 
-    @Nonnull
-    public static ClimateState convert(@Nonnull com.ansill.tesla.api.low.model.ClimateState state){
-        return new ClimateState(
-                state.getBatteryHeater(),
-                state.getBatteryHeaterNoPower(),
-                state.getClimateKeeperMode(),
-                Quantities.getQuantity(state.getDriverTempSetting(), Units.CELSIUS),
-                state.getFanStatus(),
-                Quantities.getQuantity(state.getInsideTemp().orElse(0.0), Units.CELSIUS),
-                state.getIsAutoConditioningOn().orElse(false),
-                state.getIsClimateOn(),
-                state.getIsFrontDefrosterOn(),
-                state.getIsPreconditioning(),
-                state.getIsRearDefrosterOn(),
-                state.getLeftTempDirection(),
-                Quantities.getQuantity(state.getMaxAvailTemp(), Units.CELSIUS),
-                Quantities.getQuantity(state.getMinAvailTemp(), Units.CELSIUS),
-                Quantities.getQuantity(state.getOutsideTemp().orElse(0.0), Units.CELSIUS),
-                Quantities.getQuantity(state.getPassengerTempSetting(), Units.CELSIUS),
-                state.getRemoteHeaterControlEnabled(),
-                state.getRightTempDirection(),
-                state.getSeatHeaterLeft().orElse(null),
-                state.getSeatHeaterRearCenter().orElse(null),
-                state.getSeatHeaterRearLeft().orElse(null),
-                state.getSeatHeaterLeftBack().orElse(null),
-                state.getSeatHeaterRearRight().orElse(null),
-                state.getSeatHeaterRightBack().orElse(null),
-                state.getSeatHeaterRight().orElse(null),
-                state.getSideMirrorHeaters().orElse(null),
-                state.getSmartPreconditioning().orElse(null),
-                state.getSteeringWheelHeater().orElse(null),
-                state.getTimestamp(),
-                state.getWiperBladeHeater().orElse(null),
-                state.getDefrostMode()
-        );
-    }
+  private final boolean isFrontDefrosterOn;
 
-    public boolean isBatteryHeater(){
-        return batteryHeater;
-    }
+  private final boolean isPreconditioning;
 
-    public boolean isBatteryHeaterNoPower(){
-        return batteryHeaterNoPower;
-    }
+  private final boolean isRearDefrosterOn;
 
-    public String getClimateKeeperMode(){
-        return climateKeeperMode;
-    }
+  private final String leftTempDirection; // TODO ???
 
-    @Nonnull
-    public Quantity<Temperature> getDriverTempSetting(){
-        return driverTempSetting;
-    }
+  @Nonnull
+  private final Quantity<Temperature> maxAvailTemp;
 
-    public int getFanStatus(){
-        return fanStatus;
-    }
+  @Nonnull
+  private final Quantity<Temperature> minAvailTemp;
 
-    @Nonnull
-    public Quantity<Temperature> getInsideTemp(){
-        return insideTemp;
-    }
+  @Nonnull
+  private final Quantity<Temperature> outsideTemp;
 
-    @Nonnull
-    public Optional<Boolean> isAutoConditioningOn(){
-        return Optional.ofNullable(isAutoConditioningOn);
-    }
+  @Nonnull
+  private final Quantity<Temperature> passengerTempSetting;
 
-    public boolean isClimateOn(){
-        return isClimateOn;
-    }
+  private final boolean remoteHeaterControlEnabled;
 
-    public boolean isFrontDefrosterOn(){
-        return isFrontDefrosterOn;
-    }
+  private final String rightTempDirection; // TODO ???
 
-    public boolean isPreconditioning(){
-        return isPreconditioning;
-    }
+  @Nullable
+  private final Integer seatHeaterLeft; // Entry could disappear from JSON
 
-    public boolean isRearDefrosterOn(){
-        return isRearDefrosterOn;
-    }
+  @Nullable
+  private final Integer seatHeaterRearCenter; // Entry could disappear from JSON
 
-    public String getLeftTempDirection(){
-        return leftTempDirection;
-    }
+  @Nullable
+  private final Integer seatHeaterRearLeft; // Entry could disappear from JSON
 
-    @Nonnull
-    public Quantity<Temperature> getMaxAvailTemp(){
-        return maxAvailTemp;
-    }
+  @Nullable
+  private final Integer seatHeaterLeftBack; // Entry could disappear from JSON
 
-    @Nonnull
-    public Quantity<Temperature> getMinAvailTemp(){
-        return minAvailTemp;
-    }
+  @Nullable
+  private final Integer seatHeaterRearRight; // Entry could disappear from JSON
 
-    @Nonnull
-    public Quantity<Temperature> getOutsideTemp(){
-        return outsideTemp;
-    }
+  @Nullable
+  private final Integer seatHeaterRightBack; // Entry could disappear from JSON
 
-    @Nonnull
-    public Quantity<Temperature> getPassengerTempSetting(){
-        return passengerTempSetting;
-    }
+  @Nullable
+  private final Integer seatHeaterRight; // Entry could disappear from JSON
 
-    public boolean isRemoteHeaterControlEnabled(){
-        return remoteHeaterControlEnabled;
-    }
+  @Nullable
+  private final Boolean sideMirrorHeaters; // Entry could disappear from JSON
 
-    public String getRightTempDirection(){
-        return rightTempDirection;
-    }
+  @Nullable
+  private final Boolean smartPreconditioning; // Entry could disappear from JSON
 
-    @Nullable
-    public Integer getSeatHeaterLeft(){
-        return seatHeaterLeft;
-    }
+  @Nullable
+  private final Boolean steeringWheelHeater; // Entry could disappear from JSON
 
-    @Nullable
-    public Integer getSeatHeaterRearCenter(){
-        return seatHeaterRearCenter;
-    }
+  private final long timestamp;
 
-    @Nullable
-    public Integer getSeatHeaterRearLeft(){
-        return seatHeaterRearLeft;
-    }
+  @Nullable
+  private final Boolean wiperBladeHeater; // Entry could disappear from JSON
 
-    @Nullable
-    public Integer getSeatHeaterLeftBack(){
-        return seatHeaterLeftBack;
-    }
+  private final int defrostMode;
 
-    @Nullable
-    public Integer getSeatHeaterRearRight(){
-        return seatHeaterRearRight;
-    }
+  public ClimateState(
+    boolean batteryHeater,
+    boolean batteryHeaterNoPower,
+    String climateKeeperMode,
+    @Nonnull Quantity<Temperature> driverTempSetting,
+    int fanStatus,
+    @Nonnull Quantity<Temperature> insideTemp,
+    @Nullable Boolean isAutoConditioningOn,
+    boolean isClimateOn,
+    boolean isFrontDefrosterOn,
+    boolean isPreconditioning,
+    boolean isRearDefrosterOn,
+    String leftTempDirection,
+    @Nonnull Quantity<Temperature> maxAvailTemp,
+    @Nonnull Quantity<Temperature> minAvailTemp,
+    @Nonnull Quantity<Temperature> outsideTemp,
+    @Nonnull Quantity<Temperature> passengerTempSetting,
+    boolean remoteHeaterControlEnabled,
+    String rightTempDirection,
+    @Nullable Integer seatHeaterLeft,
+    @Nullable Integer seatHeaterRearCenter,
+    @Nullable Integer seatHeaterRearLeft,
+    @Nullable Integer seatHeaterLeftBack,
+    @Nullable Integer seatHeaterRearRight,
+    @Nullable Integer seatHeaterRightBack,
+    @Nullable Integer seatHeaterRight,
+    @Nullable Boolean sideMirrorHeaters,
+    @Nullable Boolean smartPreconditioning,
+    @Nullable Boolean steeringWheelHeater,
+    long timestamp,
+    @Nullable Boolean wiperBladeHeater,
+    int defrostMode
+  ){
+    this.batteryHeater = batteryHeater;
+    this.batteryHeaterNoPower = batteryHeaterNoPower;
+    this.climateKeeperMode = climateKeeperMode;
+    this.driverTempSetting = driverTempSetting;
+    this.fanStatus = fanStatus;
+    this.insideTemp = insideTemp;
+    this.isAutoConditioningOn = isAutoConditioningOn;
+    this.isClimateOn = isClimateOn;
+    this.isFrontDefrosterOn = isFrontDefrosterOn;
+    this.isPreconditioning = isPreconditioning;
+    this.isRearDefrosterOn = isRearDefrosterOn;
+    this.leftTempDirection = leftTempDirection;
+    this.maxAvailTemp = maxAvailTemp;
+    this.minAvailTemp = minAvailTemp;
+    this.outsideTemp = outsideTemp;
+    this.passengerTempSetting = passengerTempSetting;
+    this.remoteHeaterControlEnabled = remoteHeaterControlEnabled;
+    this.rightTempDirection = rightTempDirection;
+    this.seatHeaterLeft = seatHeaterLeft;
+    this.seatHeaterRearCenter = seatHeaterRearCenter;
+    this.seatHeaterRearLeft = seatHeaterRearLeft;
+    this.seatHeaterLeftBack = seatHeaterLeftBack;
+    this.seatHeaterRearRight = seatHeaterRearRight;
+    this.seatHeaterRightBack = seatHeaterRightBack;
+    this.seatHeaterRight = seatHeaterRight;
+    this.sideMirrorHeaters = sideMirrorHeaters;
+    this.smartPreconditioning = smartPreconditioning;
+    this.steeringWheelHeater = steeringWheelHeater;
+    this.timestamp = timestamp;
+    this.wiperBladeHeater = wiperBladeHeater;
+    this.defrostMode = defrostMode;
+  }
 
-    @Nullable
-    public Integer getSeatHeaterRightBack(){
-        return seatHeaterRightBack;
-    }
+  @Nonnull
+  public static ClimateState convert(@Nonnull com.ansill.tesla.api.low.model.ClimateState state){
+    return new ClimateState(
+      state.getBatteryHeater(),
+      state.getBatteryHeaterNoPower(),
+      state.getClimateKeeperMode(),
+      Quantities.getQuantity(state.getDriverTempSetting(), Units.CELSIUS),
+      state.getFanStatus(),
+      Quantities.getQuantity(state.getInsideTemp().orElse(0.0), Units.CELSIUS),
+      state.getIsAutoConditioningOn().orElse(false),
+      state.getIsClimateOn(),
+      state.getIsFrontDefrosterOn(),
+      state.getIsPreconditioning(),
+      state.getIsRearDefrosterOn(),
+      state.getLeftTempDirection(),
+      Quantities.getQuantity(state.getMaxAvailTemp(), Units.CELSIUS),
+      Quantities.getQuantity(state.getMinAvailTemp(), Units.CELSIUS),
+      Quantities.getQuantity(state.getOutsideTemp().orElse(0.0), Units.CELSIUS),
+      Quantities.getQuantity(state.getPassengerTempSetting(), Units.CELSIUS),
+      state.getRemoteHeaterControlEnabled(),
+      state.getRightTempDirection(),
+      state.getSeatHeaterLeft().orElse(null),
+      state.getSeatHeaterRearCenter().orElse(null),
+      state.getSeatHeaterRearLeft().orElse(null),
+      state.getSeatHeaterLeftBack().orElse(null),
+      state.getSeatHeaterRearRight().orElse(null),
+      state.getSeatHeaterRightBack().orElse(null),
+      state.getSeatHeaterRight().orElse(null),
+      state.getSideMirrorHeaters().orElse(null),
+      state.getSmartPreconditioning().orElse(null),
+      state.getSteeringWheelHeater().orElse(null),
+      state.getTimestamp(),
+      state.getWiperBladeHeater().orElse(null),
+      state.getDefrostMode()
+    );
+  }
 
-    @Nullable
-    public Integer getSeatHeaterRight(){
-        return seatHeaterRight;
-    }
+  public boolean isBatteryHeater(){
+    return batteryHeater;
+  }
 
-    @Nullable
-    public Boolean getSideMirrorHeaters(){
-        return sideMirrorHeaters;
-    }
+  public boolean isBatteryHeaterNoPower(){
+    return batteryHeaterNoPower;
+  }
 
-    @Nullable
-    public Boolean getSmartPreconditioning(){
-        return smartPreconditioning;
-    }
+  public String getClimateKeeperMode(){
+    return climateKeeperMode;
+  }
 
-    @Nullable
-    public Boolean getSteeringWheelHeater(){
-        return steeringWheelHeater;
-    }
+  @Nonnull
+  public Quantity<Temperature> getDriverTempSetting(){
+    return driverTempSetting;
+  }
 
-    public long getTimestamp(){
-        return timestamp;
-    }
+  public int getFanStatus(){
+    return fanStatus;
+  }
 
-    @Nullable
-    public Boolean getWiperBladeHeater(){
-        return wiperBladeHeater;
-    }
+  @Nonnull
+  public Quantity<Temperature> getInsideTemp(){
+    return insideTemp;
+  }
 
-    public int getDefrostMode(){
-        return defrostMode;
-    }
+  @Nonnull
+  public Optional<Boolean> isAutoConditioningOn(){
+    return Optional.ofNullable(isAutoConditioningOn);
+  }
+
+  public boolean isClimateOn(){
+    return isClimateOn;
+  }
+
+  public boolean isFrontDefrosterOn(){
+    return isFrontDefrosterOn;
+  }
+
+  public boolean isPreconditioning(){
+    return isPreconditioning;
+  }
+
+  public boolean isRearDefrosterOn(){
+    return isRearDefrosterOn;
+  }
+
+  public String getLeftTempDirection(){
+    return leftTempDirection;
+  }
+
+  @Nonnull
+  public Quantity<Temperature> getMaxAvailTemp(){
+    return maxAvailTemp;
+  }
+
+  @Nonnull
+  public Quantity<Temperature> getMinAvailTemp(){
+    return minAvailTemp;
+  }
+
+  @Nonnull
+  public Quantity<Temperature> getOutsideTemp(){
+    return outsideTemp;
+  }
+
+  @Nonnull
+  public Quantity<Temperature> getPassengerTempSetting(){
+    return passengerTempSetting;
+  }
+
+  public boolean isRemoteHeaterControlEnabled(){
+    return remoteHeaterControlEnabled;
+  }
+
+  public String getRightTempDirection(){
+    return rightTempDirection;
+  }
+
+  @Nullable
+  public Integer getSeatHeaterLeft(){
+    return seatHeaterLeft;
+  }
+
+  @Nullable
+  public Integer getSeatHeaterRearCenter(){
+    return seatHeaterRearCenter;
+  }
+
+  @Nullable
+  public Integer getSeatHeaterRearLeft(){
+    return seatHeaterRearLeft;
+  }
+
+  @Nullable
+  public Integer getSeatHeaterLeftBack(){
+    return seatHeaterLeftBack;
+  }
+
+  @Nullable
+  public Integer getSeatHeaterRearRight(){
+    return seatHeaterRearRight;
+  }
+
+  @Nullable
+  public Integer getSeatHeaterRightBack(){
+    return seatHeaterRightBack;
+  }
+
+  @Nullable
+  public Integer getSeatHeaterRight(){
+    return seatHeaterRight;
+  }
+
+  @Nullable
+  public Boolean getSideMirrorHeaters(){
+    return sideMirrorHeaters;
+  }
+
+  @Nullable
+  public Boolean getSmartPreconditioning(){
+    return smartPreconditioning;
+  }
+
+  @Nullable
+  public Boolean getSteeringWheelHeater(){
+    return steeringWheelHeater;
+  }
+
+  public long getTimestamp(){
+    return timestamp;
+  }
+
+  @Nullable
+  public Boolean getWiperBladeHeater(){
+    return wiperBladeHeater;
+  }
+
+  public int getDefrostMode(){
+    return defrostMode;
+  }
 }
