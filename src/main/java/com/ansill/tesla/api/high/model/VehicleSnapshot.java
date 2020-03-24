@@ -15,6 +15,10 @@ public final class VehicleSnapshot{
     @Nonnull
     private final ChargeState chargeState;
 
+    /** Charge settings */
+    @Nonnull
+    private final ChargeSettings chargeSettings;
+
     /** Drive state */
     @Nonnull
     private final DriveState driveState;
@@ -40,6 +44,7 @@ public final class VehicleSnapshot{
      *
      * @param batteryState    battery state
      * @param chargeState     charge state
+     * @param chargeSettings  charge settings
      * @param driveState      drive state
      * @param climateSettings climate settings
      * @param climateState    climate state
@@ -48,15 +53,16 @@ public final class VehicleSnapshot{
      */
     private VehicleSnapshot(
             @Nonnull BatteryState batteryState,
-            @Nonnull ChargeState chargeState,
-            @Nonnull DriveState driveState,
-            @Nonnull ClimateSettings climateSettings,
-            @Nonnull ClimateState climateState,
-            @Nonnull GUISettings guiSettings,
-            @Nonnull VehicleConfig vehicleConfig
+      @Nonnull ChargeState chargeState,
+      @Nonnull ChargeSettings chargeSettings, @Nonnull DriveState driveState,
+      @Nonnull ClimateSettings climateSettings,
+      @Nonnull ClimateState climateState,
+      @Nonnull GUISettings guiSettings,
+      @Nonnull VehicleConfig vehicleConfig
     ){
         this.batteryState = batteryState;
         this.chargeState = chargeState;
+        this.chargeSettings = chargeSettings;
         this.driveState = driveState;
         this.climateSettings = climateSettings;
         this.climateState = climateState;
@@ -74,13 +80,14 @@ public final class VehicleSnapshot{
     @Nonnull
     public static VehicleSnapshot convert(@Nonnull com.ansill.tesla.api.med.model.CompleteData data){
         return new VehicleSnapshot(
-                BatteryState.convert(data.getChargeState()),
-                ChargeState.convert(data.getChargeState()),
-                DriveState.convert(data.getDriveState()),
-                ClimateSettings.convert(data.getClimateState()),
-                ClimateState.convert(data.getClimateState()),
-                GUISettings.convert(data.getGuiSettings()),
-                VehicleConfig.convert(data.getVehicleConfig())
+          BatteryState.convert(data.getChargeState()),
+          ChargeState.convert(data.getChargeState()),
+          ChargeSettings.convert(data.getChargeState()),
+          DriveState.convert(data.getDriveState()),
+          ClimateSettings.convert(data.getClimateState()),
+          ClimateState.convert(data.getClimateState()),
+          GUISettings.convert(data.getGuiSettings()),
+          VehicleConfig.convert(data.getVehicleConfig())
         );
     }
 
@@ -152,5 +159,15 @@ public final class VehicleSnapshot{
     @Nonnull
     public VehicleConfig getVehicleConfig(){
         return vehicleConfig;
+    }
+
+    /**
+     * Returns charge settings
+     *
+     * @return settings
+     */
+    @Nonnull
+    public ChargeSettings getChargeSettings(){
+        return chargeSettings;
     }
 }
