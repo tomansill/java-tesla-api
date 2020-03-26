@@ -1,5 +1,7 @@
 package com.ansill.tesla.api.high.model;
 
+import com.ansill.tesla.api.utility.Utility;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Unit;
@@ -100,5 +102,10 @@ public final class GUISettings{
   @Nonnull
   public Unit<Temperature> getTemperatureUnit(){
     return temperatureUnit;
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }

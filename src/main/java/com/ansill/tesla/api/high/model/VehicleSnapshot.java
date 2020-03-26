@@ -1,5 +1,7 @@
 package com.ansill.tesla.api.high.model;
 
+import com.ansill.tesla.api.utility.Utility;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
@@ -169,5 +171,10 @@ public final class VehicleSnapshot{
   @Nonnull
   public ChargeSettings getChargeSettings(){
     return chargeSettings;
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }

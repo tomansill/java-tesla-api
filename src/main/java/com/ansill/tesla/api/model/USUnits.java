@@ -12,11 +12,20 @@ import javax.measure.quantity.Temperature;
 
 public class USUnits{
 
-  public static final Unit<Length> MILE = Units.METRE.multiply(1609.344).asType(Length.class);
+  /** Imperial Mile */
+  public static final Unit<Length> MILE = new TransformedUnit<>(
+    "mi",
+    Units.METRE,
+    Units.METRE,
+    MultiplyConverter.of(1 / 0.6214)
+  );
 
+  /** Imperial Mile per hour */
   public static final Unit<Speed> MILE_PER_HOUR = MILE.divide(Units.HOUR).asType(Speed.class);
 
+  /** Imperial Fahrenheit */
   public static final Unit<Temperature> FAHRENHEIT = new TransformedUnit<>(
+    "F",
     Units.KELVIN,
     MultiplyConverter.ofRational(5, 9).concatenate(new AddConverter(459.67))
   );

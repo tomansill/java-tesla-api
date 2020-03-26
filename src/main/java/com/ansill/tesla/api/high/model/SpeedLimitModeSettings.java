@@ -1,5 +1,7 @@
 package com.ansill.tesla.api.high.model;
 
+import com.ansill.tesla.api.utility.Utility;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Quantity;
@@ -113,5 +115,10 @@ public final class SpeedLimitModeSettings{
    */
   public boolean isPinCodeSet(){
     return pinCodeSet;
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }

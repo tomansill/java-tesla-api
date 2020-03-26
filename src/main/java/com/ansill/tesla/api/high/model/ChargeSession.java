@@ -1,6 +1,7 @@
 package com.ansill.tesla.api.high.model;
 
 import com.ansill.tesla.api.med.model.ChargeState;
+import com.ansill.tesla.api.utility.Utility;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -139,5 +140,10 @@ public final class ChargeSession{
   @Nonnull
   public Duration getDurationToFullCharge(){
     return durationToFullCharge;
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }

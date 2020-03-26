@@ -1,5 +1,7 @@
 package com.ansill.tesla.api.high.model;
 
+import com.ansill.tesla.api.utility.Utility;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
@@ -280,5 +282,10 @@ public final class VehicleConfig{
   @Nonnull
   public String getWheelType(){
     return wheelType;
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }

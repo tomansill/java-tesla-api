@@ -1,5 +1,7 @@
 package com.ansill.tesla.api.high.model;
 
+import com.ansill.tesla.api.utility.Utility;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -152,5 +154,10 @@ public final class SeatHeaterSettings{
   @Nonnull
   public Optional<Integer> getRearRightLevel(){
     return Optional.ofNullable(rearRightLevel);
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }

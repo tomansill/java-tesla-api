@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.model;
 
+import com.ansill.tesla.api.utility.Utility;
 import com.ansill.validation.Validation;
 import tech.units.indriya.function.MultiplyConverter;
 import tech.units.indriya.quantity.Quantities;
@@ -11,6 +12,7 @@ import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Angle;
 
+import static com.ansill.tesla.api.utility.Utility.f;
 import static tech.units.indriya.unit.Units.RADIAN;
 
 @Immutable
@@ -39,9 +41,9 @@ public final class Coordinate{
     var lat = this.latitude.getValue().doubleValue();
     var lon = this.longitude.getValue().doubleValue();
     if(lat > 90 || lat < -90) throw new IllegalArgumentException(
-      "Latitude is over the allowable limit (-90.0 <= X <= 90.0)");
+      f("Latitude is over the allowable limit (-90.0 <= X <= 90.0), Given: {}", lat));
     if(lon > 180 || lon < -180) throw new IllegalArgumentException(
-      "Longitude is over the allowable limit (-180.0 <= X <= 180.0)");
+      f("Longitude is over the allowable limit (-180.0 <= X <= 180.0), Given: {}", lon));
   }
 
   @Nonnull
@@ -52,5 +54,10 @@ public final class Coordinate{
   @Nonnull
   public Quantity<Angle> getLongitude(){
     return longitude;
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }

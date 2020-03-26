@@ -2,6 +2,7 @@ package com.ansill.tesla.api.high.model;
 
 import com.ansill.tesla.api.model.ChargingState;
 import com.ansill.tesla.api.model.LatchState;
+import com.ansill.tesla.api.utility.Utility;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -116,5 +117,10 @@ public final class ChargeState{
   @Nonnull
   public Optional<ChargeSession> getChargeSession(){
     return Optional.ofNullable(chargeSession);
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }
