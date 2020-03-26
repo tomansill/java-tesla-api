@@ -128,9 +128,11 @@ public final class Client{
     @Nonnull Consumer<ReAuthenticationException> onError
   ){
     try{
+      var newCred = client.refreshToken(refreshToken);
+      consumer.accept(newCred);
       return Optional.of(new Account(
         client,
-        client.refreshToken(refreshToken),
+        newCred,
         new AtomicReference<>(GLOBAL_FAST_CHANGING_DATA_LIFETIME),
         new AtomicReference<>(GLOBAL_SLOW_CHANGING_DATA_LIFETIME),
         new RefreshSubscription(

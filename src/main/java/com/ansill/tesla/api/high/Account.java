@@ -7,6 +7,8 @@ import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
 import com.ansill.tesla.api.med.Client;
 import com.ansill.tesla.api.med.model.AccountCredentials;
 import com.ansill.validation.Validation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,6 +27,9 @@ import java.util.stream.Collectors;
 
 /** Tesla Account */
 public class Account implements AutoCloseable{
+
+  /** Logger */
+  private static final Logger LOGGER = LoggerFactory.getLogger(Account.class);
 
   /** Time before credentials expires */
   @Nonnull
@@ -134,6 +139,9 @@ public class Account implements AutoCloseable{
   /** Resets the timer so it will refresh credentials before its expiry time */
   private void resetTimer(){
 
+    // Log
+    LOGGER.debug("Setting up refresh timer");
+
     // Set up TimerTask
     TimerTask task = new TimerTask(){
       @Override
@@ -151,6 +159,9 @@ public class Account implements AutoCloseable{
       Instant.now(),
       credentials.getExpirationTime().minus(DEFAULT_TIME_OFFSET_BEFORE_REFRESH)
     );
+
+    // Log the delay
+    LOGGER.debug("The delay until new firing event is {}", delay);
 
     // If delay is not positive, fire it now
     if(delay.toMillis() <= 0){
@@ -195,6 +206,9 @@ public class Account implements AutoCloseable{
    */
   private void refresh() throws ReAuthenticationException{
 
+    // Log it
+    LOGGER.debug("Attempting to refresh");
+
     // Ensure that it's not closed
     if(this.closed.get()) throw new IllegalStateException("Account is closed!");
 
@@ -204,10 +218,16 @@ public class Account implements AutoCloseable{
       // Refresh it and update response
       credentials = client.refreshToken(credentials.getRefreshToken());
 
+      // Log the successful refresh
+      LOGGER.debug("Refresh is successful");
+
       // Fire subscription if exists
       if(refreshSubscription != null) refreshSubscription.getConsumer().accept(credentials);
 
     }catch(ReAuthenticationException exception){
+
+      // Log the successful refresh
+      LOGGER.debug("Exception has been thrown during attempting to refresh");
 
       // Fire subscription if exists
       if(refreshSubscription != null) refreshSubscription.getOnError().accept(exception);

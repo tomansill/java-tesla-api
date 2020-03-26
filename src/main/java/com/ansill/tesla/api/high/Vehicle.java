@@ -607,6 +607,19 @@ public class Vehicle{
   }
 
   /**
+   * Returns vehicle's id
+   *
+   * @return id
+   * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+   */
+  @Nonnull
+  public String getId() throws VehicleNotFoundException{
+
+    // Get it and convert it to high level and return
+    return getRawVehicle().getId();
+  }
+
+  /**
    * Returns vehicle's lock state
    *
    * @return true if vehicle is locked, false if it is not
