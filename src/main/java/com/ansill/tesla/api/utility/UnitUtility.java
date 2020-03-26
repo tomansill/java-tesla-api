@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.utility;
 
-import com.ansill.tesla.api.model.USUnits;
+import com.ansill.tesla.api.model.ImperialUnits;
 import tech.units.indriya.function.MultiplyConverter;
 import tech.units.indriya.unit.TransformedUnit;
 import tech.units.indriya.unit.Units;
@@ -43,10 +43,10 @@ public final class UnitUtility{
 
     // Get length
     Unit<Length> len = switch(split[0]){
-      case "mi" -> USUnits.MILE;
+      case "mi" -> ImperialUnits.MILE;
       case "km" -> Units.METRE.multiply(1000).asType(Length.class);
       case "m" -> Units.METRE;
-      case "ft" -> USUnits.MILE.divide(5280).asType(Length.class);
+      case "ft" -> ImperialUnits.MILE.divide(5280).asType(Length.class);
       default -> throw new RuntimeException(f("Unknown unit '{}' - full rate unit '{}'", split[0], unit));
     };
 
@@ -65,7 +65,7 @@ public final class UnitUtility{
   @Nonnull
   public static Unit<Temperature> getTemperatureUnit(@Nonnull String unit){
     return switch(unit){
-      case "F" -> USUnits.FAHRENHEIT;
+      case "F" -> ImperialUnits.FAHRENHEIT;
       case "C" -> Units.CELSIUS;
       case "K" -> Units.KELVIN;
       default -> throw new RuntimeException(f("Unknown unit '{}'", unit));

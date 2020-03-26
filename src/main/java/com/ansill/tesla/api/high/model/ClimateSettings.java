@@ -20,11 +20,11 @@ public final class ClimateSettings{
   private final Quantity<Temperature> passengerTemperature;
 
   /** Maximum available temperature allowed by the car */
-  @Nonnull
+  @Nonnull // TODO Move me out
   private final Quantity<Temperature> maximumAvailableTemperature;
 
   /** Minimum available temperature allowed by the car */
-  @Nonnull
+  @Nonnull // TODO Move me out
   private final Quantity<Temperature> minimumAvailableTemperature;
 
   /** Seat heater settings */

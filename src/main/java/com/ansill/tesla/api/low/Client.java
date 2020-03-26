@@ -1,12 +1,12 @@
 package com.ansill.tesla.api.low;
 
+import com.ansill.tesla.api.exception.VehicleUnavailableException;
 import com.ansill.tesla.api.low.exception.APIProtocolException;
 import com.ansill.tesla.api.low.exception.AuthenticationException;
 import com.ansill.tesla.api.low.exception.ClientException;
 import com.ansill.tesla.api.low.exception.InvalidAccessTokenException;
 import com.ansill.tesla.api.low.exception.ReAuthenticationException;
 import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
-import com.ansill.tesla.api.low.exception.VehicleUnavailableException;
 import com.ansill.tesla.api.low.model.ChargeState;
 import com.ansill.tesla.api.low.model.ClimateState;
 import com.ansill.tesla.api.low.model.CompleteVehicleDataResponse;

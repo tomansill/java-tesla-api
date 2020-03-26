@@ -1,4 +1,4 @@
-package com.ansill.tesla.api.low.exception;
+package com.ansill.tesla.api.exception;
 
 public class VehicleUnavailableException extends RuntimeException{
 

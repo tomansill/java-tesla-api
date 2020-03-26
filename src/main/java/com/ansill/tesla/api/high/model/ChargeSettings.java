@@ -14,7 +14,7 @@ public final class ChargeSettings{
 
   /** Current battery limit */
   @Nonnull
-  private final Quantity<Dimensionless> currentBatteryLimit;
+  private final Quantity<Dimensionless> currentBatteryLimit; // TODO move me out
 
   /** Maximum allowed battery limit */
   @Nonnull

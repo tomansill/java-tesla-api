@@ -1,8 +1,8 @@
 package com.ansill.tesla.api.med.model;
 
 import com.ansill.tesla.api.low.exception.APIProtocolException;
+import com.ansill.tesla.api.model.ImperialUnits;
 import com.ansill.tesla.api.model.ShiftState;
-import com.ansill.tesla.api.model.USUnits;
 import com.ansill.tesla.api.utility.UnitUtility;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
@@ -101,7 +101,7 @@ public final class DriveState{
         case "N" -> ShiftState.NEUTRAL;
         default -> throw new APIProtocolException(f("Unexpected shift state '{}'", state.getShiftState()));
       },
-      Quantities.getQuantity(state.getSpeed().orElse(0), USUnits.MILE_PER_HOUR),
+      Quantities.getQuantity(state.getSpeed().orElse(0), ImperialUnits.MILE_PER_HOUR),
       Instant.ofEpochSecond(state.getTimestamp())
     );
   }

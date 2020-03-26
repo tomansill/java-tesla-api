@@ -16,10 +16,10 @@ import static com.ansill.tesla.api.utility.Constants.*;
 /** Highly-Opinionated client */
 public final class Client{
 
-  /** Default fast changing data lifetime - used to stop too-frequent polling */
-  private static final Duration DEFAULT_FAST_CHANGING_DATA_LIFETIME = Duration.ofSeconds(5);
+  /** Default fast changing data lifetime - used to prevent too-frequent polling */
+  private static final Duration DEFAULT_FAST_CHANGING_DATA_LIFETIME = Duration.ofMillis(250);
 
-  /** Default fast changing data lifetime - used to stop too-frequent polling */
+  /** Default slow changing data lifetime - used to prevent too-frequent polling */
   private static final Duration DEFAULT_SLOW_CHANGING_DATA_LIFETIME = Duration.ofMinutes(1);
 
   /** Global setting */
@@ -56,11 +56,11 @@ public final class Client{
   }
 
   public void setGlobalFastChangingDataLifetime(@Nonnull Duration duration){
-    GLOBAL_FAST_CHANGING_DATA_LIFETIME.set(duration);
+    GLOBAL_FAST_CHANGING_DATA_LIFETIME.set(Validation.assertNonnull(duration, "duration"));
   }
 
   public void setGlobalSlowChangingDataLifetime(@Nonnull Duration duration){
-    GLOBAL_SLOW_CHANGING_DATA_LIFETIME.set(duration);
+    GLOBAL_SLOW_CHANGING_DATA_LIFETIME.set(Validation.assertNonnull(duration, "duration"));
   }
 
   public void resetGlobalFastChangingDataLifetime(){
@@ -128,15 +128,19 @@ public final class Client{
     @Nonnull Consumer<ReAuthenticationException> onError
   ){
     try{
-      var newCred = client.refreshToken(refreshToken);
-      consumer.accept(newCred);
+
+      // Refresh now
+      AccountCredentials newCred = client.refreshToken(refreshToken);
+      Validation.assertNonnull(consumer, "consumer").accept(newCred);
+
+      // Return new account
       return Optional.of(new Account(
         client,
         newCred,
         new AtomicReference<>(GLOBAL_FAST_CHANGING_DATA_LIFETIME),
         new AtomicReference<>(GLOBAL_SLOW_CHANGING_DATA_LIFETIME),
         new RefreshSubscription(
-          Validation.assertNonnull(consumer, "consumer"),
+          consumer,
           Validation.assertNonnull(onError, "onError")
         )
       ));

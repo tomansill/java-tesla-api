@@ -6,7 +6,7 @@
 
     <groupId>com.ansill.tesla</groupId>
     <artifactId>tesla-api</artifactId>
-    <version>0.2.4</version>
+    <version>0.3.0</version>
     <!-- mvn versions:set -DnewVersion=new_version -->
 
     <properties>

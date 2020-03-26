@@ -1,8 +1,8 @@
 package com.ansill.tesla.api.med.model;
 
 import com.ansill.tesla.api.model.ChargingState;
+import com.ansill.tesla.api.model.ImperialUnits;
 import com.ansill.tesla.api.model.LatchState;
-import com.ansill.tesla.api.model.USUnits;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -236,7 +236,7 @@ public final class ChargeState{
     return new ChargeState(
       chargeState.getBatteryHeaterOn(),
       Quantities.getQuantity(chargeState.getBatteryLevel(), Units.PERCENT),
-      Quantities.getQuantity(chargeState.getBatteryRange(), USUnits.MILE),
+      Quantities.getQuantity(chargeState.getBatteryRange(), ImperialUnits.MILE),
       Quantities.getQuantity(chargeState.getChargeCurrentRequest(), Units.AMPERE),
       Quantities.getQuantity(chargeState.getChargeCurrentRequestMax(), Units.AMPERE),
       chargeState.isChargeEnableRequest(),
@@ -248,8 +248,8 @@ public final class ChargeState{
       Quantities.getQuantity(chargeState.getChargeLimitSocMax(), Units.PERCENT),
       Quantities.getQuantity(chargeState.getChargeLimitSocMin(), Units.PERCENT),
       Quantities.getQuantity(chargeState.getChargeLimitSocStd(), Units.PERCENT),
-      Quantities.getQuantity(chargeState.getChargeMilesAddedIdeal(), USUnits.MILE),
-      Quantities.getQuantity(chargeState.getChargeMilesAddedRated(), USUnits.MILE),
+      Quantities.getQuantity(chargeState.getChargeMilesAddedIdeal(), ImperialUnits.MILE),
+      Quantities.getQuantity(chargeState.getChargeMilesAddedRated(), ImperialUnits.MILE),
       chargeState.getChargePortColdWeatherMode(),
       chargeState.getChargePortDoorOpen(),
       LatchState.valueOf(chargeState.getChargePortLatch().toUpperCase()),
@@ -262,11 +262,11 @@ public final class ChargeState{
       Quantities.getQuantity(chargeState.getChargerVoltage(), Units.VOLT),
       ChargingState.valueOf(chargeState.getChargingState().toUpperCase()),
       chargeState.getConnChargeCable(),
-      Quantities.getQuantity(chargeState.getEstBatteryRange(), USUnits.MILE),
+      Quantities.getQuantity(chargeState.getEstBatteryRange(), ImperialUnits.MILE),
       chargeState.getFastChargerBrand(),
       chargeState.getFastChargerPresent(),
       chargeState.getFastChargerType(),
-      Quantities.getQuantity(chargeState.getIdealBatteryRange(), USUnits.MILE),
+      Quantities.getQuantity(chargeState.getIdealBatteryRange(), ImperialUnits.MILE),
       chargeState.getManagedChargingActive(),
       chargeState.getManagedChargingStartTime(),
       chargeState.getManagedChargingUserCanceled(),

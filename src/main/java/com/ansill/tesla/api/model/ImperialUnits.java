@@ -10,7 +10,7 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 
-public class USUnits{
+public class ImperialUnits{
 
   /** Imperial Mile */
   public static final Unit<Length> MILE = new TransformedUnit<>(

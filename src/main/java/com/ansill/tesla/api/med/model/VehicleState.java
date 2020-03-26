@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.med.model;
 
-import com.ansill.tesla.api.model.USUnits;
+import com.ansill.tesla.api.model.ImperialUnits;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -188,7 +188,7 @@ public final class VehicleState{
       state.getLocked(),
       MediaState.convert(state.getMediaState()),
       state.getNotificationsSupported(),
-      Quantities.getQuantity(state.getOdometer(), USUnits.MILE),
+      Quantities.getQuantity(state.getOdometer(), ImperialUnits.MILE),
       state.getParsed_calendarSupported(),
       state.getRemoteStart(),
       state.getRemoteStartEnabled(),
@@ -450,9 +450,9 @@ public final class VehicleState{
     public static SpeedLimitMode convert(@Nonnull com.ansill.tesla.api.low.model.VehicleState.SpeedLimitMode mode){
       return new SpeedLimitMode(
         mode.getActive(),
-        Quantities.getQuantity(mode.getCurrentLimitMph(), USUnits.MILE_PER_HOUR),
-        Quantities.getQuantity(mode.getMaxLimitMph(), USUnits.MILE_PER_HOUR),
-        Quantities.getQuantity(mode.getMinLimitMph(), USUnits.MILE_PER_HOUR),
+        Quantities.getQuantity(mode.getCurrentLimitMph(), ImperialUnits.MILE_PER_HOUR),
+        Quantities.getQuantity(mode.getMaxLimitMph(), ImperialUnits.MILE_PER_HOUR),
+        Quantities.getQuantity(mode.getMinLimitMph(), ImperialUnits.MILE_PER_HOUR),
         mode.getPinCodeSet()
       );
     }
