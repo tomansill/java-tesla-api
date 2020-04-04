@@ -17,7 +17,7 @@ import static com.ansill.tesla.api.utility.Constants.*;
 public final class Client{
 
   /** Default fast changing data lifetime - used to prevent too-frequent polling */
-  private static final Duration DEFAULT_FAST_CHANGING_DATA_LIFETIME = Duration.ofMillis(250);
+  private static final Duration DEFAULT_FAST_CHANGING_DATA_LIFETIME = Duration.ofMillis(250); // 1/4 seconds
 
   /** Default slow changing data lifetime - used to prevent too-frequent polling */
   private static final Duration DEFAULT_SLOW_CHANGING_DATA_LIFETIME = Duration.ofMinutes(1);

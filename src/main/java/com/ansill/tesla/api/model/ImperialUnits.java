@@ -17,7 +17,7 @@ public class ImperialUnits{
     "mi",
     Units.METRE,
     Units.METRE,
-    MultiplyConverter.of(1 / 0.6214)
+    MultiplyConverter.of(1609.344)
   );
 
   /** Imperial Mile per hour */

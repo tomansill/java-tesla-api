@@ -25,6 +25,7 @@ import com.ansill.tesla.api.utility.Utility;
 import com.ansill.validation.Validation;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -177,7 +178,13 @@ public final class Client{
 
   @Nonnull
   private static <T> T fromJson(@Nonnull String string, Class<T> type) throws APIProtocolException{
-    var item = GSON.fromJson(string, type);
+    T item;
+    try{
+      item = GSON.fromJson(string, type);
+    }catch(JsonSyntaxException e){
+      // Log what was in the string and push it up
+      throw new JsonSyntaxException("Original: \n" + string, e);
+    }
     if(item == null) throw new APIProtocolException(f(
       "The JSON string is not in format of {} class. JSON message \n\"{}\"",
       type.getName(),
@@ -549,7 +556,7 @@ public final class Client{
   }
 
   @Nonnull
-  public VehiclesResponse wakeup(@Nonnull String accessToken, @Nonnull String idString)
+  public VehicleResponse wakeup(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
 
     // Check parameters
@@ -571,7 +578,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, VehiclesResponse.class);
+        case 200 -> fromJson(response, VehicleResponse.class);
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();

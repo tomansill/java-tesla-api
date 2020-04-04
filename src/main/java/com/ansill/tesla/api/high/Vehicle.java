@@ -17,6 +17,8 @@ import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
 import com.ansill.tesla.api.model.CachedValue;
 import com.ansill.tesla.api.model.ShiftState;
 import com.ansill.validation.Validation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.measure.Quantity;
@@ -28,6 +30,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Vehicle class */
 public class Vehicle{
+
+  /** Logger */
+  private static final Logger LOGGER = LoggerFactory.getLogger(Vehicle.class);
 
   /** Id of this vehicle */
   @Nonnull
@@ -163,6 +168,57 @@ public class Vehicle{
   public void setSlowChangingDataCacheLifetime(@Nonnull AtomicReference<Duration> duration){
     Validation.assertNonnull(duration.get(), "duration.get()");
     slowChangingDataLifetime.set(Validation.assertNonnull(duration, "duration"));
+  }
+
+  /**
+   * Wakes the vehicle up
+   *
+   * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+   */
+  public void wakeUp() throws VehicleNotFoundException{
+
+    // Lock it
+    try(var ignored = parent.getReadLock().doLock()){
+
+      // Exception catcher
+      AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
+
+      // Retrieve from cache if any or send new call
+      var state = cachedVehicle.getOrUpdate(() -> {
+        parent.performOnClient(client -> {
+          try{
+            client.wakeup(parent.getToken(), id);
+          }catch(VehicleIDNotFoundException e){
+            exceptionCatcher.set(new VehicleNotFoundException(id));
+          }
+          return null;
+        });
+        exceptionCatcher.set(new VehicleNotFoundException(id));
+        return null;
+      });
+
+      // Check exception
+      if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+    }
+
+    // Ensure that vehicle is waking up
+    boolean awoke = false;
+    for(int i = 0; i < 5; i++){
+      try{
+        this.getVehicleSnapshot();
+        awoke = true;
+        break;
+      }catch(VehicleUnavailableException e){
+        try{
+          Thread.sleep(Duration.ofSeconds(15).toMillisPart());
+        }catch(InterruptedException ex){
+          ex.printStackTrace();
+        }
+      }
+    }
+
+    // Report warning if it doesn't still wake up
+    if(!awoke) LOGGER.warn("After issuing a wake-up command, the vehicle is still asleep...");
   }
 
   /**
