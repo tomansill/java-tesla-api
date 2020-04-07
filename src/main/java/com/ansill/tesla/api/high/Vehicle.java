@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.high;
 
-import com.ansill.tesla.api.exception.VehicleUnavailableException;
+import com.ansill.tesla.api.exception.VehicleSleepingException;
 import com.ansill.tesla.api.high.exception.VehicleNotFoundException;
 import com.ansill.tesla.api.high.model.BatteryState;
 import com.ansill.tesla.api.high.model.ChargeAdded;
@@ -175,7 +175,10 @@ public class Vehicle{
    *
    * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
    */
-  public void wakeUp() throws VehicleNotFoundException{
+  public void wakeUp(boolean lazy) throws VehicleNotFoundException{
+
+    // Success flag
+    boolean success = false;
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -183,32 +186,54 @@ public class Vehicle{
       // Exception catcher
       AtomicReference<VehicleNotFoundException> exceptionCatcher = new AtomicReference<>();
 
-      // Retrieve from cache if any or send new call
-      var state = cachedVehicle.getOrUpdate(() -> {
-        parent.performOnClient(client -> {
+      // Get iteration number
+      final int iterations = lazy ? 1 : 15;
+
+
+      // Set up loop to repeat until awoken or fail
+      for(int i = 0; i < iterations; i++){
+
+        // Make the call
+        var vehicle = parent.performOnClient(client -> {
           try{
-            client.wakeup(parent.getToken(), id);
+            return client.wakeup(parent.getToken(), id);
           }catch(VehicleIDNotFoundException e){
             exceptionCatcher.set(new VehicleNotFoundException(id));
           }
           return null;
         });
-        exceptionCatcher.set(new VehicleNotFoundException(id));
-        return null;
-      });
 
-      // Check exception
-      if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+        // Check exception
+        if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
+
+        // Check if vehicle state is not sleeping anymore
+        if(vehicle.getState() != com.ansill.tesla.api.med.model.Vehicle.State.ASLEEP){
+
+          // Update
+          success = true;
+          break;
+        }
+
+        // Otherwise sleep and try again
+        if(i == 0) continue;
+        Thread.sleep(Duration.ofSeconds(2).toMillis());
+      }
+    }catch(InterruptedException e){
+      LOGGER.warn("Attempted to sleep on awaiting for vehicle wake-up, but got interrupted", e);
     }
 
+    // Report warning if it doesn't still wake up
+    if(!success) LOGGER.warn("After issuing a wake-up command, the vehicle is still asleep...");
+
     // Ensure that vehicle is waking up
+    /*
     boolean awoke = false;
     for(int i = 0; i < 5; i++){
       try{
         this.getVehicleSnapshot();
         awoke = true;
         break;
-      }catch(VehicleUnavailableException e){
+      }catch(VehicleSleepingException e){
         try{
           Thread.sleep(Duration.ofSeconds(15).toMillisPart());
         }catch(InterruptedException ex){
@@ -219,17 +244,18 @@ public class Vehicle{
 
     // Report warning if it doesn't still wake up
     if(!awoke) LOGGER.warn("After issuing a wake-up command, the vehicle is still asleep...");
+     */
   }
 
   /**
    * Gets odometer
    *
    * @return odometer
-   * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public Quantity<Length> getOdometer() throws VehicleNotFoundException, VehicleUnavailableException{
+  public Quantity<Length> getOdometer() throws VehicleNotFoundException, VehicleSleepingException{
     return getRawVehicleState().getOdometer();
   }
 
@@ -238,9 +264,9 @@ public class Vehicle{
    *
    * @return true if vehicle is in service, false if it is not
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
-  public boolean isInService() throws VehicleNotFoundException, VehicleUnavailableException{
+  public boolean isInService() throws VehicleNotFoundException, VehicleSleepingException{
     return getRawVehicle().isInService();
   }
 
@@ -249,10 +275,10 @@ public class Vehicle{
    *
    * @return shift state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public ShiftState getShiftState() throws VehicleNotFoundException, VehicleUnavailableException{
+  public ShiftState getShiftState() throws VehicleNotFoundException, VehicleSleepingException{
     return getRawDriveState().getShiftState();
   }
 
@@ -262,10 +288,10 @@ public class Vehicle{
    *
    * @return power usage
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public Quantity<Power> getPowerUsage() throws VehicleNotFoundException, VehicleUnavailableException{
+  public Quantity<Power> getPowerUsage() throws VehicleNotFoundException, VehicleSleepingException{
     return getRawDriveState().getPower();
   }
 
@@ -274,10 +300,10 @@ public class Vehicle{
    *
    * @return speed
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public Quantity<Speed> getSpeed() throws VehicleNotFoundException, VehicleUnavailableException{
+  public Quantity<Speed> getSpeed() throws VehicleNotFoundException, VehicleSleepingException{
     return getRawDriveState().getSpeed();
   }
 
@@ -286,10 +312,10 @@ public class Vehicle{
    *
    * @return location
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public Location getLocation() throws VehicleNotFoundException, VehicleUnavailableException{
+  public Location getLocation() throws VehicleNotFoundException, VehicleSleepingException{
     var state = getRawDriveState();
     var heading = state.getHeading();
     var lat = state.getLatitude();
@@ -302,10 +328,10 @@ public class Vehicle{
    *
    * @return charge state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public ChargeState getChargeState() throws VehicleNotFoundException, VehicleUnavailableException{
+  public ChargeState getChargeState() throws VehicleNotFoundException, VehicleSleepingException{
     return ChargeState.convert(getRawChargeState());
   }
 
@@ -314,10 +340,10 @@ public class Vehicle{
    *
    * @return charge added information
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public ChargeAdded getChargeAdded() throws VehicleNotFoundException, VehicleUnavailableException{
+  public ChargeAdded getChargeAdded() throws VehicleNotFoundException, VehicleSleepingException{
     return ChargeAdded.convert(getRawChargeState());
   }
 
@@ -326,10 +352,10 @@ public class Vehicle{
    *
    * @return vehicle config
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public VehicleConfig getVehicleConfig() throws VehicleNotFoundException, VehicleUnavailableException{
+  public VehicleConfig getVehicleConfig() throws VehicleNotFoundException, VehicleSleepingException{
     return VehicleConfig.convert(getRawVehicleConfig());
   }
 
@@ -339,10 +365,10 @@ public class Vehicle{
    *
    * @return settings
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public GUISettings getGUISettings() throws VehicleNotFoundException, VehicleUnavailableException{
+  public GUISettings getGUISettings() throws VehicleNotFoundException, VehicleSleepingException{
     return GUISettings.convert(getRawGuiSettings());
   }
 
@@ -351,10 +377,10 @@ public class Vehicle{
    *
    * @return snapshot
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public VehicleSnapshot getVehicleSnapshot() throws VehicleNotFoundException, VehicleUnavailableException{
+  public VehicleSnapshot getVehicleSnapshot() throws VehicleNotFoundException, VehicleSleepingException{
     return VehicleSnapshot.convert(getRawCompleteVehicleData());
   }
 
@@ -363,10 +389,10 @@ public class Vehicle{
    *
    * @return battery state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public BatteryState getBatteryState() throws VehicleNotFoundException, VehicleUnavailableException{
+  public BatteryState getBatteryState() throws VehicleNotFoundException, VehicleSleepingException{
     return BatteryState.convert(getRawChargeState());
   }
 
@@ -375,10 +401,10 @@ public class Vehicle{
    *
    * @return climate settings
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public ClimateSettings getClimateSettings() throws VehicleNotFoundException, VehicleUnavailableException{
+  public ClimateSettings getClimateSettings() throws VehicleNotFoundException, VehicleSleepingException{
     return ClimateSettings.convert(getRawClimateState());
   }
 
@@ -388,10 +414,10 @@ public class Vehicle{
    *
    * @return climate state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public ClimateState getClimateState() throws VehicleNotFoundException, VehicleUnavailableException{
+  public ClimateState getClimateState() throws VehicleNotFoundException, VehicleSleepingException{
     return ClimateState.convert(getRawClimateState());
   }
 
@@ -400,10 +426,10 @@ public class Vehicle{
    *
    * @return charge settings
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public ChargeSettings getChargeSettings() throws VehicleNotFoundException, VehicleUnavailableException{
+  public ChargeSettings getChargeSettings() throws VehicleNotFoundException, VehicleSleepingException{
     return ChargeSettings.convert(getRawChargeState());
   }
 
@@ -412,11 +438,11 @@ public class Vehicle{
    *
    * @return charge settings
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
   private com.ansill.tesla.api.med.model.Vehicle getRawVehicle()
-  throws VehicleNotFoundException, VehicleUnavailableException{
+  throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -446,11 +472,11 @@ public class Vehicle{
    *
    * @return charge state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
   private com.ansill.tesla.api.med.model.DriveState getRawDriveState()
-  throws VehicleNotFoundException, VehicleUnavailableException{
+  throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -484,11 +510,11 @@ public class Vehicle{
    *
    * @return charge state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
   private com.ansill.tesla.api.med.model.ChargeState getRawChargeState()
-  throws VehicleNotFoundException, VehicleUnavailableException{
+  throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -522,11 +548,11 @@ public class Vehicle{
    *
    * @return gui settings
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
   private com.ansill.tesla.api.med.model.GuiSettings getRawGuiSettings()
-  throws VehicleNotFoundException, VehicleUnavailableException{
+  throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -561,11 +587,11 @@ public class Vehicle{
    *
    * @return data
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
   private com.ansill.tesla.api.med.model.CompleteData getRawCompleteVehicleData()
-  throws VehicleNotFoundException, VehicleUnavailableException{
+  throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -612,11 +638,11 @@ public class Vehicle{
    *
    * @return vehicle state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
   private com.ansill.tesla.api.med.model.VehicleState getRawVehicleState()
-  throws VehicleNotFoundException, VehicleUnavailableException{
+  throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -650,11 +676,11 @@ public class Vehicle{
    *
    * @return climate state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
   private com.ansill.tesla.api.med.model.ClimateState getRawClimateState()
-  throws VehicleNotFoundException, VehicleUnavailableException{
+  throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -689,11 +715,11 @@ public class Vehicle{
    *
    * @return vehicle config
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
   private com.ansill.tesla.api.med.model.VehicleConfig getRawVehicleConfig()
-  throws VehicleNotFoundException, VehicleUnavailableException{
+  throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
     try(var ignored = parent.getReadLock().doLock()){
@@ -737,10 +763,10 @@ public class Vehicle{
    *
    * @return name
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public String getName() throws VehicleNotFoundException, VehicleUnavailableException{
+  public String getName() throws VehicleNotFoundException, VehicleSleepingException{
 
     // Get it and convert it to high level and return
     return getRawVehicle().getDisplayName();
@@ -751,10 +777,10 @@ public class Vehicle{
    *
    * @return id
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public String getId() throws VehicleNotFoundException, VehicleUnavailableException{
+  public String getId() throws VehicleNotFoundException, VehicleSleepingException{
 
     // Get it and convert it to high level and return
     return getRawVehicle().getId();
@@ -765,9 +791,9 @@ public class Vehicle{
    *
    * @return true if vehicle is locked, false if it is not
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
-  public boolean isLocked() throws VehicleNotFoundException, VehicleUnavailableException{
+  public boolean isLocked() throws VehicleNotFoundException, VehicleSleepingException{
 
     // Get it and convert it to high level and return
     return getRawVehicleState().isLocked();
@@ -778,9 +804,9 @@ public class Vehicle{
    *
    * @return true if user is inside, false if it is not
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
-  public boolean isUserPresent() throws VehicleNotFoundException, VehicleUnavailableException{
+  public boolean isUserPresent() throws VehicleNotFoundException, VehicleSleepingException{
 
     // Get it and convert it to high level and return
     return getRawVehicleState().isUserPresent();
@@ -791,10 +817,10 @@ public class Vehicle{
    *
    * @return sentry mode state
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public SentryModeState getSentryModeState() throws VehicleNotFoundException, VehicleUnavailableException{
+  public SentryModeState getSentryModeState() throws VehicleNotFoundException, VehicleSleepingException{
 
     // Get it and convert it to high level and return
     return !getRawVehicleState().isSentryModeAvailable() ? SentryModeState.NOT_AVAILABLE : getRawVehicleState().isSentryMode() ? SentryModeState.ACTIVE : SentryModeState.INACTIVE;
@@ -805,10 +831,10 @@ public class Vehicle{
    *
    * @return true if sentry mode is available, false if it is not
    * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
-   * @throws VehicleUnavailableException when the vehicle is possibly in sleeping state, this exception will be thrown
+   * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  public String getVersion() throws VehicleNotFoundException, VehicleUnavailableException{
+  public String getVersion() throws VehicleNotFoundException, VehicleSleepingException{
 
     // Get it and convert it to high level and return
     return getRawVehicleState().getCarVersion();

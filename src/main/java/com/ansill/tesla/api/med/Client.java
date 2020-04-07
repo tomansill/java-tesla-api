@@ -111,7 +111,7 @@ public class Client{
     return client.getVehicle(accessToken, idString).map(Vehicle::convert);
   }
 
-  public void wakeup(@Nonnull String accessToken, @Nonnull String idString)
+  public Vehicle wakeup(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
 
     // Check parameters
@@ -121,7 +121,7 @@ public class Client{
     Validation.assertNonnull(idString, "idString");
 
     // Call it
-    this.client.wakeup(accessToken, idString);
+    return Vehicle.convert(this.client.wakeup(accessToken, idString).getResponse());
   }
 
   public void unlockDoors(@Nonnull String accessToken, @Nonnull String idString)

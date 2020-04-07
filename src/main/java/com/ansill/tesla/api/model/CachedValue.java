@@ -1,6 +1,8 @@
 package com.ansill.tesla.api.model;
 
 import com.ansill.validation.Validation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,6 +18,9 @@ import java.util.function.Supplier;
  * Caches value until its lifetime has passed, then that value will be dropped
  */
 public class CachedValue<T>{
+
+  /** Logger */
+  private static final Logger LOGGER = LoggerFactory.getLogger(CachedValue.class);
 
   /** Small delay to kick the vacuum online */
   private static final Duration VACUUM_DELAY = Duration.ofSeconds(10);
@@ -57,20 +62,28 @@ public class CachedValue<T>{
     resetVacuum();
   }
 
-  /** Resets the vacuum */
+  /**
+   * Resets the vacuum
+   * NOT INTENDED TO BE AN INVALIDATOR - INTENDED TO JUST CLEAN UP OLD VALUE THAT HAS NOT BEEN TOUCHED FOR A WHILE
+   */
   private void resetVacuum(){
 
     // Set up timer
     Timer timer = null;
 
+    // Only run if value is not null
     if(value != null){
+
       // Create timertask
       TimerTask tt = new TimerTask(){
         @Override
         public void run(){
 
           // Check if it's time to clean up - not, reset vacuum timer
-          if(!Instant.now().isAfter(lastCached.plus(lifetime.get().get()).plus(VACUUM_DELAY))) resetVacuum();
+          if(!Instant.now().isAfter(lastCached.plus(lifetime.get().get()))){
+            resetVacuum();
+            return;
+          }
 
           // Otherwise clean up
           value = null;
@@ -78,13 +91,19 @@ public class CachedValue<T>{
       };
 
       // Calculate delay
-      var delay = Duration.between(Instant.now(), lastCached.plus(lifetime.get().get()).plus(VACUUM_DELAY))
+      // NOTE: This method is not for actual invalidating, this method is just for cleaning up value that is unused for
+      // a significant amount of time, the actual invalidating process is done at getOrUpdate(Supplier) method
+      var delay = Duration.between(Instant.now(), lastCached.plus(lifetime.get().get().plus(VACUUM_DELAY)))
                           .toMillis();
 
       // Skip if zero or negative
-      if(delay <= 0) value = null;
+      if(delay <= 0){
 
-        // Otherwise create timer and schedule it
+        // Clean up
+        value = null;
+      }
+
+      // Otherwise create timer and schedule it
       else{
 
         // Create timer
@@ -129,7 +148,10 @@ public class CachedValue<T>{
   public synchronized T getOrUpdate(@Nonnull Supplier<T> supplier){
 
     // Calculate if expired or not - return if not expired
-    if(value != null || !Instant.now().isAfter(lastCached.plus(lifetime.get().get()))) return value;
+    if(value != null && !Instant.now().isAfter(lastCached.plus(lifetime.get().get()))){
+      LOGGER.debug("The current value is valid, returning current value");
+      return value;
+    }
 
     // Rebuild
     value = supplier.get();

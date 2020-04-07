@@ -1,17 +1,17 @@
 package com.ansill.tesla.api.exception;
 
-public class VehicleUnavailableException extends RuntimeException{
+public class VehicleSleepingException extends RuntimeException{
 
   /** Serial Version ID */
   private static final long serialVersionUID = -144385432021096541L;
 
   /** Message */
-  private static final String MESSAGE = "Vehicle unavailable (Could be sleeping)";
+  private static final String MESSAGE = "Vehicle is asleep";
 
   /**
    * Constructor that formats exception message
    */
-  public VehicleUnavailableException(){
+  public VehicleSleepingException(){
     super(MESSAGE);
   }
 }

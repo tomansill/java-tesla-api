@@ -6,6 +6,7 @@ import com.ansill.tesla.api.utility.Utility;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.measure.Quantity;
+import javax.measure.quantity.Length;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Speed;
 
@@ -42,6 +43,9 @@ public final class VehicleSnapshot{
   private final VehicleConfig vehicleConfig;
 
   @Nonnull
+  private final ChargeAdded chargeAdded;
+
+  @Nonnull
   private final ShiftState shiftState;
 
   @Nonnull
@@ -49,6 +53,16 @@ public final class VehicleSnapshot{
 
   @Nonnull
   private final Quantity<Speed> speed;
+
+  @Nonnull
+  private final Quantity<Length> odometer;
+
+  private final boolean isLocked;
+
+  private final boolean isUserPresent;
+
+  @Nonnull
+  private final SentryModeState sentryModeState;
 
   @Nonnull
   private final Location location;
@@ -63,6 +77,11 @@ public final class VehicleSnapshot{
    * @param climateState    climate state
    * @param guiSettings     gui settings
    * @param vehicleConfig   vehicle config
+   * @param chargeAdded     charge added
+   * @param odometer        odometer
+   * @param isLocked        lock state - true if vehicle is locked, false if vehicle is unlocked
+   * @param isUserPresent   user present state - true if user is in the vehicle, false if user is not in the vehicle
+   * @param sentryModeState sentry mode state
    */
   private VehicleSnapshot(
     @Nonnull BatteryState batteryState,
@@ -72,9 +91,13 @@ public final class VehicleSnapshot{
     @Nonnull ClimateState climateState,
     @Nonnull GUISettings guiSettings,
     @Nonnull VehicleConfig vehicleConfig,
-    @Nonnull ShiftState shiftState,
+    @Nonnull ChargeAdded chargeAdded, @Nonnull ShiftState shiftState,
     @Nonnull Quantity<Power> powerUsage,
     @Nonnull Quantity<Speed> speed,
+    @Nonnull Quantity<Length> odometer,
+    boolean isLocked,
+    boolean isUserPresent,
+    @Nonnull SentryModeState sentryModeState,
     @Nonnull Location location
   ){
     this.batteryState = batteryState;
@@ -84,12 +107,16 @@ public final class VehicleSnapshot{
     this.climateState = climateState;
     this.guiSettings = guiSettings;
     this.vehicleConfig = vehicleConfig;
+    this.chargeAdded = chargeAdded;
     this.shiftState = shiftState;
     this.powerUsage = powerUsage;
     this.speed = speed;
+    this.odometer = odometer;
+    this.isLocked = isLocked;
+    this.isUserPresent = isUserPresent;
+    this.sentryModeState = sentryModeState;
     this.location = location;
   }
-
 
   /**
    * Converts medium-level to high-level object
@@ -107,15 +134,43 @@ public final class VehicleSnapshot{
       ClimateState.convert(data.getClimateState()),
       GUISettings.convert(data.getGuiSettings()),
       VehicleConfig.convert(data.getVehicleConfig()),
+      ChargeAdded.convert(data.getChargeState()),
       data.getDriveState().getShiftState(),
       data.getDriveState().getPower(),
       data.getDriveState().getSpeed(),
+      data.getVehicleState().getOdometer(),
+      data.getVehicleState().isLocked(),
+      data.getVehicleState().isUserPresent(),
+      data.getVehicleState().isSentryModeAvailable() ? data.getVehicleState()
+                                                           .isSentryMode() ? SentryModeState.ACTIVE : SentryModeState.INACTIVE : SentryModeState.NOT_AVAILABLE,
       new Location(
         data.getDriveState().getHeading(),
         data.getDriveState().getLatitude(),
         data.getDriveState().getLongitude()
       )
     );
+  }
+
+
+  /**
+   * Returns gui settings
+   *
+   * @return settings
+   */
+  @Nonnull
+  public GUISettings getGuiSettings(){
+    return guiSettings;
+  }
+
+
+  /**
+   * Returns odometer
+   *
+   * @return odometer
+   */
+  @Nonnull
+  public Quantity<Length> getOdometer(){
+    return odometer;
   }
 
   /**
@@ -211,5 +266,23 @@ public final class VehicleSnapshot{
   @Nonnull
   public Location getLocation(){
     return location;
+  }
+
+  public boolean isVehicleLocked(){
+    return isLocked;
+  }
+
+  public boolean isUserPresent(){
+    return isUserPresent;
+  }
+
+  @Nonnull
+  public SentryModeState getSentryModeState(){
+    return sentryModeState;
+  }
+
+  @Nonnull
+  public ChargeAdded getChargeAdded(){
+    return chargeAdded;
   }
 }

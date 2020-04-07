@@ -1,6 +1,6 @@
 package com.ansill.tesla.test;
 
-import com.ansill.tesla.api.exception.VehicleUnavailableException;
+import com.ansill.tesla.api.exception.VehicleSleepingException;
 import com.ansill.tesla.api.low.Client;
 import com.ansill.tesla.api.low.exception.AuthenticationException;
 import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
@@ -74,7 +74,7 @@ class SleepTester{
         client.getVehicleData(creds.getAccessToken(), id);
         notsleeping = true;
         break;
-      }catch(VehicleUnavailableException e){
+      }catch(VehicleSleepingException e){
         Thread.sleep(Duration.ofSeconds(15).toMillis());
       }
     }
@@ -93,7 +93,7 @@ class SleepTester{
         duration = duration.plus(duration.dividedBy(4));
       }
 
-    }catch(VehicleUnavailableException e){
+    }catch(VehicleSleepingException e){
       found = true;
     }
 

@@ -1,6 +1,7 @@
 package com.ansill.tesla.api.low;
 
-import com.ansill.tesla.api.exception.VehicleUnavailableException;
+import com.ansill.tesla.api.exception.VehicleOfflineException;
+import com.ansill.tesla.api.exception.VehicleSleepingException;
 import com.ansill.tesla.api.low.exception.APIProtocolException;
 import com.ansill.tesla.api.low.exception.AuthenticationException;
 import com.ansill.tesla.api.low.exception.ClientException;
@@ -555,6 +556,15 @@ public final class Client{
     }
   }
 
+  /**
+   * Issues command to wake the vehicle up
+   * <B>NOTE:</B> Does not guarantee that vehicle is awoke after this command completes
+   *
+   * @param accessToken access token
+   * @param idString    vehicle id
+   * @return vehicle response
+   * @throws VehicleIDNotFoundException thrown if the vehicle does not exist
+   */
   @Nonnull
   public VehicleResponse wakeup(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
@@ -587,7 +597,7 @@ public final class Client{
         case 404 -> throw new VehicleIDNotFoundException(idString);
 
         // Request Timeout
-        case 408 -> throw new VehicleUnavailableException(); // TODO will this ever happen?
+        case 408 -> throw new VehicleSleepingException(); // TODO will this ever happen?
 
         // Unknown
         default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
@@ -633,7 +643,7 @@ public final class Client{
         case 401 -> throw new InvalidAccessTokenException();
 
         // Request Timeout
-        case 408 -> throw new VehicleUnavailableException();
+        case 408 -> throw new VehicleSleepingException();
 
         // Not found
         case 404 -> throw new VehicleIDNotFoundException(idString);
@@ -802,7 +812,7 @@ public final class Client{
         case 404 -> throw new VehicleIDNotFoundException(idString);
 
         // Request Timeout
-        case 408 -> throw new VehicleUnavailableException();
+        case 408 -> throw new VehicleSleepingException();
 
         // Unknown
         default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
@@ -821,7 +831,7 @@ public final class Client{
       var vehicle = this.getVehicle(accessToken, idString).orElseThrow();
 
       // Get state - if asleep, throw VehicleUnavailableException
-      if("asleep".equals(vehicle.getResponse().getState())) throw new VehicleUnavailableException();
+      if("asleep".equals(vehicle.getResponse().getState())) throw new VehicleSleepingException();
 
       // Get state - if online, try again
       if("online".equals(vehicle.getResponse().getState())) return getVehicleDataForm(
@@ -830,6 +840,9 @@ public final class Client{
         typeToken,
         path
       );
+
+      // Get state - if offline, TODO do we need to do anything for this?
+      if("offline".equals(vehicle.getResponse().getState())) throw new VehicleOfflineException();
 
       // Else throw protocol error
       throw new APIProtocolException(f(
