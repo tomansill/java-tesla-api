@@ -6,8 +6,14 @@
 
     <groupId>com.ansill.tesla</groupId>
     <artifactId>tesla-api</artifactId>
-    <version>0.3.0</version>
+    <packaging>pom</packaging>
+    <version>0.4.0</version>
     <!-- mvn versions:set -DnewVersion=new_version -->
+
+    <modules>
+        <module>mock-server</module>
+        <module>api</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,12 +48,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.2.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>javax.measure</groupId>
             <artifactId>unit-api</artifactId>
             <version>2.0</version>
@@ -81,18 +81,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.4.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.javalin</groupId>
-            <artifactId>javalin</artifactId>
-            <version>3.7.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.13.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
