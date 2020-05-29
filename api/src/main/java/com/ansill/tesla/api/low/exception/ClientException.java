@@ -32,7 +32,6 @@ public class ClientException extends RuntimeException{
     super(f(EXTRA_MESSAGE, message));
   }
 
-
   /**
    * Constructor that formats exception message
    *

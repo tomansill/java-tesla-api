@@ -991,8 +991,10 @@ public final class Client{
     var typeToken = new TypeToken<SimpleResponse<ChargeState>>(){
     };
 
+    var result = getVehicleDataForm(accessToken, idString, typeToken, "data_request/charge_state");
+
     // Get the data
-    return getVehicleDataForm(accessToken, idString, typeToken, "data_request/charge_state").getResponse();
+    return result.getResponse();
   }
 
   @Nonnull

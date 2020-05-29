@@ -63,7 +63,7 @@ public final class TestUtility{
     );
   }
 
-  private static VehicleConfig generateVehicleConfig(){
+  public static VehicleConfig generateVehicleConfig(){
     return new VehicleConfig(
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
@@ -93,7 +93,7 @@ public final class TestUtility{
     );
   }
 
-  private static VehicleState generateVehicleState(){
+  public static VehicleState generateVehicleState(){
     return new VehicleState(
       RANDOM.nextInt(),
       generateString(32),
@@ -161,7 +161,7 @@ public final class TestUtility{
     return new VehicleState.MediaState(RANDOM.nextBoolean());
   }
 
-  private static ClimateState generateClimateState(){
+  public static ClimateState generateClimateState(){
     return new ClimateState(
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
@@ -197,7 +197,7 @@ public final class TestUtility{
     );
   }
 
-  private static ChargeState generateChargeState(){
+  public static ChargeState generateChargeState(){
     return new ChargeState(
       RANDOM.nextBoolean(),
       RANDOM.nextInt(),
@@ -245,7 +245,7 @@ public final class TestUtility{
     );
   }
 
-  private static DriveState generateDriveState(){
+  public static DriveState generateDriveState(){
     return new DriveState(
       RANDOM.nextLong(),
       RANDOM.nextInt(),
@@ -262,7 +262,7 @@ public final class TestUtility{
     );
   }
 
-  private static GuiSettings generateGuiSettings(){
+  public static GuiSettings generateGuiSettings(){
     return new GuiSettings(
       RANDOM.nextBoolean(),
       generateString(32),
