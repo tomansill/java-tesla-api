@@ -3,6 +3,7 @@ package com.ansill.tesla.api.low.model;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.ansill.utility.Utility.simpleToString;
@@ -36,6 +37,50 @@ public final class DriveState{
   private final Integer speed;
 
   private final long timestamp;
+
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(o == null || getClass() != o.getClass()) return false;
+
+    DriveState that = (DriveState) o;
+
+    if(gps_as_of != that.gps_as_of) return false;
+    if(heading != that.heading) return false;
+    if(Double.compare(that.latitude, latitude) != 0) return false;
+    if(Double.compare(that.longitude, longitude) != 0) return false;
+    if(Double.compare(that.native_latitude, native_latitude) != 0) return false;
+    if(native_location_supported != that.native_location_supported) return false;
+    if(Double.compare(that.native_longitude, native_longitude) != 0) return false;
+    if(power != that.power) return false;
+    if(timestamp != that.timestamp) return false;
+    if(!native_type.equals(that.native_type)) return false;
+    if(!Objects.equals(shift_state, that.shift_state)) return false;
+    return Objects.equals(speed, that.speed);
+  }
+
+  @Override
+  public int hashCode(){
+    int result;
+    long temp;
+    result = (int) (gps_as_of ^ (gps_as_of >>> 32));
+    result = 31 * result + heading;
+    temp = Double.doubleToLongBits(latitude);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(longitude);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(native_latitude);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + native_location_supported;
+    temp = Double.doubleToLongBits(native_longitude);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + native_type.hashCode();
+    result = 31 * result + power;
+    result = 31 * result + Objects.hashCode(shift_state);
+    result = 31 * result + Objects.hashCode(speed);
+    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+    return result;
+  }
 
   public DriveState(
     long gps_as_of,

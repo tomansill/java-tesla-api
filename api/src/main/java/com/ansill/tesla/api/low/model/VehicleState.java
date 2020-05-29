@@ -4,6 +4,7 @@ package com.ansill.tesla.api.low.model;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.ansill.utility.Utility.simpleToString;
@@ -339,6 +340,101 @@ public final class VehicleState{
     return simpleToString(this);
   }
 
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(o == null || getClass() != o.getClass()) return false;
+
+    VehicleState that = (VehicleState) o;
+
+    if(api_version != that.api_version) return false;
+    if(calendar_supported != that.calendar_supported) return false;
+    if(center_display_state != that.center_display_state) return false;
+    if(df != that.df) return false;
+    if(dr != that.dr) return false;
+    if(ft != that.ft) return false;
+    if(is_user_present != that.is_user_present) return false;
+    if(locked != that.locked) return false;
+    if(notifications_supported != that.notifications_supported) return false;
+    if(Double.compare(that.odometer, odometer) != 0) return false;
+    if(parsed_calendar_supported != that.parsed_calendar_supported) return false;
+    if(pf != that.pf) return false;
+    if(pr != that.pr) return false;
+    if(remote_start != that.remote_start) return false;
+    if(remote_start_enabled != that.remote_start_enabled) return false;
+    if(remote_start_supported != that.remote_start_supported) return false;
+    if(rt != that.rt) return false;
+    if(sentry_mode != that.sentry_mode) return false;
+    if(fd_window != that.fd_window) return false;
+    if(fp_window != that.fp_window) return false;
+    if(rd_window != that.rd_window) return false;
+    if(rp_window != that.rp_window) return false;
+    if(sentry_mode_available != that.sentry_mode_available) return false;
+    if(timestamp != that.timestamp) return false;
+    if(valet_mode != that.valet_mode) return false;
+    if(valet_pin_needed != that.valet_pin_needed) return false;
+    if(!autopark_state_v2.equals(that.autopark_state_v2)) return false;
+    if(!autopark_style.equals(that.autopark_style)) return false;
+    if(!car_version.equals(that.car_version)) return false;
+    if(!Objects.equals(homelink_nearby, that.homelink_nearby)) return false;
+    if(!Objects.equals(homelink_device_count, that.homelink_device_count)) return false;
+    if(!Objects.equals(sun_roof_percent_open, that.sun_roof_percent_open)) return false;
+    if(!last_autopark_error.equals(that.last_autopark_error)) return false;
+    if(!media_state.equals(that.media_state)) return false;
+    if(!software_update.equals(that.software_update)) return false;
+    if(!speed_limit_mode.equals(that.speed_limit_mode)) return false;
+    if(!autopark_state_v3.equals(that.autopark_state_v3)) return false;
+    if(!sun_roof_state.equals(that.sun_roof_state)) return false;
+    return vehicle_name.equals(that.vehicle_name);
+  }
+
+  @Override
+  public int hashCode(){
+    int result;
+    long temp;
+    result = api_version;
+    result = 31 * result + autopark_state_v2.hashCode();
+    result = 31 * result + autopark_style.hashCode();
+    result = 31 * result + (calendar_supported ? 1 : 0);
+    result = 31 * result + car_version.hashCode();
+    result = 31 * result + center_display_state;
+    result = 31 * result + df;
+    result = 31 * result + dr;
+    result = 31 * result + ft;
+    result = 31 * result + Objects.hashCode(homelink_nearby);
+    result = 31 * result + Objects.hashCode(homelink_device_count);
+    result = 31 * result + Objects.hashCode(sun_roof_percent_open);
+    result = 31 * result + (is_user_present ? 1 : 0);
+    result = 31 * result + last_autopark_error.hashCode();
+    result = 31 * result + (locked ? 1 : 0);
+    result = 31 * result + media_state.hashCode();
+    result = 31 * result + (notifications_supported ? 1 : 0);
+    temp = Double.doubleToLongBits(odometer);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + (parsed_calendar_supported ? 1 : 0);
+    result = 31 * result + pf;
+    result = 31 * result + pr;
+    result = 31 * result + (remote_start ? 1 : 0);
+    result = 31 * result + (remote_start_enabled ? 1 : 0);
+    result = 31 * result + (remote_start_supported ? 1 : 0);
+    result = 31 * result + rt;
+    result = 31 * result + (sentry_mode ? 1 : 0);
+    result = 31 * result + software_update.hashCode();
+    result = 31 * result + speed_limit_mode.hashCode();
+    result = 31 * result + autopark_state_v3.hashCode();
+    result = 31 * result + fd_window;
+    result = 31 * result + fp_window;
+    result = 31 * result + rd_window;
+    result = 31 * result + rp_window;
+    result = 31 * result + (sentry_mode_available ? 1 : 0);
+    result = 31 * result + sun_roof_state.hashCode();
+    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+    result = 31 * result + (valet_mode ? 1 : 0);
+    result = 31 * result + (valet_pin_needed ? 1 : 0);
+    result = 31 * result + vehicle_name.hashCode();
+    return result;
+  }
+
   public static class MediaState{
 
     private final boolean remote_control_enabled;
@@ -349,6 +445,19 @@ public final class VehicleState{
 
     public boolean isRemoteControlEnabled(){
       return remote_control_enabled;
+    }
+
+    @Override
+    public boolean equals(Object o){
+      if(this == o) return true;
+      if(!(o instanceof MediaState that)) return false;
+
+      return remote_control_enabled == that.remote_control_enabled;
+    }
+
+    @Override
+    public int hashCode(){
+      return (remote_control_enabled ? 1 : 0);
     }
   }
 
@@ -364,7 +473,7 @@ public final class VehicleState{
 
     private final String status;
 
-    private SoftwareUpdate(
+    public SoftwareUpdate(
       int download_perc,
       int install_perc,
       String version,
@@ -376,6 +485,30 @@ public final class VehicleState{
       this.version = version;
       this.expected_duration_sec = expected_duration_sec;
       this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o){
+      if(this == o) return true;
+      if(o == null || getClass() != o.getClass()) return false;
+
+      SoftwareUpdate that = (SoftwareUpdate) o;
+
+      if(download_perc != that.download_perc) return false;
+      if(install_perc != that.install_perc) return false;
+      if(expected_duration_sec != that.expected_duration_sec) return false;
+      if(!version.equals(that.version)) return false;
+      return status.equals(that.status);
+    }
+
+    @Override
+    public int hashCode(){
+      int result = download_perc;
+      result = 31 * result + install_perc;
+      result = 31 * result + version.hashCode();
+      result = 31 * result + (int) (expected_duration_sec ^ (expected_duration_sec >>> 32));
+      result = 31 * result + status.hashCode();
+      return result;
     }
 
     public int getDownloadPercent(){
@@ -443,6 +576,33 @@ public final class VehicleState{
 
     public boolean getPinCodeSet(){
       return pin_code_set;
+    }
+
+    @Override
+    public boolean equals(Object o){
+      if(this == o) return true;
+      if(o == null || getClass() != o.getClass()) return false;
+
+      SpeedLimitMode that = (SpeedLimitMode) o;
+
+      if(active != that.active) return false;
+      if(Double.compare(that.current_limit_mph, current_limit_mph) != 0) return false;
+      if(max_limit_mph != that.max_limit_mph) return false;
+      if(min_limit_mph != that.min_limit_mph) return false;
+      return pin_code_set == that.pin_code_set;
+    }
+
+    @Override
+    public int hashCode(){
+      int result;
+      long temp;
+      result = (active ? 1 : 0);
+      temp = Double.doubleToLongBits(current_limit_mph);
+      result = 31 * result + (int) (temp ^ (temp >>> 32));
+      result = 31 * result + max_limit_mph;
+      result = 31 * result + min_limit_mph;
+      result = 31 * result + (pin_code_set ? 1 : 0);
+      return result;
     }
   }
 }

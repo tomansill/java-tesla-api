@@ -15,14 +15,13 @@ import com.ansill.tesla.api.med.model.GuiSettings;
 import com.ansill.tesla.api.med.model.Vehicle;
 import com.ansill.tesla.api.med.model.VehicleConfig;
 import com.ansill.tesla.api.med.model.VehicleState;
+import com.ansill.tesla.api.model.ClientBuilder;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.ansill.tesla.api.utility.Constants.*;
 
 
 /** Slightly opinionated client */
@@ -31,22 +30,38 @@ public class Client{
   /** Low-level client */
   private final com.ansill.tesla.api.low.Client client;
 
-  /** Sets up high-level client with default URL, client ID, and client secret */
-  public Client(){
-    this(URL, CLIENT_ID, CLIENT_SECRET);
+  /**
+   * Builds client using low-level client
+   *
+   * @param client low-level client
+   */
+  private Client(@Nonnull com.ansill.tesla.api.low.Client client){
+    this.client = client;
   }
 
   /**
-   * Sets up high-level client with custom URL, client ID, and client secret
+   * Creates builder
    *
-   * @param url          URL
-   * @param clientId     client id
-   * @param clientSecret client secret
+   * @return builder
    */
-  public Client(@Nonnull String url, @Nonnull String clientId, @Nonnull String clientSecret){
+  @Nonnull
+  public static Client.Builder builder(){
+    return new Client.Builder();
+  }
 
-    // Assign it
-    this.client = new com.ansill.tesla.api.low.Client(url, clientId, clientSecret);
+  /** Builder */
+  public static class Builder extends ClientBuilder<Client>{
+
+    @Nonnull
+    @Override
+    public Client build(){
+      return new Client(com.ansill.tesla.api.low.Client.builder()
+                                                       .setUrl(this.url)
+                                                       .setClientId(clientId)
+                                                       .setClientSecret(clientSecret)
+                                                       .setDebugFunction(debug)
+                                                       .build());
+    }
   }
 
   @Nonnull

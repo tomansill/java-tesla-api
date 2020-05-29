@@ -3,6 +3,7 @@ package com.ansill.tesla.api.low.model;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.ansill.utility.Utility.simpleToString;
@@ -86,6 +87,88 @@ public final class ClimateState{
   private final Boolean wiper_blade_heater; // Entry could disappear from JSON
 
   private final int defrost_mode;
+
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(o == null || getClass() != o.getClass()) return false;
+
+    ClimateState that = (ClimateState) o;
+
+    if(battery_heater != that.battery_heater) return false;
+    if(battery_heater_no_power != that.battery_heater_no_power) return false;
+    if(Double.compare(that.driver_temp_setting, driver_temp_setting) != 0) return false;
+    if(fan_status != that.fan_status) return false;
+    if(is_climate_on != that.is_climate_on) return false;
+    if(is_front_defroster_on != that.is_front_defroster_on) return false;
+    if(is_preconditioning != that.is_preconditioning) return false;
+    if(is_rear_defroster_on != that.is_rear_defroster_on) return false;
+    if(Double.compare(that.max_avail_temp, max_avail_temp) != 0) return false;
+    if(Double.compare(that.min_avail_temp, min_avail_temp) != 0) return false;
+    if(Double.compare(that.passenger_temp_setting, passenger_temp_setting) != 0) return false;
+    if(remote_heater_control_enabled != that.remote_heater_control_enabled) return false;
+    if(timestamp != that.timestamp) return false;
+    if(defrost_mode != that.defrost_mode) return false;
+    if(!climate_keeper_mode.equals(that.climate_keeper_mode)) return false;
+    if(!Objects.equals(inside_temp, that.inside_temp)) return false;
+    if(!Objects.equals(is_auto_conditioning_on, that.is_auto_conditioning_on)) return false;
+    if(!left_temp_direction.equals(that.left_temp_direction)) return false;
+    if(!Objects.equals(outside_temp, that.outside_temp)) return false;
+    if(!right_temp_direction.equals(that.right_temp_direction)) return false;
+    if(!Objects.equals(seat_heater_left, that.seat_heater_left)) return false;
+    if(!Objects.equals(seat_heater_rear_center, that.seat_heater_rear_center)) return false;
+    if(!Objects.equals(seat_heater_rear_left, that.seat_heater_rear_left)) return false;
+    if(!Objects.equals(seat_heater_left_back, that.seat_heater_left_back)) return false;
+    if(!Objects.equals(seat_heater_rear_right, that.seat_heater_rear_right)) return false;
+    if(!Objects.equals(seat_heater_right_back, that.seat_heater_right_back)) return false;
+    if(!Objects.equals(seat_heater_right, that.seat_heater_right)) return false;
+    if(!Objects.equals(side_mirror_heaters, that.side_mirror_heaters)) return false;
+    if(!Objects.equals(smart_preconditioning, that.smart_preconditioning)) return false;
+    if(!Objects.equals(steering_wheel_heater, that.steering_wheel_heater)) return false;
+    return Objects.equals(wiper_blade_heater, that.wiper_blade_heater);
+  }
+
+  @Override
+  public int hashCode(){
+    int result;
+    long temp;
+    result = (battery_heater ? 1 : 0);
+    result = 31 * result + (battery_heater_no_power ? 1 : 0);
+    result = 31 * result + climate_keeper_mode.hashCode();
+    temp = Double.doubleToLongBits(driver_temp_setting);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + fan_status;
+    result = 31 * result + Objects.hashCode(inside_temp);
+    result = 31 * result + Objects.hashCode(is_auto_conditioning_on);
+    result = 31 * result + (is_climate_on ? 1 : 0);
+    result = 31 * result + (is_front_defroster_on ? 1 : 0);
+    result = 31 * result + (is_preconditioning ? 1 : 0);
+    result = 31 * result + (is_rear_defroster_on ? 1 : 0);
+    result = 31 * result + left_temp_direction.hashCode();
+    temp = Double.doubleToLongBits(max_avail_temp);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(min_avail_temp);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + Objects.hashCode(outside_temp);
+    temp = Double.doubleToLongBits(passenger_temp_setting);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + (remote_heater_control_enabled ? 1 : 0);
+    result = 31 * result + right_temp_direction.hashCode();
+    result = 31 * result + Objects.hashCode(seat_heater_left);
+    result = 31 * result + Objects.hashCode(seat_heater_rear_center);
+    result = 31 * result + Objects.hashCode(seat_heater_rear_left);
+    result = 31 * result + Objects.hashCode(seat_heater_left_back);
+    result = 31 * result + Objects.hashCode(seat_heater_rear_right);
+    result = 31 * result + Objects.hashCode(seat_heater_right_back);
+    result = 31 * result + Objects.hashCode(seat_heater_right);
+    result = 31 * result + Objects.hashCode(side_mirror_heaters);
+    result = 31 * result + Objects.hashCode(smart_preconditioning);
+    result = 31 * result + Objects.hashCode(steering_wheel_heater);
+    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+    result = 31 * result + Objects.hashCode(wiper_blade_heater);
+    result = 31 * result + defrost_mode;
+    return result;
+  }
 
   public ClimateState(
     boolean battery_heater,

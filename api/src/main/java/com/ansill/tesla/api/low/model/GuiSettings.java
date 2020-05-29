@@ -22,6 +22,34 @@ public final class GuiSettings{
 
   private final boolean show_range_units;
 
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(o == null || getClass() != o.getClass()) return false;
+
+    GuiSettings that = (GuiSettings) o;
+
+    if(gui_24_hour_time != that.gui_24_hour_time) return false;
+    if(timestamp != that.timestamp) return false;
+    if(show_range_units != that.show_range_units) return false;
+    if(!gui_charge_rate_units.equals(that.gui_charge_rate_units)) return false;
+    if(!gui_distance_units.equals(that.gui_distance_units)) return false;
+    if(!gui_range_display.equals(that.gui_range_display)) return false;
+    return gui_temperature_units.equals(that.gui_temperature_units);
+  }
+
+  @Override
+  public int hashCode(){
+    int result = (gui_24_hour_time ? 1 : 0);
+    result = 31 * result + gui_charge_rate_units.hashCode();
+    result = 31 * result + gui_distance_units.hashCode();
+    result = 31 * result + gui_range_display.hashCode();
+    result = 31 * result + gui_temperature_units.hashCode();
+    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+    result = 31 * result + (show_range_units ? 1 : 0);
+    return result;
+  }
+
   public GuiSettings(
     boolean gui_24_hour_time,
     String gui_charge_rate_units,

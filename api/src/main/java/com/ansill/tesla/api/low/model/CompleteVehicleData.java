@@ -37,9 +37,12 @@ public final class CompleteVehicleData extends Vehicle{
     int api_version,
     String backseat_token,
     String backseat_token_updated_at,
-    GuiSettings gui_settings, DriveState drive_state, ChargeState charge_state,
+    GuiSettings gui_settings,
+    DriveState drive_state,
+    ChargeState charge_state,
     ClimateState climate_state,
-    VehicleState vehicle_state, VehicleConfig vehicle_config
+    VehicleState vehicle_state,
+    VehicleConfig vehicle_config
   ){
     super(
       id,
@@ -64,6 +67,34 @@ public final class CompleteVehicleData extends Vehicle{
     this.climate_state = climate_state;
     this.vehicle_state = vehicle_state;
     this.vehicle_config = vehicle_config;
+  }
+
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(o == null || getClass() != o.getClass()) return false;
+    if(!super.equals(o)) return false;
+
+    CompleteVehicleData that = (CompleteVehicleData) o;
+
+    if(!gui_settings.equals(that.gui_settings)) return false;
+    if(!drive_state.equals(that.drive_state)) return false;
+    if(!charge_state.equals(that.charge_state)) return false;
+    if(!climate_state.equals(that.climate_state)) return false;
+    if(!vehicle_state.equals(that.vehicle_state)) return false;
+    return vehicle_config.equals(that.vehicle_config);
+  }
+
+  @Override
+  public int hashCode(){
+    int result = super.hashCode();
+    result = 31 * result + gui_settings.hashCode();
+    result = 31 * result + drive_state.hashCode();
+    result = 31 * result + charge_state.hashCode();
+    result = 31 * result + climate_state.hashCode();
+    result = 31 * result + vehicle_state.hashCode();
+    result = 31 * result + vehicle_config.hashCode();
+    return result;
   }
 
   public DriveState getDriveState(){

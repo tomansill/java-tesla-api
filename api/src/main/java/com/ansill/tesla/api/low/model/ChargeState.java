@@ -3,6 +3,7 @@ package com.ansill.tesla.api.low.model;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.ansill.utility.Utility.simpleToString;
@@ -96,6 +97,114 @@ public final class ChargeState{
   private final String user_charge_enable_request;
 
   private final boolean trip_charging;
+
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(!(o instanceof ChargeState that)) return false;
+
+    if(battery_heater_on != that.battery_heater_on) return false;
+    if(battery_level != that.battery_level) return false;
+    if(Double.compare(that.battery_range, battery_range) != 0) return false;
+    if(charge_current_request != that.charge_current_request) return false;
+    if(charge_current_request_max != that.charge_current_request_max) return false;
+    if(charge_enable_request != that.charge_enable_request) return false;
+    if(Double.compare(that.charge_energy_added, charge_energy_added) != 0) return false;
+    if(charge_limit_soc != that.charge_limit_soc) return false;
+    if(charge_limit_soc_max != that.charge_limit_soc_max) return false;
+    if(charge_limit_soc_min != that.charge_limit_soc_min) return false;
+    if(charge_limit_soc_std != that.charge_limit_soc_std) return false;
+    if(Double.compare(that.charge_miles_added_ideal, charge_miles_added_ideal) != 0) return false;
+    if(Double.compare(that.charge_miles_added_rated, charge_miles_added_rated) != 0) return false;
+    if(charge_port_cold_weather_mode != that.charge_port_cold_weather_mode) return false;
+    if(charge_port_door_open != that.charge_port_door_open) return false;
+    if(Double.compare(that.charge_rate, charge_rate) != 0) return false;
+    if(charge_to_max_range != that.charge_to_max_range) return false;
+    if(charger_actual_current != that.charger_actual_current) return false;
+    if(charger_pilot_current != that.charger_pilot_current) return false;
+    if(charger_power != that.charger_power) return false;
+    if(charger_voltage != that.charger_voltage) return false;
+    if(Double.compare(that.est_battery_range, est_battery_range) != 0) return false;
+    if(fast_charger_present != that.fast_charger_present) return false;
+    if(minutes_to_full_charge != that.minutes_to_full_charge) return false;
+    if(Double.compare(that.ideal_battery_range, ideal_battery_range) != 0) return false;
+    if(managed_charging_active != that.managed_charging_active) return false;
+    if(managed_charging_user_canceled != that.managed_charging_user_canceled) return false;
+    if(max_range_charge_counter != that.max_range_charge_counter) return false;
+    if(scheduled_charging_pending != that.scheduled_charging_pending) return false;
+    if(Double.compare(that.time_to_full_charge, time_to_full_charge) != 0) return false;
+    if(timestamp != that.timestamp) return false;
+    if(usable_battery_level != that.usable_battery_level) return false;
+    if(trip_charging != that.trip_charging) return false;
+    if(!charge_port_latch.equals(that.charge_port_latch)) return false;
+    if(!charger_phases.equals(that.charger_phases)) return false;
+    if(!charging_state.equals(that.charging_state)) return false;
+    if(!conn_charge_cable.equals(that.conn_charge_cable)) return false;
+    if(!fast_charger_brand.equals(that.fast_charger_brand)) return false;
+    if(!fast_charger_type.equals(that.fast_charger_type)) return false;
+    if(!managed_charging_start_time.equals(that.managed_charging_start_time)) return false;
+    if(!not_enough_power_to_heat.equals(that.not_enough_power_to_heat)) return false;
+    if(!Objects.equals(scheduled_charging_start_time, that.scheduled_charging_start_time)) return false;
+    return user_charge_enable_request.equals(that.user_charge_enable_request);
+  }
+
+  @Override
+  public int hashCode(){
+    int result;
+    long temp;
+    result = (battery_heater_on ? 1 : 0);
+    result = 31 * result + battery_level;
+    temp = Double.doubleToLongBits(battery_range);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + charge_current_request;
+    result = 31 * result + charge_current_request_max;
+    result = 31 * result + (charge_enable_request ? 1 : 0);
+    temp = Double.doubleToLongBits(charge_energy_added);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + charge_limit_soc;
+    result = 31 * result + charge_limit_soc_max;
+    result = 31 * result + charge_limit_soc_min;
+    result = 31 * result + charge_limit_soc_std;
+    temp = Double.doubleToLongBits(charge_miles_added_ideal);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    temp = Double.doubleToLongBits(charge_miles_added_rated);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + (charge_port_cold_weather_mode ? 1 : 0);
+    result = 31 * result + (charge_port_door_open ? 1 : 0);
+    result = 31 * result + charge_port_latch.hashCode();
+    temp = Double.doubleToLongBits(charge_rate);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + (charge_to_max_range ? 1 : 0);
+    result = 31 * result + charger_actual_current;
+    result = 31 * result + charger_phases.hashCode();
+    result = 31 * result + charger_pilot_current;
+    result = 31 * result + charger_power;
+    result = 31 * result + charger_voltage;
+    result = 31 * result + charging_state.hashCode();
+    result = 31 * result + conn_charge_cable.hashCode();
+    temp = Double.doubleToLongBits(est_battery_range);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + fast_charger_brand.hashCode();
+    result = 31 * result + (fast_charger_present ? 1 : 0);
+    result = 31 * result + (int) (minutes_to_full_charge ^ (minutes_to_full_charge >>> 32));
+    result = 31 * result + fast_charger_type.hashCode();
+    temp = Double.doubleToLongBits(ideal_battery_range);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + (managed_charging_active ? 1 : 0);
+    result = 31 * result + managed_charging_start_time.hashCode();
+    result = 31 * result + (managed_charging_user_canceled ? 1 : 0);
+    result = 31 * result + max_range_charge_counter;
+    result = 31 * result + not_enough_power_to_heat.hashCode();
+    result = 31 * result + (scheduled_charging_pending ? 1 : 0);
+    result = 31 * result + Objects.hashCode(scheduled_charging_start_time);
+    temp = Double.doubleToLongBits(time_to_full_charge);
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+    result = 31 * result + usable_battery_level;
+    result = 31 * result + user_charge_enable_request.hashCode();
+    result = 31 * result + (trip_charging ? 1 : 0);
+    return result;
+  }
 
   public ChargeState(
     boolean battery_heater_on,

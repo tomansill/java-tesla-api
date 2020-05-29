@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.low.model;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.List;
@@ -35,15 +36,19 @@ public class Vehicle{
 
   protected final int api_version;
 
+  @Nullable
   protected final String backseat_token; // TODO confirm String
 
+  @Nullable
   protected final String backseat_token_updated_at; // TODO confirm String
 
   public Vehicle(
     long id,
     long vehicle_id,
-    long user_id, String vin,
-    String display_name, String option_codes,
+    long user_id,
+    String vin,
+    String display_name,
+    String option_codes,
     String color,
     List<String> tokens,
     String state,
@@ -51,8 +56,8 @@ public class Vehicle{
     String id_s,
     boolean calendar_enabled,
     int api_version,
-    String backseat_token,
-    String backseat_token_updated_at
+    @Nullable String backseat_token,
+    @Nullable String backseat_token_updated_at
   ){
     this.id = id;
     this.vehicle_id = vehicle_id;
@@ -134,5 +139,52 @@ public class Vehicle{
 
   public String getDisplayName(){
     return display_name;
+  }
+
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(o == null || getClass() != o.getClass()) return false;
+
+    Vehicle vehicle = (Vehicle) o;
+
+    if(id != vehicle.id) return false;
+    if(vehicle_id != vehicle.vehicle_id) return false;
+    if(user_id != vehicle.user_id) return false;
+    if(in_service != vehicle.in_service) return false;
+    if(calendar_enabled != vehicle.calendar_enabled) return false;
+    if(api_version != vehicle.api_version) return false;
+    if(!vin.equals(vehicle.vin)) return false;
+    if(!display_name.equals(vehicle.display_name)) return false;
+    if(!option_codes.equals(vehicle.option_codes)) return false;
+    if(!color.equals(vehicle.color)) return false;
+    if(!tokens.equals(vehicle.tokens)) return false;
+    if(!state.equals(vehicle.state)) return false;
+    if(!id_s.equals(vehicle.id_s)) return false;
+    if(backseat_token != null ? !backseat_token.equals(vehicle.backseat_token) : vehicle.backseat_token != null)
+      return false;
+    return backseat_token_updated_at !=
+           null ? backseat_token_updated_at.equals(vehicle.backseat_token_updated_at) : vehicle.backseat_token_updated_at ==
+                                                                                        null;
+  }
+
+  @Override
+  public int hashCode(){
+    int result = (int) (id ^ (id >>> 32));
+    result = 31 * result + (int) (vehicle_id ^ (vehicle_id >>> 32));
+    result = 31 * result + (int) (user_id ^ (user_id >>> 32));
+    result = 31 * result + vin.hashCode();
+    result = 31 * result + display_name.hashCode();
+    result = 31 * result + option_codes.hashCode();
+    result = 31 * result + color.hashCode();
+    result = 31 * result + tokens.hashCode();
+    result = 31 * result + state.hashCode();
+    result = 31 * result + (in_service ? 1 : 0);
+    result = 31 * result + id_s.hashCode();
+    result = 31 * result + (calendar_enabled ? 1 : 0);
+    result = 31 * result + api_version;
+    result = 31 * result + (backseat_token != null ? backseat_token.hashCode() : 0);
+    result = 31 * result + (backseat_token_updated_at != null ? backseat_token_updated_at.hashCode() : 0);
+    return result;
   }
 }

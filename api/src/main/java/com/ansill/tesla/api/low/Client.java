@@ -22,6 +22,7 @@ import com.ansill.tesla.api.low.model.VehicleConfig;
 import com.ansill.tesla.api.low.model.VehicleResponse;
 import com.ansill.tesla.api.low.model.VehicleState;
 import com.ansill.tesla.api.low.model.VehiclesResponse;
+import com.ansill.tesla.api.model.ClientBuilder;
 import com.ansill.tesla.api.utility.HTTPUtility;
 import com.ansill.tesla.api.utility.ReusableResponse;
 import com.ansill.validation.Validation;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
@@ -49,7 +51,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.ansill.tesla.api.utility.Constants.*;
@@ -58,13 +61,13 @@ import static com.ansill.utility.Utility.f;
 /** Low Level Tesla API client */
 public final class Client{
 
-  public final static AtomicBoolean STRICT_DESERIALIZATION = new AtomicBoolean(false);
-
+  /** Gson instance */
   private final static Gson GSON;
 
   /** Logger */
   private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
 
+  /** Number of connection attempts */
   private static final int MAX_ATTEMPTS = 5;
 
   static{
@@ -92,26 +95,23 @@ public final class Client{
 
   private final boolean verifySleepingState = true;
 
-  /**
-   * Sets up low-level client with default URL, client ID, and client secret
-   */
-  public Client(){
-    this(URL, CLIENT_ID, CLIENT_SECRET);
-  }
+  /** Debugging function to fire on unexpected json properties */
+  @Nonnull
+  private final AtomicReference<Function<Object,Boolean>> debug = new AtomicReference<>();
 
-  /**
-   * Sets up low-level client with custom URL, client ID, and client secret
-   *
-   * @param url          URL
-   * @param clientId     client id
-   * @param clientSecret client secret
-   */
-  public Client(@Nonnull String url, @Nonnull String clientId, @Nonnull String clientSecret){
+  private Client(
+    @Nullable String url,
+    @Nullable String clientId,
+    @Nullable String clientSecret,
+    @Nullable Function<Object,Boolean> debug
+  ){
 
-    // Ensure correct parameters
-    Validation.assertNonnull(url, "url");
-    Validation.assertNonnull(clientId, "client_id");
-    Validation.assertNonnull(clientSecret, "client_secret");
+    // Use default if null
+    if(url == null) url = URL;
+    if(clientId == null && clientSecret == null){
+      clientId = CLIENT_ID;
+      clientSecret = CLIENT_SECRET;
+    }
 
     // Ensure that URL is valid
     try{
@@ -123,12 +123,27 @@ public final class Client{
 
     // Assign it
     this.url = url;
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
+    this.clientId = Validation.assertNonnull(clientId, "client_id");
+    this.clientSecret = Validation.assertNonnull(clientSecret, "client_secret");
+    this.debug.set(debug);
+  }
+
+  /**
+   * Creates builder
+   *
+   * @return builder
+   */
+  @Nonnull
+  public static Builder builder(){
+    return new Builder();
   }
 
   @Nonnull
-  private static <T> T fromJson(@Nonnull ReusableResponse response, Class<T> type)
+  private static <T> T fromJson(
+    @Nonnull ReusableResponse response,
+    Class<T> type,
+    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+  )
   throws APIProtocolException, ClientException{
 
     try{
@@ -138,7 +153,7 @@ public final class Client{
                             .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
 
       // Forward it
-      return fromJson(body, type);
+      return fromJson(body, type, debug);
 
     }catch(IOException e){
       throw new ClientException("Failed to parse content of response body", e);
@@ -146,7 +161,11 @@ public final class Client{
   }
 
   @Nonnull
-  private static <T> T fromJson(@Nonnull ReusableResponse response, TypeToken<T> typeToken)
+  private static <T> T fromJson(
+    @Nonnull ReusableResponse response,
+    TypeToken<T> typeToken,
+    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+  )
   throws APIProtocolException, ClientException{
 
     try{
@@ -156,7 +175,7 @@ public final class Client{
                             .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
 
       // Forward it
-      return fromJson(body, typeToken);
+      return fromJson(body, typeToken, debug);
 
     }catch(IOException e){
       throw new ClientException("Failed to parse content of response body", e);
@@ -164,7 +183,11 @@ public final class Client{
   }
 
   @Nonnull
-  private static <T> T fromJson(@Nonnull Response response, Class<T> type)
+  private static <T> T fromJson(
+    @Nonnull Response response,
+    Class<T> type,
+    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+  )
   throws APIProtocolException, ClientException{
 
     try{
@@ -174,7 +197,7 @@ public final class Client{
                                .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
 
       // Forward it
-      return fromJson(body, type);
+      return fromJson(body, type, debug);
 
     }catch(IOException e){
       throw new ClientException("Failed to parse content of response body", e);
@@ -182,7 +205,11 @@ public final class Client{
   }
 
   @Nonnull
-  private static <T> T fromJson(@Nonnull String string, Class<T> type) throws APIProtocolException{
+  private static <T> T fromJson(
+    @Nonnull String string,
+    Class<T> type,
+    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+  ) throws APIProtocolException{
     T item;
     try{
       item = GSON.fromJson(string, type);
@@ -195,47 +222,47 @@ public final class Client{
       type.getName(),
       string
     ));
-    if(STRICT_DESERIALIZATION.get()) checkJSONForMissingFields(string, item);
+    checkJSONForMissingFields(string, item, debug);
     return item;
   }
 
   @SuppressWarnings("unchecked") // Shouldn't have problem with casting
   @Nonnull
-  private static <T> T fromJson(@Nonnull String string, TypeToken<T> typeToken) throws APIProtocolException{
+  private static <T> T fromJson(
+    @Nonnull String string,
+    TypeToken<T> typeToken,
+    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+  ) throws APIProtocolException{
     var item = (T) GSON.fromJson(string, typeToken.getType());
     if(item == null) throw new APIProtocolException(f(
       "The JSON string is not in format of {} class. JSON message \n\"{}\"",
       typeToken.getType().getTypeName(),
       string
     ));
-    if(STRICT_DESERIALIZATION.get()) checkJSONForMissingFields(string, item);
+    checkJSONForMissingFields(string, item, debug);
     return item;
   }
 
-  private static void checkJSONForMissingFields(@Nonnull String string, Object result) throws APIProtocolException{
+  private static void checkJSONForMissingFields(
+    @Nonnull String string,
+    Object result,
+    AtomicReference<Function<Object,Boolean>> debug
+  ) throws APIProtocolException{
 
     // Deserialize JSON but to plain old map
     Map<String,Object> map = GSON.fromJson(string, new TypeToken<Map<String,Object>>(){
     }.getType());
 
     // Run it
-    recursiveCheckJSONForMissingFields(map, result);
-  }
-
-  private static Set<Field> getFields(@Nonnull Class<?> item){
-
-    Set<Field> fields = new HashSet<>(Arrays.asList(item.getDeclaredFields()));
-
-    // Check if there's a parent class that is not Object
-    if(item.getSuperclass() != null){
-      fields.addAll(getFields(item.getSuperclass()));
-    }
-
-    return fields;
+    recursiveCheckJSONForMissingFields(map, result, debug);
   }
 
   @SuppressWarnings("unchecked")
-  private static void recursiveCheckJSONForMissingFields(@Nonnull Map<String,Object> map, @Nonnull Object result){
+  private static void recursiveCheckJSONForMissingFields(
+    @Nonnull Map<String,Object> map,
+    @Nonnull Object result,
+    AtomicReference<Function<Object,Boolean>> debug
+  ) throws APIProtocolException{
 
     // Turn fields to set
     Map<String,Field> fields = getFields(result.getClass()).stream()
@@ -250,15 +277,24 @@ public final class Client{
     for(var entry : map.entrySet()){
 
       if(!fields.containsKey(entry.getKey())){
-        System.err.println(f(
-          "Class '{}' is missing a field called '{}' ({}), Stacktrace: {}",
-          result.getClass().getName(),
-          entry.getKey(),
-          entry.getValue().getClass().getName(),
-          Arrays.stream(Thread.currentThread().getStackTrace())
-                .map(StackTraceElement::toString)
-                .collect(Collectors.joining("\n"))
-        ));
+
+        // Log to logger if debugger is undefined
+        if(debug.get() == null){
+          LOGGER.warn(
+            "Class '{}' is missing a field called '{}' ({}), Stacktrace: {}",
+            result.getClass().getName(),
+            entry.getKey(),
+            entry.getValue().getClass().getName(),
+            Arrays.stream(Thread.currentThread().getStackTrace())
+                  .map(StackTraceElement::toString)
+                  .collect(Collectors.joining("\n"))
+          );
+        }else{
+
+          // Otherwise pass it into debugger
+          if(debug.get().apply(null)) throw new APIProtocolException(null); // TODO define message
+
+        }
       }
 
       // If map, then get equivalent object and follow that in
@@ -273,7 +309,7 @@ public final class Client{
           var value = field.get(result);
 
           // Now analyze that
-          recursiveCheckJSONForMissingFields(inner, value);
+          recursiveCheckJSONForMissingFields(inner, value, debug);
 
         }catch(IllegalAccessException e){
 
@@ -284,7 +320,7 @@ public final class Client{
             var value = field.get(result);
 
             // Now analyze that
-            recursiveCheckJSONForMissingFields(inner, value);
+            recursiveCheckJSONForMissingFields(inner, value, debug);
 
           }catch(IllegalAccessException ex){
             ex.printStackTrace();
@@ -296,6 +332,18 @@ public final class Client{
 
     }
 
+  }
+
+  private static Set<Field> getFields(@Nonnull Class<?> item){
+
+    Set<Field> fields = new HashSet<>(Arrays.asList(item.getDeclaredFields()));
+
+    // Check if there's a parent class that is not Object
+    if(item.getSuperclass() != null){
+      fields.addAll(getFields(item.getSuperclass()));
+    }
+
+    return fields;
   }
 
   /**
@@ -339,13 +387,13 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, SuccessfulAuthenticationResponse.class);
+        case 200 -> fromJson(response, SuccessfulAuthenticationResponse.class, debug);
 
         // Unauthorized
         case 401 -> {
 
           // Parse error
-          var error = fromJson(response, GenericErrorResponse.class);
+          var error = fromJson(response, GenericErrorResponse.class, debug);
 
           // If we get an response, ignore other error
           if(error.getResponse().isPresent()){
@@ -398,11 +446,11 @@ public final class Client{
     Validation.assertNonnull(refreshToken, "refreshToken");
 
     // Set up body
-    var requestBody = new FormBody.Builder().add("token", refreshToken).build();
+    var requestBody = new FormBody.Builder().build();
 
     // Set up request
     Request request = new Request.Builder().url(url + "oauth/revoke")
-                                           .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                                           .addHeader("Authorization", "Bearer " + refreshToken)
                                            .post(requestBody)
                                            .build();
 
@@ -447,31 +495,46 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, SuccessfulAuthenticationResponse.class);
+        case 200 -> fromJson(response, SuccessfulAuthenticationResponse.class, debug);
 
-        // Unauthenticated
+        // Unauthorized
         case 401 -> {
 
-          // Get error
-          var error = fromJson(response, GenericErrorResponse.class);
+          // Parse error
+          var error = fromJson(response, GenericErrorResponse.class, debug);
 
-          // Find out whether if it's password invalid or protocol error
-          if(!"invalid_grant".equals(error.getError().orElse(""))){
+          // If we get an response, ignore other error
+          if(error.getResponse().isPresent()){
 
-            // Respond with exception
-            throw new APIProtocolException(f(
-              "error: {}\t description: {}",
-              error.getError().orElse("Empty error type"),
-              error.getErrorDescription().orElse("Empty error description")
+            // Get response
+            var item = error.getResponse().orElseThrow(() -> new APIProtocolException(f(
+              "Unexpected empty response in object: {}",
+              error
+            )));
+
+            // Check if it's invalid password
+            if(!item.startsWith("authorization_required_for_txid_")) throw new APIProtocolException(f(
+              "Unexpected string in 401 error response: {}",
+              error
             ));
 
+            // It's invalid token error
+            throw new ReAuthenticationException();
+
+          }else{
+
+            // Check if it's invalid_client
+            if("invalid_client".equals(error.getError().orElse(""))){
+              throw new ClientException(error.getErrorDescription().orElseThrow());
+            }
+
+            // Otherwise report protocol error
+            throw new APIProtocolException(f(
+              "error: {}\t description: {}",
+              error.getError(),
+              error.getErrorDescription()
+            ));
           }
-
-          // Log the contents
-          LOGGER.debug("Error contents: {}", error);
-
-          // It's invalid credentials error
-          throw new ReAuthenticationException();
         }
 
         // Unknown
@@ -504,7 +567,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, VehiclesResponse.class);
+        case 200 -> fromJson(response, VehiclesResponse.class, debug);
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -542,7 +605,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> Optional.of(fromJson(response, VehicleResponse.class));
+        case 200 -> Optional.of(fromJson(response, VehicleResponse.class, debug));
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -593,7 +656,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, VehicleResponse.class);
+        case 200 -> fromJson(response, VehicleResponse.class, debug);
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -645,7 +708,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, SimpleReasonResponse.class);
+        case 200 -> fromJson(response, SimpleReasonResponse.class, debug);
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -662,6 +725,90 @@ public final class Client{
         // Unknown
         default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
       };
+
+    }catch(IOException e){
+
+      // Wrap and re-throw
+      throw new ClientException("Unhandled Exception has occurred", e);
+    }
+  }
+
+  @Nonnull
+  private <T> T getVehicleDataForm(
+    @Nonnull String accessToken,
+    @Nonnull String idString,
+    @Nonnull TypeToken<T> typeToken,
+    @Nonnull String path,
+    @Nonnegative int attemptsRemaining
+  ) throws VehicleIDNotFoundException{
+
+    // Set up request
+    Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/" + path)
+                                           .addHeader("Authorization", "Bearer " + accessToken)
+                                           .get()
+                                           .build();
+
+    // Send request
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+
+      // Handle code
+      return switch(response.code()){
+
+        // Success
+        case 200 -> fromJson(response, typeToken, debug);
+
+        // Unauthenticated
+        case 401 -> throw new InvalidAccessTokenException();
+
+        // Not found
+        case 404 -> throw new VehicleIDNotFoundException(idString);
+
+        // In service
+        case 405 -> throw new VehicleInServiceException();
+
+        // Request Timeout
+        case 408 -> throw new VehicleSleepingException();
+
+        // Unknown
+        default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
+      };
+    }catch(SocketTimeoutException e){
+
+      // Possible sleeping state
+      if(!verifySleepingState){
+        throw new ClientException(
+          "SocketTimeoutException thrown on possible sleeping vehicle and Client has been told to not attempt to verify the state",
+          e
+        );
+      }
+
+      // Error if attempts ran out
+      if(attemptsRemaining <= 0) throw new ClientException(
+        "Failed to get vehicle data - client kept getting multiple SocketTimeoutException");
+
+      // Call on vehicle
+      var vehicle = this.getVehicle(accessToken, idString).orElseThrow();
+
+      // Get state - if asleep, throw VehicleUnavailableException
+      if("asleep".equals(vehicle.getResponse().getState())) throw new VehicleSleepingException();
+
+      // Get state - if online, try again
+      if("online".equals(vehicle.getResponse().getState())) return getVehicleDataForm(
+        accessToken,
+        idString,
+        typeToken,
+        path,
+        attemptsRemaining - 1
+      );
+
+      // Get state - if offline, TODO do we need to do anything for this?
+      if("offline".equals(vehicle.getResponse().getState())) throw new VehicleOfflineException();
+
+      // Else throw protocol error
+      throw new APIProtocolException(f(
+        "Cannot determine the cause of SocketTimeoutException, received state '{}'",
+        vehicle.getResponse().getState()
+      ));
 
     }catch(IOException e){
 
@@ -802,87 +949,13 @@ public final class Client{
     return getVehicleDataForm(accessToken, idString, typeToken, path, MAX_ATTEMPTS);
   }
 
-  @Nonnull
-  private <T> T getVehicleDataForm(
-    @Nonnull String accessToken,
-    @Nonnull String idString,
-    @Nonnull TypeToken<T> typeToken,
-    @Nonnull String path,
-    @Nonnegative int attemptsRemaining
-  ) throws VehicleIDNotFoundException{
+  /** Builder */
+  public static class Builder extends ClientBuilder<Client>{
 
-    // Set up request
-    Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/" + path)
-                                           .addHeader("Authorization", "Bearer " + accessToken)
-                                           .get()
-                                           .build();
-
-    // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
-
-      // Handle code
-      return switch(response.code()){
-
-        // Success
-        case 200 -> fromJson(response, typeToken);
-
-        // Unauthenticated
-        case 401 -> throw new InvalidAccessTokenException();
-
-        // Not found
-        case 404 -> throw new VehicleIDNotFoundException(idString);
-
-        // In service
-        case 405 -> throw new VehicleInServiceException();
-
-        // Request Timeout
-        case 408 -> throw new VehicleSleepingException();
-
-        // Unknown
-        default -> throw new APIProtocolException(f("Unexpected status code: {}", response.code()));
-      };
-    }catch(SocketTimeoutException e){
-
-      // Possible sleeping state
-      if(!verifySleepingState){
-        throw new ClientException(
-          "SocketTimeoutException thrown on possible sleeping vehicle and Client has been told to not attempt to verify the state",
-          e
-        );
-      }
-
-      // Error if attempts ran out
-      if(attemptsRemaining <= 0) throw new ClientException(
-        "Failed to get vehicle data - client kept getting multiple SocketTimeoutException");
-
-      // Call on vehicle
-      var vehicle = this.getVehicle(accessToken, idString).orElseThrow();
-
-      // Get state - if asleep, throw VehicleUnavailableException
-      if("asleep".equals(vehicle.getResponse().getState())) throw new VehicleSleepingException();
-
-      // Get state - if online, try again
-      if("online".equals(vehicle.getResponse().getState())) return getVehicleDataForm(
-        accessToken,
-        idString,
-        typeToken,
-        path,
-        attemptsRemaining - 1
-      );
-
-      // Get state - if offline, TODO do we need to do anything for this?
-      if("offline".equals(vehicle.getResponse().getState())) throw new VehicleOfflineException();
-
-      // Else throw protocol error
-      throw new APIProtocolException(f(
-        "Cannot determine the cause of SocketTimeoutException, received state '{}'",
-        vehicle.getResponse().getState()
-      ));
-
-    }catch(IOException e){
-
-      // Wrap and re-throw
-      throw new ClientException("Unhandled Exception has occurred", e);
+    @Nonnull
+    @Override
+    public Client build(){
+      return new Client(url, clientId, clientSecret, debug);
     }
   }
 

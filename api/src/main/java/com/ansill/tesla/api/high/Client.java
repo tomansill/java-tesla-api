@@ -3,6 +3,7 @@ package com.ansill.tesla.api.high;
 import com.ansill.tesla.api.low.exception.AuthenticationException;
 import com.ansill.tesla.api.low.exception.ReAuthenticationException;
 import com.ansill.tesla.api.med.model.AccountCredentials;
+import com.ansill.tesla.api.model.ClientBuilder;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
@@ -11,13 +12,11 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static com.ansill.tesla.api.utility.Constants.*;
-
 /** Highly-Opinionated client */
 public final class Client{
 
   /** Default fast changing data lifetime - used to prevent too-frequent polling */
-  private static final Duration DEFAULT_FAST_CHANGING_DATA_LIFETIME = Duration.ofMillis(250); // 1/4 seconds
+  private static final Duration DEFAULT_FAST_CHANGING_DATA_LIFETIME = Duration.ofMillis(100); // 1/10 seconds
 
   /** Default slow changing data lifetime - used to prevent too-frequent polling */
   private static final Duration DEFAULT_SLOW_CHANGING_DATA_LIFETIME = Duration.ofMinutes(1);
@@ -30,29 +29,41 @@ public final class Client{
   private static final AtomicReference<Duration> GLOBAL_SLOW_CHANGING_DATA_LIFETIME = new AtomicReference<>(
     DEFAULT_SLOW_CHANGING_DATA_LIFETIME);
 
-  /** Low-level client */
+  /** Med-level client */
   private final com.ansill.tesla.api.med.Client client;
 
-  /** Sets up high-level client with default URL, client ID, and client secret */
-  public Client(){
-    this(URL, CLIENT_ID, CLIENT_SECRET);
+  /**
+   * Constructor that constructs high-level client using medium-level client
+   *
+   * @param client medium-level client
+   */
+  private Client(@Nonnull com.ansill.tesla.api.med.Client client){
+    this.client = client;
   }
 
   /**
-   * Sets up high-level client with custom URL, client ID, and client secret
+   * Creates builder
    *
-   * @param url          URL
-   * @param clientId     client id
-   * @param clientSecret client secret
+   * @return builder
    */
-  public Client(@Nonnull String url, @Nonnull String clientId, @Nonnull String clientSecret){
+  @Nonnull
+  public static com.ansill.tesla.api.high.Client.Builder builder(){
+    return new com.ansill.tesla.api.high.Client.Builder();
+  }
 
-    // Assign it
-    this.client = new com.ansill.tesla.api.med.Client(
-      Validation.assertNonemptyString(url),
-      Validation.assertNonemptyString(clientId),
-      Validation.assertNonemptyString(clientSecret)
-    );
+  /** Builder */
+  public static class Builder extends ClientBuilder<com.ansill.tesla.api.high.Client>{
+
+    @Nonnull
+    @Override
+    public com.ansill.tesla.api.high.Client build(){
+      return new com.ansill.tesla.api.high.Client(com.ansill.tesla.api.med.Client.builder()
+                                                                                 .setUrl(this.url)
+                                                                                 .setClientId(clientId)
+                                                                                 .setClientSecret(clientSecret)
+                                                                                 .setDebugFunction(debug)
+                                                                                 .build());
+    }
   }
 
   public void setGlobalFastChangingDataLifetime(@Nonnull Duration duration){

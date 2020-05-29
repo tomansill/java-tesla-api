@@ -58,6 +58,70 @@ public final class VehicleConfig{
 
   private final boolean use_range_badging;
 
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(o == null || getClass() != o.getClass()) return false;
+
+    VehicleConfig that = (VehicleConfig) o;
+
+    if(can_accept_navigation_requests != that.can_accept_navigation_requests) return false;
+    if(can_actuate_trunks != that.can_actuate_trunks) return false;
+    if(eu_vehicle != that.eu_vehicle) return false;
+    if(has_air_suspension != that.has_air_suspension) return false;
+    if(has_ludicrous_mode != that.has_ludicrous_mode) return false;
+    if(key_version != that.key_version) return false;
+    if(motorized_charge_port != that.motorized_charge_port) return false;
+    if(plg != that.plg) return false;
+    if(rear_seat_heaters != that.rear_seat_heaters) return false;
+    if(rear_seat_type != that.rear_seat_type) return false;
+    if(rhd != that.rhd) return false;
+    if(seat_type != that.seat_type) return false;
+    if(sun_roof_installed != that.sun_roof_installed) return false;
+    if(timestamp != that.timestamp) return false;
+    if(use_range_badging != that.use_range_badging) return false;
+    if(!car_special_type.equals(that.car_special_type)) return false;
+    if(!car_type.equals(that.car_type)) return false;
+    if(!charge_port_type.equals(that.charge_port_type)) return false;
+    if(!exterior_color.equals(that.exterior_color)) return false;
+    if(!perf_config.equals(that.perf_config)) return false;
+    if(!roof_color.equals(that.roof_color)) return false;
+    if(!spoiler_type.equals(that.spoiler_type)) return false;
+    if(!third_row_seats.equals(that.third_row_seats)) return false;
+    if(!trim_badging.equals(that.trim_badging)) return false;
+    return wheel_type.equals(that.wheel_type);
+  }
+
+  @Override
+  public int hashCode(){
+    int result = (can_accept_navigation_requests ? 1 : 0);
+    result = 31 * result + (can_actuate_trunks ? 1 : 0);
+    result = 31 * result + car_special_type.hashCode();
+    result = 31 * result + car_type.hashCode();
+    result = 31 * result + charge_port_type.hashCode();
+    result = 31 * result + (eu_vehicle ? 1 : 0);
+    result = 31 * result + exterior_color.hashCode();
+    result = 31 * result + (has_air_suspension ? 1 : 0);
+    result = 31 * result + (has_ludicrous_mode ? 1 : 0);
+    result = 31 * result + key_version;
+    result = 31 * result + (motorized_charge_port ? 1 : 0);
+    result = 31 * result + perf_config.hashCode();
+    result = 31 * result + (plg ? 1 : 0);
+    result = 31 * result + rear_seat_heaters;
+    result = 31 * result + rear_seat_type;
+    result = 31 * result + (rhd ? 1 : 0);
+    result = 31 * result + roof_color.hashCode();
+    result = 31 * result + seat_type;
+    result = 31 * result + spoiler_type.hashCode();
+    result = 31 * result + sun_roof_installed;
+    result = 31 * result + third_row_seats.hashCode();
+    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+    result = 31 * result + trim_badging.hashCode();
+    result = 31 * result + wheel_type.hashCode();
+    result = 31 * result + (use_range_badging ? 1 : 0);
+    return result;
+  }
+
   public VehicleConfig(
     boolean can_accept_navigation_requests,
     boolean can_actuate_trunks,
