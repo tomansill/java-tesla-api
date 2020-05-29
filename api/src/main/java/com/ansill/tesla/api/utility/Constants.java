@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.utility;
 
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.utility.Utility.f;
 
 public final class Constants{
 

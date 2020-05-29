@@ -98,6 +98,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.ansill.utility</groupId>
+            <artifactId>utility</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.ansill.lock</groupId>
             <artifactId>AutoLock</artifactId>
             <version>0.2.2</version>

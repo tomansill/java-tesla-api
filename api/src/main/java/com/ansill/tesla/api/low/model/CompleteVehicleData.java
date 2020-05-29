@@ -3,7 +3,7 @@ package com.ansill.tesla.api.low.model;
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
-import static com.ansill.tesla.api.utility.Utility.simpleToString;
+import static com.ansill.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 @Immutable

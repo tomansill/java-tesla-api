@@ -2,7 +2,7 @@ package com.ansill.tesla.api.high.exception;
 
 import javax.annotation.Nonnull;
 
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.utility.Utility.f;
 
 public class VehicleNotFoundException extends RuntimeException{
 

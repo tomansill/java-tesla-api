@@ -13,7 +13,7 @@ import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.utility.Utility.f;
 import static tech.units.indriya.unit.Units.RADIAN;
 
 /**

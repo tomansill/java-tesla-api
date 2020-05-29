@@ -16,16 +16,18 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ansill.utility.Utility.f;
+
 /**
  * Utility Class
  */
-public final class Utility{
+public final class HTTPUtility{
 
   // Purely for debugging - remove later
   @Deprecated
   public static final AtomicReference<BiConsumer<Request,ReusableResponse>> HTTP_LOGGING = new AtomicReference<>();
 
-  private Utility(){
+  private HTTPUtility(){
     throw new AssertionError(f("No {} instances for you!", this.getClass().getName()));
   }
 
@@ -98,75 +100,6 @@ public final class Utility{
     if(object == null) return "null";
     if(object instanceof String) return "\"" + object.toString() + "\"";
     else return object.toString();
-  }
-
-  /**
-   * Formats string, replaces any '{}' with objects
-   *
-   * @param message message with '{}'
-   * @param objects objects to replace
-   * @return formatted string
-   */
-  @Nonnull
-  public static String f(@Nonnull String message, @Nonnull Object... objects){
-    return format(message, objects);
-  }
-
-  /**
-   * Formats string, replaces any '{}' with objects
-   *
-   * @param message message with '{}'
-   * @param objects objects to replace
-   * @return formatted string
-   */
-  @Nonnull
-  public static String format(@Nullable String message, @Nullable Object... objects){
-
-    // If any of parameters are null, then return message
-    if(message == null) return "null";
-    if(objects == null) return message;
-
-    // Set up builder
-    StringBuilder builder = new StringBuilder();
-
-    // Set up index in objects
-    int objects_index = 0;
-
-    // Set up indices for message
-    int previous_index = 0;
-    int brace_index = 0;
-
-    // Loop until all is replaced or all elements in object array is used
-    while(objects_index < objects.length && (brace_index = message.indexOf("{}", brace_index)) != -1){
-
-      // Copy in characters since previous index
-      builder.append(message, previous_index, brace_index);
-
-      // Update brace index to skip "{}"
-      brace_index = Math.min(brace_index + 2, message.length());
-
-      // Update the previous index
-      previous_index = brace_index;
-
-      // Format 'null' if null
-      if(objects[objects_index] == null) builder.append("null");
-
-        // Use normal string if String
-      else if(objects[objects_index] instanceof String) builder.append((String) objects[objects_index]);
-
-        // Else, use .toString() method
-      else builder.append(objects[objects_index].toString());
-
-      // Increment the array
-      objects_index++;
-
-    }
-
-    // Finish the string if there's any remaining
-    if(previous_index < message.length()) builder.append(message, previous_index, message.length());
-
-    // Return result
-    return builder.toString();
   }
 
 }

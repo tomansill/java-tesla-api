@@ -2,7 +2,7 @@ package com.ansill.tesla.api.low.exception;
 
 import javax.annotation.Nonnull;
 
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.utility.Utility.f;
 
 /** Client-related Exception */
 public class ClientException extends RuntimeException{

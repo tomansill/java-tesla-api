@@ -3,7 +3,7 @@ package com.ansill.tesla.api.low.model;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import static com.ansill.tesla.api.utility.Utility.simpleToString;
+import static com.ansill.utility.Utility.simpleToString;
 
 /** Complete Vehicle Data Response */
 @Immutable

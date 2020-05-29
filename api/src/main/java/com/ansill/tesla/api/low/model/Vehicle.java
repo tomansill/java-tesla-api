@@ -4,7 +4,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.List;
 
-import static com.ansill.tesla.api.utility.Utility.simpleToString;
+import static com.ansill.utility.Utility.simpleToString;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 @Immutable

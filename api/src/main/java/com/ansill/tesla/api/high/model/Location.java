@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.high.model;
 
-import com.ansill.tesla.api.utility.Utility;
+import com.ansill.utility.Utility;
 import com.ansill.validation.Validation;
 import tech.units.indriya.function.MultiplyConverter;
 import tech.units.indriya.quantity.Quantities;
@@ -12,7 +12,7 @@ import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Angle;
 
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.utility.Utility.f;
 import static tech.units.indriya.unit.Units.RADIAN;
 
 /** Location that includes latitude and longitude coordinate and heading */

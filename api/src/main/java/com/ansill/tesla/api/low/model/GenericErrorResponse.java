@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Optional;
 
-import static com.ansill.tesla.api.utility.Utility.simpleToString;
+import static com.ansill.utility.Utility.simpleToString;
 
 /** Generic Error Response */
 @Immutable

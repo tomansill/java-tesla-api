@@ -22,8 +22,8 @@ import com.ansill.tesla.api.low.model.VehicleConfig;
 import com.ansill.tesla.api.low.model.VehicleResponse;
 import com.ansill.tesla.api.low.model.VehicleState;
 import com.ansill.tesla.api.low.model.VehiclesResponse;
+import com.ansill.tesla.api.utility.HTTPUtility;
 import com.ansill.tesla.api.utility.ReusableResponse;
-import com.ansill.tesla.api.utility.Utility;
 import com.ansill.validation.Validation;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.ansill.tesla.api.utility.Constants.*;
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.utility.Utility.f;
 
 /** Low Level Tesla API client */
 public final class Client{
@@ -170,8 +170,8 @@ public final class Client{
     try{
 
       // Get body
-      String body = Utility.getStringFromResponseBody(response)
-                           .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
+      String body = HTTPUtility.getStringFromResponseBody(response)
+                               .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
 
       // Forward it
       return fromJson(body, type);
@@ -333,7 +333,7 @@ public final class Client{
 
 
     // Send request
-    try(ReusableResponse response = Utility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
 
       // Handle code
       return switch(response.code()){
@@ -407,7 +407,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = Utility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
 
       // Handle code
       if(response.code() != 200){
@@ -441,7 +441,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = Utility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
 
       // Handle code
       return switch(response.code()){
@@ -498,7 +498,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = Utility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
 
       // Handle code
       return switch(response.code()){
@@ -536,7 +536,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = Utility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
 
       // Handle code
       return switch(response.code()){
@@ -587,7 +587,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = Utility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
 
       // Handle code
       return switch(response.code()){
@@ -639,7 +639,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = Utility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
 
       // Handle code
       return switch(response.code()){
@@ -818,7 +818,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = Utility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request)){
 
       // Handle code
       return switch(response.code()){

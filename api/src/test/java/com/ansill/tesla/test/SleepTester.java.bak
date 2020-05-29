@@ -16,7 +16,7 @@ import java.io.Reader;
 import java.time.Duration;
 import java.util.Properties;
 
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.tesla.api.utility.HTTPUtility.f;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class SleepTester{

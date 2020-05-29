@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.ansill.tesla.api.utility.Utility.simpleToString;
+import static com.ansill.utility.Utility.simpleToString;
 
 /** Reusable version of Response - allows us to read response body many times */
 public class ReusableResponse implements AutoCloseable{
@@ -29,7 +29,7 @@ public class ReusableResponse implements AutoCloseable{
   @Nonnull
   public synchronized Optional<String> getBodyAsString() throws IOException{
     if(bodyString != null) return Optional.of(bodyString);
-    bodyString = Utility.getStringFromResponseBody(response).orElse(null);
+    bodyString = HTTPUtility.getStringFromResponseBody(response).orElse(null);
     return Optional.ofNullable(bodyString);
   }
 

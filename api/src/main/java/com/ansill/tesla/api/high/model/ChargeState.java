@@ -2,7 +2,7 @@ package com.ansill.tesla.api.high.model;
 
 import com.ansill.tesla.api.model.ChargingState;
 import com.ansill.tesla.api.model.LatchState;
-import com.ansill.tesla.api.utility.Utility;
+import com.ansill.utility.Utility;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

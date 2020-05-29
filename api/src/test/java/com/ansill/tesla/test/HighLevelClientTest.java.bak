@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static com.ansill.tesla.api.utility.Constants.*;
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.tesla.api.utility.HTTPUtility.f;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HighLevelClientTest{

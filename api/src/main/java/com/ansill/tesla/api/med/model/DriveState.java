@@ -15,7 +15,7 @@ import javax.measure.quantity.Power;
 import javax.measure.quantity.Speed;
 import java.time.Instant;
 
-import static com.ansill.tesla.api.utility.Utility.f;
+import static com.ansill.utility.Utility.f;
 
 @Immutable
 public final class DriveState{
