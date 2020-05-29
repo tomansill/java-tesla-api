@@ -4,6 +4,7 @@ public enum ChargingState{
   DISCONNECTED,
   STARTING,
   CHARGING,
+  NOPOWER,
   STOPPED,
   COMPLETE
 }

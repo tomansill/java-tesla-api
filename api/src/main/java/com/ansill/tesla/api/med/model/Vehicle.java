@@ -139,7 +139,8 @@ public final class Vehicle{
   public enum State{
     ASLEEP,
     ONLINE,
-    DRIVING
+    DRIVING,
+    OFFLINE
     //Others??
   }
 }

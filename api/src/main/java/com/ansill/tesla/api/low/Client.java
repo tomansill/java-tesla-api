@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.low;
 
+import com.ansill.tesla.api.exception.VehicleInServiceException;
 import com.ansill.tesla.api.exception.VehicleOfflineException;
 import com.ansill.tesla.api.exception.VehicleSleepingException;
 import com.ansill.tesla.api.low.exception.APIProtocolException;
@@ -36,6 +37,7 @@ import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -61,7 +63,9 @@ public final class Client{
   private final static Gson GSON;
 
   /** Logger */
-  private static final Logger LOG = LoggerFactory.getLogger(Client.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
+
+  private static final int MAX_ATTEMPTS = 5;
 
   static{
     // builder
@@ -300,7 +304,8 @@ public final class Client{
    * @param emailAddress email address to the account
    * @param password     password to the account
    * @return object that contains access and refresh tokens
-   * @throws IOException thrown if failed to read from the service
+   * @throws AuthenticationException thrown if failed to authenticate
+   * @throws ClientException         thrown if failed to read from the service
    */
   @Nonnull
   public SuccessfulAuthenticationResponse authenticate(
@@ -463,7 +468,7 @@ public final class Client{
           }
 
           // Log the contents
-          LOG.debug("Error contents: {}", error);
+          LOGGER.debug("Error contents: {}", error);
 
           // It's invalid credentials error
           throw new ReAuthenticationException();
@@ -596,6 +601,9 @@ public final class Client{
         // Not found
         case 404 -> throw new VehicleIDNotFoundException(idString);
 
+        // In service
+        case 405 -> throw new VehicleInServiceException();
+
         // Request Timeout
         case 408 -> throw new VehicleSleepingException(); // TODO will this ever happen?
 
@@ -641,6 +649,9 @@ public final class Client{
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
+
+        // In service
+        case 405 -> throw new VehicleInServiceException();
 
         // Request Timeout
         case 408 -> throw new VehicleSleepingException();
@@ -780,7 +791,6 @@ public final class Client{
     return this.invokeSimpleCommand(accessToken, idString, "cancel_software_update");
   }
 
-
   @Nonnull
   private <T> T getVehicleDataForm(
     @Nonnull String accessToken,
@@ -789,6 +799,17 @@ public final class Client{
     @Nonnull String path
   )
   throws VehicleIDNotFoundException{
+    return getVehicleDataForm(accessToken, idString, typeToken, path, MAX_ATTEMPTS);
+  }
+
+  @Nonnull
+  private <T> T getVehicleDataForm(
+    @Nonnull String accessToken,
+    @Nonnull String idString,
+    @Nonnull TypeToken<T> typeToken,
+    @Nonnull String path,
+    @Nonnegative int attemptsRemaining
+  ) throws VehicleIDNotFoundException{
 
     // Set up request
     Request request = new Request.Builder().url(url + "api/1/vehicles/" + idString + "/" + path)
@@ -811,6 +832,9 @@ public final class Client{
         // Not found
         case 404 -> throw new VehicleIDNotFoundException(idString);
 
+        // In service
+        case 405 -> throw new VehicleInServiceException();
+
         // Request Timeout
         case 408 -> throw new VehicleSleepingException();
 
@@ -827,6 +851,10 @@ public final class Client{
         );
       }
 
+      // Error if attempts ran out
+      if(attemptsRemaining <= 0) throw new ClientException(
+        "Failed to get vehicle data - client kept getting multiple SocketTimeoutException");
+
       // Call on vehicle
       var vehicle = this.getVehicle(accessToken, idString).orElseThrow();
 
@@ -838,7 +866,8 @@ public final class Client{
         accessToken,
         idString,
         typeToken,
-        path
+        path,
+        attemptsRemaining - 1
       );
 
       // Get state - if offline, TODO do we need to do anything for this?
