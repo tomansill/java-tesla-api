@@ -1,6 +1,7 @@
 package com.ansill.tesla.api.test;
 
 import com.ansill.tesla.api.exception.VehicleInServiceException;
+import com.ansill.tesla.api.exception.VehicleOfflineException;
 import com.ansill.tesla.api.exception.VehicleSleepingException;
 import com.ansill.tesla.api.low.Client;
 import com.ansill.tesla.api.low.exception.APIProtocolException;
@@ -25,11 +26,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -944,6 +949,158 @@ class LowClientTest{
   }
 
   @Test
+  void testCompleteVehicleSleepingViaSocketException(){
+
+    // Get old refresh token
+    var accessToken = generateString(32);
+
+    // Generate vehicle
+    var vehicle_temp = generateVehicle();
+
+    // We have to set the state and vehicle is an immutable object... oh bother
+    var vehicle = new Vehicle(
+      vehicle_temp.getId(),
+      vehicle_temp.getVehicleId(),
+      vehicle_temp.getUserId(),
+      vehicle_temp.getVIN(),
+      vehicle_temp.getDisplayName(),
+      vehicle_temp.getOptionCodes(),
+      vehicle_temp.getColor(),
+      vehicle_temp.getTokens(),
+      com.ansill.tesla.api.med.model.Vehicle.State.ASLEEP.toString().toLowerCase(),
+      vehicle_temp.isInService(),
+      vehicle_temp.getOptionCodes(),
+      vehicle_temp.isCalendarEnabled(),
+      vehicle_temp.getApiVersion(),
+      vehicle_temp.getBackseatToken(),
+      vehicle_temp.getBackseatTokenUpdatedAt()
+    );
+
+    // Set up 'catch' function
+    var tripped = new AtomicBoolean(false);
+    var cdl = new CountDownLatch(1);
+    VEHICLE_HANDLER.set(ctx -> {
+
+      // Tripped is for second connection after sockettimeout
+      if(tripped.getAndSet(true)){
+
+        // Return vehicle data
+        ctx.status(200);
+        ctx.result(writeToJson(GSON, new VehicleResponse(vehicle)));
+
+        return;
+      }
+
+      // Ensure no leftovers
+      try{
+        var pathParams = new HashSet<>(ctx.pathParamMap().keySet());
+        assertTrue(pathParams.remove("id"));
+        assertTrue(pathParams.remove("type"));
+        assertEquals(Collections.emptySet(), pathParams);
+        assertEquals(Collections.emptySet(), ctx.formParamMap().keySet());
+        assertEquals(Collections.emptySet(), ctx.queryParamMap().keySet());
+
+        // Must be get
+        assertEquals("get", ctx.method().toLowerCase());
+
+        // Bearer must exist and path params must match
+        assertEquals("Bearer " + accessToken, ctx.header("Authorization"));
+        assertEquals("vehicle_data", ctx.pathParam("type"));
+
+        // Stall
+        cdl.await(30, TimeUnit.SECONDS);
+        //Thread.sleep(Duration.ofSeconds(2).toMillis());
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+
+    // Set timeout to too low
+    client.setReadTimeoutDuration(Duration.ofMillis(150));
+
+    // Fire it
+    assertThrows(VehicleSleepingException.class, () -> client.getVehicleData(accessToken, vehicle.getIdString()));
+    cdl.countDown();
+  }
+
+  @Test
+  void testCompleteVehicleOffline(){
+
+    // Get old refresh token
+    var accessToken = generateString(32);
+
+    // Generate vehicle
+    var vehicle_temp = generateVehicle();
+
+    // We have to set the state and vehicle is an immutable object... oh bother
+    var vehicle = new Vehicle(
+      vehicle_temp.getId(),
+      vehicle_temp.getVehicleId(),
+      vehicle_temp.getUserId(),
+      vehicle_temp.getVIN(),
+      vehicle_temp.getDisplayName(),
+      vehicle_temp.getOptionCodes(),
+      vehicle_temp.getColor(),
+      vehicle_temp.getTokens(),
+      com.ansill.tesla.api.med.model.Vehicle.State.OFFLINE.toString().toLowerCase(),
+      vehicle_temp.isInService(),
+      vehicle_temp.getOptionCodes(),
+      vehicle_temp.isCalendarEnabled(),
+      vehicle_temp.getApiVersion(),
+      vehicle_temp.getBackseatToken(),
+      vehicle_temp.getBackseatTokenUpdatedAt()
+    );
+
+    // Set up 'catch' function
+    var tripped = new AtomicBoolean(false);
+    var cdl = new CountDownLatch(1);
+    VEHICLE_HANDLER.set(ctx -> {
+
+      // Tripped is for second connection after sockettimeout
+      if(tripped.getAndSet(true)){
+
+        // Return vehicle data
+        ctx.status(200);
+        ctx.result(writeToJson(GSON, new VehicleResponse(vehicle)));
+
+        return;
+      }
+
+      // Ensure no leftovers
+      try{
+        var pathParams = new HashSet<>(ctx.pathParamMap().keySet());
+        assertTrue(pathParams.remove("id"));
+        assertTrue(pathParams.remove("type"));
+        assertEquals(Collections.emptySet(), pathParams);
+        assertEquals(Collections.emptySet(), ctx.formParamMap().keySet());
+        assertEquals(Collections.emptySet(), ctx.queryParamMap().keySet());
+
+        // Must be get
+        assertEquals("get", ctx.method().toLowerCase());
+
+        // Bearer must exist and path params must match
+        assertEquals("Bearer " + accessToken, ctx.header("Authorization"));
+        assertEquals("vehicle_data", ctx.pathParam("type"));
+
+        // Stall
+        //Thread.sleep(Duration.ofSeconds(2).toMillis());
+        cdl.await(30, TimeUnit.SECONDS);
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+
+    // Set timeout to too low
+    client.setReadTimeoutDuration(Duration.ofMillis(150));
+
+    // Fire it
+    assertThrows(VehicleOfflineException.class, () -> client.getVehicleData(accessToken, vehicle.getIdString()));
+    cdl.countDown();
+  }
+
+  @Test
   void testCompleteVehicleUnexpected(){
 
     // Get old refresh token
@@ -1233,6 +1390,159 @@ class LowClientTest{
     assertThrows(APIProtocolException.class, () -> function.accept(accessToken, vehicle.getIdString()));
   }
 
+  void testVehicleDataSleepingViaSocketException(String path, CheckedBiConsumer<String,String> function){
+
+    // Get old refresh token
+    var accessToken = generateString(32);
+
+    // Generate vehicle
+    var vehicle_temp = generateVehicle();
+
+    // We have to set the state and vehicle is an immutable object... oh bother
+    var vehicle = new Vehicle(
+      vehicle_temp.getId(),
+      vehicle_temp.getVehicleId(),
+      vehicle_temp.getUserId(),
+      vehicle_temp.getVIN(),
+      vehicle_temp.getDisplayName(),
+      vehicle_temp.getOptionCodes(),
+      vehicle_temp.getColor(),
+      vehicle_temp.getTokens(),
+      com.ansill.tesla.api.med.model.Vehicle.State.ASLEEP.toString().toLowerCase(),
+      vehicle_temp.isInService(),
+      vehicle_temp.getOptionCodes(),
+      vehicle_temp.isCalendarEnabled(),
+      vehicle_temp.getApiVersion(),
+      vehicle_temp.getBackseatToken(),
+      vehicle_temp.getBackseatTokenUpdatedAt()
+    );
+
+    // Set up 'catch' function
+    var cdl = new CountDownLatch(1);
+    VEHICLE_HANDLER.set(ctx -> {
+
+      try{
+
+        // Return vehicle data
+        ctx.status(200);
+        ctx.result(writeToJson(GSON, new VehicleResponse(vehicle)));
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+    VEHICLE_DATA_HANDLER.set(ctx -> {
+      try{
+
+        // Ensure no leftovers
+        var pathParams = new HashSet<>(ctx.pathParamMap().keySet());
+        assertTrue(pathParams.remove("id"));
+        assertTrue(pathParams.remove("type"));
+        assertEquals(Collections.emptySet(), pathParams);
+        assertEquals(Collections.emptySet(), ctx.formParamMap().keySet());
+        assertEquals(Collections.emptySet(), ctx.queryParamMap().keySet());
+
+        // Must be get
+        assertEquals("get", ctx.method().toLowerCase());
+
+        // Bearer must exist and path params must match
+        assertEquals("Bearer " + accessToken, ctx.header("Authorization"));
+        assertEquals(path, ctx.pathParam("type"));
+
+        // Stall
+        //Thread.sleep(Duration.ofSeconds(2).toMillis());
+        cdl.await(30, TimeUnit.SECONDS);
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+
+    // Set timeout to too low
+    client.setReadTimeoutDuration(Duration.ofMillis(150));
+
+    // Fire it
+    assertThrows(VehicleSleepingException.class, () -> function.accept(accessToken, vehicle.getIdString()));
+    cdl.countDown();
+  }
+
+  void testVehicleDataOffline(String path, CheckedBiConsumer<String,String> function){
+
+    // Get old refresh token
+    var accessToken = generateString(32);
+
+    // Generate vehicle
+    var vehicle_temp = generateVehicle();
+
+    // We have to set the state and vehicle is an immutable object... oh bother
+    var vehicle = new Vehicle(
+      vehicle_temp.getId(),
+      vehicle_temp.getVehicleId(),
+      vehicle_temp.getUserId(),
+      vehicle_temp.getVIN(),
+      vehicle_temp.getDisplayName(),
+      vehicle_temp.getOptionCodes(),
+      vehicle_temp.getColor(),
+      vehicle_temp.getTokens(),
+      com.ansill.tesla.api.med.model.Vehicle.State.OFFLINE.toString().toLowerCase(),
+      vehicle_temp.isInService(),
+      vehicle_temp.getOptionCodes(),
+      vehicle_temp.isCalendarEnabled(),
+      vehicle_temp.getApiVersion(),
+      vehicle_temp.getBackseatToken(),
+      vehicle_temp.getBackseatTokenUpdatedAt()
+    );
+
+    // Set up 'catch' function
+    var cdl = new CountDownLatch(1);
+    VEHICLE_HANDLER.set(ctx -> {
+
+      try{
+
+        // Return vehicle data
+        ctx.status(200);
+        ctx.result(writeToJson(GSON, new VehicleResponse(vehicle)));
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+    VEHICLE_DATA_HANDLER.set(ctx -> {
+
+      try{
+
+        // Ensure no leftovers
+        var pathParams = new HashSet<>(ctx.pathParamMap().keySet());
+        assertTrue(pathParams.remove("id"));
+        assertTrue(pathParams.remove("type"));
+        assertEquals(Collections.emptySet(), pathParams);
+        assertEquals(Collections.emptySet(), ctx.formParamMap().keySet());
+        assertEquals(Collections.emptySet(), ctx.queryParamMap().keySet());
+
+        // Must be get
+        assertEquals("get", ctx.method().toLowerCase());
+
+        // Bearer must exist and path params must match
+        assertEquals("Bearer " + accessToken, ctx.header("Authorization"));
+        assertEquals(path, ctx.pathParam("type"));
+
+        // Stall
+        Thread.sleep(Duration.ofSeconds(2).toMillis());
+        cdl.await(30, TimeUnit.SECONDS);
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+
+    // Set timeout to too low
+    client.setReadTimeoutDuration(Duration.ofMillis(150));
+
+    // Fire it
+    assertThrows(VehicleOfflineException.class, () -> function.accept(accessToken, vehicle.getIdString()));
+    cdl.countDown();
+  }
+
   @RepeatedTest(50)
   void testVehicleChargeState(){
     testVehicleData("charge_state", generateChargeState(), (token, id) -> client.getVehicleChargeState(token, id));
@@ -1293,6 +1603,16 @@ class LowClientTest{
   }
 
   @Test
+  void testVehicleChargeStateSleepingViaSocketException(){
+    testVehicleDataSleepingViaSocketException("charge_state", (token, id) -> client.getVehicleChargeState(token, id));
+  }
+
+  @Test
+  void testVehicleChargeStateOffline(){
+    testVehicleDataOffline("charge_state", (token, id) -> client.getVehicleChargeState(token, id));
+  }
+
+  @Test
   void testVehicleClimateStateInvalidVehicleId(){
     testVehicleDataInvalidVehicleId("climate_state", (token, id) -> client.getVehicleClimateState(token, id));
   }
@@ -1315,6 +1635,16 @@ class LowClientTest{
   @Test
   void testVehicleClimateStateSleeping(){
     testVehicleDataSleeping("climate_state", (token, id) -> client.getVehicleClimateState(token, id));
+  }
+
+  @Test
+  void testVehicleClimateStateSleepingViaSocketException(){
+    testVehicleDataSleepingViaSocketException("climate_state", (token, id) -> client.getVehicleClimateState(token, id));
+  }
+
+  @Test
+  void testVehicleClimateStateOffline(){
+    testVehicleDataOffline("climate_state", (token, id) -> client.getVehicleClimateState(token, id));
   }
 
   @Test
@@ -1343,6 +1673,16 @@ class LowClientTest{
   }
 
   @Test
+  void testVehicleDriveStateSleepingViaSocketTimeoutException(){
+    testVehicleDataSleepingViaSocketException("drive_state", (token, id) -> client.getVehicleDriveState(token, id));
+  }
+
+  @Test
+  void testVehicleDriveStateOffline(){
+    testVehicleDataOffline("drive_state", (token, id) -> client.getVehicleDriveState(token, id));
+  }
+
+  @Test
   void testVehicleGuiSettingsInvalidVehicleId(){
     testVehicleDataInvalidVehicleId("gui_settings", (token, id) -> client.getVehicleGuiSettings(token, id));
   }
@@ -1365,6 +1705,16 @@ class LowClientTest{
   @Test
   void testVehicleGuiSettingsSleeping(){
     testVehicleDataSleeping("gui_settings", (token, id) -> client.getVehicleGuiSettings(token, id));
+  }
+
+  @Test
+  void testVehicleGuiSettingsSleepingViaSocketTimeoutException(){
+    testVehicleDataSleepingViaSocketException("gui_settings", (token, id) -> client.getVehicleGuiSettings(token, id));
+  }
+
+  @Test
+  void testVehicleGuiSettingsOffline(){
+    testVehicleDataOffline("gui_settings", (token, id) -> client.getVehicleGuiSettings(token, id));
   }
 
   @Test
@@ -1393,6 +1743,16 @@ class LowClientTest{
   }
 
   @Test
+  void testVehicleVehicleStateSleepingViaSocketTimeoutException(){
+    testVehicleDataSleepingViaSocketException("vehicle_state", (token, id) -> client.getVehicleVehicleState(token, id));
+  }
+
+  @Test
+  void testVehicleVehicleStateOffline(){
+    testVehicleDataOffline("vehicle_state", (token, id) -> client.getVehicleVehicleState(token, id));
+  }
+
+  @Test
   void testVehicleVehicleConfigInvalidVehicleId(){
     testVehicleDataInvalidVehicleId("vehicle_config", (token, id) -> client.getVehicleVehicleConfig(token, id));
   }
@@ -1415,5 +1775,18 @@ class LowClientTest{
   @Test
   void testVehicleVehicleConfigSleeping(){
     testVehicleDataSleeping("vehicle_config", (token, id) -> client.getVehicleVehicleConfig(token, id));
+  }
+
+  @Test
+  void testVehicleVehicleConfigSleepingViaSocketTimeoutException(){
+    testVehicleDataSleepingViaSocketException(
+      "vehicle_config",
+      (token, id) -> client.getVehicleVehicleConfig(token, id)
+    );
+  }
+
+  @Test
+  void testVehicleVehicleConfigOffline(){
+    testVehicleDataOffline("vehicle_config", (token, id) -> client.getVehicleVehicleConfig(token, id));
   }
 }

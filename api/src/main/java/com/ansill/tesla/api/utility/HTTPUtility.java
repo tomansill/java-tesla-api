@@ -39,10 +39,14 @@ public final class HTTPUtility{
   }
 
   @Nonnull
-  public static ReusableResponse httpCall(@Nonnull Request request) throws IOException{
+  public static ReusableResponse httpCall(
+    @Nonnull Request request,
+    @Nonnull Function<OkHttpClient.Builder,OkHttpClient.Builder> config
+  ) throws IOException{
+    var client = config.apply(new OkHttpClient.Builder()).build();
     ReusableResponse reusableResponse = null;
     try{
-      reusableResponse = new ReusableResponse(new OkHttpClient().newCall(request).execute());
+      reusableResponse = new ReusableResponse(client.newCall(request).execute());
     }finally{
       var consumer = HTTP_LOGGING.get();
       if(consumer != null) consumer.accept(request, reusableResponse);

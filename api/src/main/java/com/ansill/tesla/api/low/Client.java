@@ -32,6 +32,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -46,6 +47,7 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -93,6 +95,14 @@ public final class Client{
   @Nonnull
   private final String url;
 
+  /** Connect Timeout Duration */
+  @Nonnull
+  private final AtomicReference<Duration> connectTimeoutDuration = new AtomicReference<>();
+
+  /** Read Timeout Duration */
+  @Nonnull
+  private final AtomicReference<Duration> readTimeoutDuration = new AtomicReference<>();
+
   private final boolean verifySleepingState = true;
 
   /** Debugging function to fire on unexpected json properties */
@@ -103,7 +113,9 @@ public final class Client{
     @Nullable String url,
     @Nullable String clientId,
     @Nullable String clientSecret,
-    @Nullable Function<Object,Boolean> debug
+    @Nullable Function<Object,Boolean> debug,
+    @Nullable Duration connectTimeoutDuration,
+    @Nullable Duration readTimeoutDuration
   ){
 
     // Use default if null
@@ -126,6 +138,8 @@ public final class Client{
     this.clientId = Validation.assertNonnull(clientId, "client_id");
     this.clientSecret = Validation.assertNonnull(clientSecret, "client_secret");
     this.debug.set(debug);
+    this.connectTimeoutDuration.set(connectTimeoutDuration);
+    this.readTimeoutDuration.set(readTimeoutDuration);
   }
 
   /**
@@ -136,6 +150,43 @@ public final class Client{
   @Nonnull
   public static Builder builder(){
     return new Builder();
+  }
+
+  public void resetConnectTimeoutDuration(){
+    this.connectTimeoutDuration.set(null);
+  }
+
+  public void resetReadTimeoutDuration(){
+    this.readTimeoutDuration.set(null);
+  }
+
+  @Nonnull
+  public Optional<Duration> getConnectTimeoutDuration(){
+    return Optional.ofNullable(this.connectTimeoutDuration.get());
+  }
+
+  public void setConnectTimeoutDuration(@Nonnull Duration timeout){
+    this.connectTimeoutDuration.set(Validation.assertNonnull(timeout, "timeout"));
+  }
+
+  @Nonnull
+  public Optional<Duration> getReadTimeoutDuration(){
+    return Optional.ofNullable(this.readTimeoutDuration.get());
+  }
+
+  public void setReadTimeoutDuration(@Nonnull Duration timeout){
+    this.readTimeoutDuration.set(Validation.assertNonnull(timeout, "timeout"));
+  }
+
+  @Nonnull
+  private Function<OkHttpClient.Builder,OkHttpClient.Builder> buildClientConfigurator(){
+    return builder -> {
+      var timeout = this.connectTimeoutDuration.get();
+      if(timeout != null) builder.connectTimeout(timeout);
+      timeout = this.readTimeoutDuration.get();
+      if(timeout != null) builder.readTimeout(timeout);
+      return builder;
+    };
   }
 
   @Nonnull
@@ -381,7 +432,7 @@ public final class Client{
 
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
 
       // Handle code
       return switch(response.code()){
@@ -455,7 +506,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
 
       // Handle code
       if(response.code() != 200){
@@ -489,7 +540,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
 
       // Handle code
       return switch(response.code()){
@@ -561,7 +612,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
 
       // Handle code
       return switch(response.code()){
@@ -599,7 +650,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
 
       // Handle code
       return switch(response.code()){
@@ -650,7 +701,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
 
       // Handle code
       return switch(response.code()){
@@ -702,7 +753,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
 
       // Handle code
       return switch(response.code()){
@@ -749,7 +800,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request)){
+    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
 
       // Handle code
       return switch(response.code()){
@@ -955,7 +1006,7 @@ public final class Client{
     @Nonnull
     @Override
     public Client build(){
-      return new Client(url, clientId, clientSecret, debug);
+      return new Client(url, clientId, clientSecret, debug, connectTimeoutDuration, readTimeoutDuration);
     }
   }
 

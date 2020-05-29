@@ -2,6 +2,7 @@ package com.ansill.tesla.api.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Duration;
 import java.util.function.Function;
 
 public abstract class ClientBuilder<T>{
@@ -17,6 +18,12 @@ public abstract class ClientBuilder<T>{
 
   /** Debugging prints consumer */
   protected Function<Object,Boolean> debug;
+
+  /** Connection timeout duration */
+  protected Duration connectTimeoutDuration;
+
+  /** Read timeout duration */
+  protected Duration readTimeoutDuration;
 
   protected ClientBuilder(){
 
@@ -67,6 +74,31 @@ public abstract class ClientBuilder<T>{
   @Nonnull
   public ClientBuilder<T> setDebugFunction(@Nullable Function<Object,Boolean> debug){
     this.debug = debug;
+    return this;
+  }
+
+  /**
+   * Sets connection timeout duration
+   *
+   * @param timeout desired client secret or null to use default
+   * @return updated builder
+   */
+  @Nonnull
+  public ClientBuilder<T> setConnectionTimeoutDuration(@Nullable Duration timeout){
+    this.connectTimeoutDuration = timeout;
+    return this;
+  }
+
+
+  /**
+   * Sets read timeout duration
+   *
+   * @param timeout desired client secret or null to use default
+   * @return updated builder
+   */
+  @Nonnull
+  public ClientBuilder<T> setReadTimeoutDuration(@Nullable Duration timeout){
+    this.readTimeoutDuration = timeout;
     return this;
   }
 
