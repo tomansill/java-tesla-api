@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.high;
 
-import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
+import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
 
 @FunctionalInterface
 interface FunctionWithVehicleException<T, R>{

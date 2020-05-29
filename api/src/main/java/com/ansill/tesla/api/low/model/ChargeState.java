@@ -1,477 +1,490 @@
 package com.ansill.tesla.api.low.model;
 
+import com.ansill.tesla.api.model.ChargingState;
+import com.ansill.tesla.api.model.ImperialUnits;
+import com.ansill.tesla.api.model.LatchState;
+import tech.units.indriya.quantity.Quantities;
+import tech.units.indriya.unit.Units;
+
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Objects;
+import javax.measure.Quantity;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Length;
+import javax.measure.quantity.Power;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 
-import static com.ansill.utility.Utility.simpleToString;
-
-@SuppressWarnings("unused")
 @Immutable
 public final class ChargeState{
-  private final boolean battery_heater_on;
 
-  private final int battery_level;
+  private final boolean batteryHeaterOn;
 
-  private final double battery_range;
+  @Nonnull
+  private final Quantity<Dimensionless> batteryLevel;
 
-  private final int charge_current_request;
+  @Nonnull
+  private final Quantity<Length> batteryRange;
 
-  private final int charge_current_request_max;
+  @Nonnull
+  private final Quantity<ElectricCurrent> chargeCurrentRequest;
 
-  private final boolean charge_enable_request;
+  @Nonnull
+  private final Quantity<ElectricCurrent> chargeCurrentRequestMax;
 
-  private final double charge_energy_added;
+  private final boolean chargeEnableRequest;
 
-  private final int charge_limit_soc;
+  @Nonnull
+  private final Quantity<Power> chargeEnergyAdded;
 
-  private final int charge_limit_soc_max;
+  @Nonnull
+  private final Quantity<Dimensionless> chargeLimitSOC;
 
-  private final int charge_limit_soc_min;
+  @Nonnull
+  private final Quantity<Dimensionless> chargeLimitSOCMax;
 
-  private final int charge_limit_soc_std;
+  @Nonnull
+  private final Quantity<Dimensionless> chargeLimitSOCMin;
 
-  private final double charge_miles_added_ideal;
+  @Nonnull
+  private final Quantity<Dimensionless> chargeLimitSOCStandard;
 
-  private final double charge_miles_added_rated;
+  @Nonnull
+  private final Quantity<Length> chargeDistanceAddedIdeal;
 
-  private final boolean charge_port_cold_weather_mode;
+  @Nonnull
+  private final Quantity<Length> chargeDistanceAddedRated;
 
-  private final boolean charge_port_door_open;
+  private final boolean chargePortColdWeatherMode;
 
-  private final String charge_port_latch;
+  private final boolean chargePortDoorOpen;
 
-  private final double charge_rate;
+  @Nonnull
+  private final LatchState chargePortLatch;
 
-  private final boolean charge_to_max_range;
+  @Nonnull
+  private final Quantity<ElectricCurrent> chargeRate;
 
-  private final int charger_actual_current;
+  private final boolean chargeToMaxRange;
 
-  private final String charger_phases;
-
-  private final int charger_pilot_current;
-
-  private final int charger_power;
-
-  private final int charger_voltage;
-
-  private final String charging_state;
-
-  private final String conn_charge_cable;
-
-  private final double est_battery_range;
-
-  private final String fast_charger_brand;
-
-  private final boolean fast_charger_present;
-
-  private final long minutes_to_full_charge;
-
-  private final String fast_charger_type;
-
-  private final double ideal_battery_range;
-
-  private final boolean managed_charging_active;
-
-  private final String managed_charging_start_time;
-
-  private final boolean managed_charging_user_canceled;
-
-  private final int max_range_charge_counter;
-
-  private final Boolean not_enough_power_to_heat;
-
-  private final boolean scheduled_charging_pending;
+  @Nonnull
+  private final Quantity<ElectricCurrent> chargerActualCurrent;
 
   @Nullable
-  private final String scheduled_charging_start_time;
+  private final String chargerPhases; // TODO find all possible enums
 
-  private final double time_to_full_charge;
+  @Nonnull
+  private final Quantity<ElectricCurrent> chargerPilotCurrent;
 
-  private final long timestamp;
+  @Nonnull
+  private final Quantity<Power> chargerPower;
 
-  private final int usable_battery_level;
+  @Nonnull
+  private final Quantity<ElectricPotential> chargerVoltage;
 
-  private final String user_charge_enable_request;
+  @Nonnull
+  private final ChargingState chargingState;
 
-  private final boolean trip_charging;
+  @Nonnull
+  private final String connChargeCable;
 
-  @Override
-  public boolean equals(Object o){
-    if(this == o) return true;
-    if(!(o instanceof ChargeState that)) return false;
+  @Nonnull
+  private final Quantity<Length> estimatedBatteryRange; // Originally "est_battery_range"
 
-    if(battery_heater_on != that.battery_heater_on) return false;
-    if(battery_level != that.battery_level) return false;
-    if(Double.compare(that.battery_range, battery_range) != 0) return false;
-    if(charge_current_request != that.charge_current_request) return false;
-    if(charge_current_request_max != that.charge_current_request_max) return false;
-    if(charge_enable_request != that.charge_enable_request) return false;
-    if(Double.compare(that.charge_energy_added, charge_energy_added) != 0) return false;
-    if(charge_limit_soc != that.charge_limit_soc) return false;
-    if(charge_limit_soc_max != that.charge_limit_soc_max) return false;
-    if(charge_limit_soc_min != that.charge_limit_soc_min) return false;
-    if(charge_limit_soc_std != that.charge_limit_soc_std) return false;
-    if(Double.compare(that.charge_miles_added_ideal, charge_miles_added_ideal) != 0) return false;
-    if(Double.compare(that.charge_miles_added_rated, charge_miles_added_rated) != 0) return false;
-    if(charge_port_cold_weather_mode != that.charge_port_cold_weather_mode) return false;
-    if(charge_port_door_open != that.charge_port_door_open) return false;
-    if(Double.compare(that.charge_rate, charge_rate) != 0) return false;
-    if(charge_to_max_range != that.charge_to_max_range) return false;
-    if(charger_actual_current != that.charger_actual_current) return false;
-    if(charger_pilot_current != that.charger_pilot_current) return false;
-    if(charger_power != that.charger_power) return false;
-    if(charger_voltage != that.charger_voltage) return false;
-    if(Double.compare(that.est_battery_range, est_battery_range) != 0) return false;
-    if(fast_charger_present != that.fast_charger_present) return false;
-    if(minutes_to_full_charge != that.minutes_to_full_charge) return false;
-    if(Double.compare(that.ideal_battery_range, ideal_battery_range) != 0) return false;
-    if(managed_charging_active != that.managed_charging_active) return false;
-    if(managed_charging_user_canceled != that.managed_charging_user_canceled) return false;
-    if(max_range_charge_counter != that.max_range_charge_counter) return false;
-    if(scheduled_charging_pending != that.scheduled_charging_pending) return false;
-    if(Double.compare(that.time_to_full_charge, time_to_full_charge) != 0) return false;
-    if(timestamp != that.timestamp) return false;
-    if(usable_battery_level != that.usable_battery_level) return false;
-    if(trip_charging != that.trip_charging) return false;
-    if(!charge_port_latch.equals(that.charge_port_latch)) return false;
-    if(!charger_phases.equals(that.charger_phases)) return false;
-    if(!charging_state.equals(that.charging_state)) return false;
-    if(!conn_charge_cable.equals(that.conn_charge_cable)) return false;
-    if(!fast_charger_brand.equals(that.fast_charger_brand)) return false;
-    if(!fast_charger_type.equals(that.fast_charger_type)) return false;
-    if(!managed_charging_start_time.equals(that.managed_charging_start_time)) return false;
-    if(!not_enough_power_to_heat.equals(that.not_enough_power_to_heat)) return false;
-    if(!Objects.equals(scheduled_charging_start_time, that.scheduled_charging_start_time)) return false;
-    return user_charge_enable_request.equals(that.user_charge_enable_request);
-  }
+  @Nonnull
+  private final String fastChargerBrand;
 
-  @Override
-  public int hashCode(){
-    int result;
-    long temp;
-    result = (battery_heater_on ? 1 : 0);
-    result = 31 * result + battery_level;
-    temp = Double.doubleToLongBits(battery_range);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    result = 31 * result + charge_current_request;
-    result = 31 * result + charge_current_request_max;
-    result = 31 * result + (charge_enable_request ? 1 : 0);
-    temp = Double.doubleToLongBits(charge_energy_added);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    result = 31 * result + charge_limit_soc;
-    result = 31 * result + charge_limit_soc_max;
-    result = 31 * result + charge_limit_soc_min;
-    result = 31 * result + charge_limit_soc_std;
-    temp = Double.doubleToLongBits(charge_miles_added_ideal);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    temp = Double.doubleToLongBits(charge_miles_added_rated);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    result = 31 * result + (charge_port_cold_weather_mode ? 1 : 0);
-    result = 31 * result + (charge_port_door_open ? 1 : 0);
-    result = 31 * result + charge_port_latch.hashCode();
-    temp = Double.doubleToLongBits(charge_rate);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    result = 31 * result + (charge_to_max_range ? 1 : 0);
-    result = 31 * result + charger_actual_current;
-    result = 31 * result + charger_phases.hashCode();
-    result = 31 * result + charger_pilot_current;
-    result = 31 * result + charger_power;
-    result = 31 * result + charger_voltage;
-    result = 31 * result + charging_state.hashCode();
-    result = 31 * result + conn_charge_cable.hashCode();
-    temp = Double.doubleToLongBits(est_battery_range);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    result = 31 * result + fast_charger_brand.hashCode();
-    result = 31 * result + (fast_charger_present ? 1 : 0);
-    result = 31 * result + (int) (minutes_to_full_charge ^ (minutes_to_full_charge >>> 32));
-    result = 31 * result + fast_charger_type.hashCode();
-    temp = Double.doubleToLongBits(ideal_battery_range);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    result = 31 * result + (managed_charging_active ? 1 : 0);
-    result = 31 * result + managed_charging_start_time.hashCode();
-    result = 31 * result + (managed_charging_user_canceled ? 1 : 0);
-    result = 31 * result + max_range_charge_counter;
-    result = 31 * result + not_enough_power_to_heat.hashCode();
-    result = 31 * result + (scheduled_charging_pending ? 1 : 0);
-    result = 31 * result + Objects.hashCode(scheduled_charging_start_time);
-    temp = Double.doubleToLongBits(time_to_full_charge);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
-    result = 31 * result + usable_battery_level;
-    result = 31 * result + user_charge_enable_request.hashCode();
-    result = 31 * result + (trip_charging ? 1 : 0);
-    return result;
-  }
+  private final boolean fastChargerPresent;
 
-  public ChargeState(
-    boolean battery_heater_on,
-    int battery_level,
-    double battery_range,
-    int charge_current_request,
-    int charge_current_request_max,
-    boolean charge_enable_request,
-    double charge_energy_added,
-    int charge_limit_soc,
-    int charge_limit_soc_max,
-    int charge_limit_soc_min,
-    int charge_limit_soc_std,
-    double charge_miles_added_ideal,
-    double charge_miles_added_rated,
-    boolean charge_port_cold_weather_mode,
-    boolean charge_port_door_open,
-    String charge_port_latch,
-    double charge_rate,
-    boolean charge_to_max_range,
-    int charger_actual_current,
-    String charger_phases,
-    int charger_pilot_current,
-    int charger_power,
-    int charger_voltage,
-    String charging_state,
-    String conn_charge_cable,
-    double est_battery_range,
-    String fast_charger_brand,
-    boolean fast_charger_present,
-    long minutes_to_full_charge, String fast_charger_type,
-    double ideal_battery_range,
-    boolean managed_charging_active,
-    String managed_charging_start_time,
-    boolean managed_charging_user_canceled,
-    int max_range_charge_counter,
-    Boolean not_enough_power_to_heat,
-    boolean scheduled_charging_pending,
-    @Nullable String scheduled_charging_start_time,
-    double time_to_full_charge,
-    long timestamp,
-    int usable_battery_level,
-    String user_charge_enable_request,
-    boolean trip_charging
+  @Nonnull
+  private final String fastChargerType;
+
+  @Nonnull
+  private final Quantity<Length> idealBatteryRange;
+
+  private final boolean managedChargingActive;
+
+  @Nonnull
+  private final String managedChargingStartTime; // TODO what is this
+
+  private final boolean managedChargingUserCanceled;
+
+  private final int maxRangeChargeCounter; // TODO what is this
+
+  @Nonnull
+  private final Duration durationToFullCharge;
+
+  @Nullable
+  private final Boolean notEnoughPowerToHeat;
+
+  private final boolean scheduledChargingPending;
+
+  @Nullable
+  private final Instant scheduledChargingStartTime;
+
+  @Nonnull
+  private final Duration timeToFullCharge;
+
+  @Nonnull
+  private final Instant timestamp;
+
+  private final boolean tripCharging;
+
+  @Nonnull
+  private final Quantity<Dimensionless> usableBatteryLevel;
+
+  @Nonnull
+  private final String userChargeEnableRequest; // TODO what is this
+
+  private ChargeState(
+    boolean batteryHeaterOn,
+    @Nonnull Quantity<Dimensionless> batteryLevel,
+    @Nonnull Quantity<Length> batteryRange,
+    @Nonnull Quantity<ElectricCurrent> chargeCurrentRequest,
+    @Nonnull Quantity<ElectricCurrent> chargeCurrentRequestMax,
+    boolean chargeEnableRequest,
+    @Nonnull Quantity<Power> chargeEnergyAdded,
+    @Nonnull Quantity<Dimensionless> chargeLimitSOC,
+    @Nonnull Quantity<Dimensionless> chargeLimitSOCMax,
+    @Nonnull Quantity<Dimensionless> chargeLimitSOCMin,
+    @Nonnull Quantity<Dimensionless> chargeLimitSOCStandard,
+    @Nonnull Quantity<Length> chargeDistanceAddedIdeal,
+    @Nonnull Quantity<Length> chargeDistanceAddedRated,
+    boolean chargePortColdWeatherMode,
+    boolean chargePortDoorOpen,
+    @Nonnull LatchState chargePortLatch,
+    @Nonnull Quantity<ElectricCurrent> chargeRate,
+    boolean chargeToMaxRange,
+    @Nonnull Quantity<ElectricCurrent> chargerActualCurrent,
+    @Nullable String chargerPhases,
+    @Nonnull Quantity<ElectricCurrent> chargerPilotCurrent,
+    @Nonnull Quantity<Power> chargerPower,
+    @Nonnull Quantity<ElectricPotential> chargerVoltage,
+    @Nonnull ChargingState chargingState,
+    @Nonnull String connChargeCable,
+    @Nonnull Quantity<Length> estimatedBatteryRange,
+    @Nonnull String fastChargerBrand,
+    boolean fastChargerPresent,
+    @Nonnull String fastChargerType,
+    @Nonnull Quantity<Length> idealBatteryRange,
+    boolean managedChargingActive,
+    @Nonnull String managedChargingStartTime,
+    boolean managedChargingUserCanceled,
+    int maxRangeChargeCounter,
+    @Nonnull Duration durationToFullCharge,
+    @Nullable Boolean notEnoughPowerToHeat,
+    boolean scheduledChargingPending,
+    @Nullable Instant scheduledChargingStartTime,
+    @Nonnull Duration timeToFullCharge,
+    @Nonnull Instant timestamp,
+    boolean tripCharging,
+    @Nonnull Quantity<Dimensionless> usableBatteryLevel,
+    @Nonnull String userChargeEnableRequest
   ){
-    this.battery_heater_on = battery_heater_on;
-    this.battery_level = battery_level;
-    this.battery_range = battery_range;
-    this.charge_current_request = charge_current_request;
-    this.charge_current_request_max = charge_current_request_max;
-    this.charge_enable_request = charge_enable_request;
-    this.charge_energy_added = charge_energy_added;
-    this.charge_limit_soc = charge_limit_soc;
-    this.charge_limit_soc_max = charge_limit_soc_max;
-    this.charge_limit_soc_min = charge_limit_soc_min;
-    this.charge_limit_soc_std = charge_limit_soc_std;
-    this.charge_miles_added_ideal = charge_miles_added_ideal;
-    this.charge_miles_added_rated = charge_miles_added_rated;
-    this.charge_port_cold_weather_mode = charge_port_cold_weather_mode;
-    this.charge_port_door_open = charge_port_door_open;
-    this.charge_port_latch = charge_port_latch;
-    this.charge_rate = charge_rate;
-    this.charge_to_max_range = charge_to_max_range;
-    this.charger_actual_current = charger_actual_current;
-    this.charger_phases = charger_phases;
-    this.charger_pilot_current = charger_pilot_current;
-    this.charger_power = charger_power;
-    this.charger_voltage = charger_voltage;
-    this.charging_state = charging_state;
-    this.conn_charge_cable = conn_charge_cable;
-    this.est_battery_range = est_battery_range;
-    this.fast_charger_brand = fast_charger_brand;
-    this.fast_charger_present = fast_charger_present;
-    this.minutes_to_full_charge = minutes_to_full_charge;
-    this.fast_charger_type = fast_charger_type;
-    this.ideal_battery_range = ideal_battery_range;
-    this.managed_charging_active = managed_charging_active;
-    this.managed_charging_start_time = managed_charging_start_time;
-    this.managed_charging_user_canceled = managed_charging_user_canceled;
-    this.max_range_charge_counter = max_range_charge_counter;
-    this.not_enough_power_to_heat = not_enough_power_to_heat;
-    this.scheduled_charging_pending = scheduled_charging_pending;
-    this.scheduled_charging_start_time = scheduled_charging_start_time;
-    this.time_to_full_charge = time_to_full_charge;
+    this.batteryHeaterOn = batteryHeaterOn;
+    this.batteryLevel = batteryLevel;
+    this.batteryRange = batteryRange;
+    this.chargeCurrentRequest = chargeCurrentRequest;
+    this.chargeCurrentRequestMax = chargeCurrentRequestMax;
+    this.chargeEnableRequest = chargeEnableRequest;
+    this.chargeEnergyAdded = chargeEnergyAdded;
+    this.chargeLimitSOC = chargeLimitSOC;
+    this.chargeLimitSOCMax = chargeLimitSOCMax;
+    this.chargeLimitSOCMin = chargeLimitSOCMin;
+    this.chargeLimitSOCStandard = chargeLimitSOCStandard;
+    this.chargeDistanceAddedIdeal = chargeDistanceAddedIdeal;
+    this.chargeDistanceAddedRated = chargeDistanceAddedRated;
+    this.chargePortColdWeatherMode = chargePortColdWeatherMode;
+    this.chargePortDoorOpen = chargePortDoorOpen;
+    this.chargePortLatch = chargePortLatch;
+    this.chargeRate = chargeRate;
+    this.chargeToMaxRange = chargeToMaxRange;
+    this.chargerActualCurrent = chargerActualCurrent;
+    this.chargerPhases = chargerPhases;
+    this.chargerPilotCurrent = chargerPilotCurrent;
+    this.chargerPower = chargerPower;
+    this.chargerVoltage = chargerVoltage;
+    this.chargingState = chargingState;
+    this.connChargeCable = connChargeCable;
+    this.estimatedBatteryRange = estimatedBatteryRange;
+    this.fastChargerBrand = fastChargerBrand;
+    this.fastChargerPresent = fastChargerPresent;
+    this.fastChargerType = fastChargerType;
+    this.idealBatteryRange = idealBatteryRange;
+    this.managedChargingActive = managedChargingActive;
+    this.managedChargingStartTime = managedChargingStartTime;
+    this.managedChargingUserCanceled = managedChargingUserCanceled;
+    this.maxRangeChargeCounter = maxRangeChargeCounter;
+    this.durationToFullCharge = durationToFullCharge;
+    this.notEnoughPowerToHeat = notEnoughPowerToHeat;
+    this.scheduledChargingPending = scheduledChargingPending;
+    this.scheduledChargingStartTime = scheduledChargingStartTime;
+    this.timeToFullCharge = timeToFullCharge;
     this.timestamp = timestamp;
-    this.usable_battery_level = usable_battery_level;
-    this.user_charge_enable_request = user_charge_enable_request;
-    this.trip_charging = trip_charging;
+    this.tripCharging = tripCharging;
+    this.usableBatteryLevel = usableBatteryLevel;
+    this.userChargeEnableRequest = userChargeEnableRequest;
   }
 
-  public boolean isTripCharging(){
-    return trip_charging;
+  @Nonnull
+  public static ChargeState convert(@Nonnull com.ansill.tesla.api.raw.model.ChargeState chargeState){
+    return new ChargeState(
+      chargeState.getBatteryHeaterOn(),
+      Quantities.getQuantity(chargeState.getBatteryLevel(), Units.PERCENT),
+      Quantities.getQuantity(chargeState.getBatteryRange(), ImperialUnits.MILE),
+      Quantities.getQuantity(chargeState.getChargeCurrentRequest(), Units.AMPERE),
+      Quantities.getQuantity(chargeState.getChargeCurrentRequestMax(), Units.AMPERE),
+      chargeState.isChargeEnableRequest(),
+      Quantities.getQuantity(
+        chargeState.getChargeEnergyAdded(),
+        Units.WATT.multiply(1000.00).asType(Power.class)
+      ),
+      Quantities.getQuantity(chargeState.getChargeLimitSoc(), Units.PERCENT),
+      Quantities.getQuantity(chargeState.getChargeLimitSocMax(), Units.PERCENT),
+      Quantities.getQuantity(chargeState.getChargeLimitSocMin(), Units.PERCENT),
+      Quantities.getQuantity(chargeState.getChargeLimitSocStd(), Units.PERCENT),
+      Quantities.getQuantity(chargeState.getChargeMilesAddedIdeal(), ImperialUnits.MILE),
+      Quantities.getQuantity(chargeState.getChargeMilesAddedRated(), ImperialUnits.MILE),
+      chargeState.getChargePortColdWeatherMode(),
+      chargeState.getChargePortDoorOpen(),
+      LatchState.valueOf(chargeState.getChargePortLatch().toUpperCase()),
+      Quantities.getQuantity(chargeState.getChargeRate(), Units.AMPERE),
+      chargeState.getChargeToMaxRange(),
+      Quantities.getQuantity(chargeState.getChargerActualCurrent(), Units.AMPERE),
+      chargeState.getChargerPhases(),
+      Quantities.getQuantity(chargeState.getChargePilotCurrent(), Units.AMPERE),
+      Quantities.getQuantity(chargeState.getChargerPower(), Units.WATT),
+      Quantities.getQuantity(chargeState.getChargerVoltage(), Units.VOLT),
+      ChargingState.valueOf(chargeState.getChargingState().toUpperCase()),
+      chargeState.getConnChargeCable(),
+      Quantities.getQuantity(chargeState.getEstBatteryRange(), ImperialUnits.MILE),
+      chargeState.getFastChargerBrand(),
+      chargeState.getFastChargerPresent(),
+      chargeState.getFastChargerType(),
+      Quantities.getQuantity(chargeState.getIdealBatteryRange(), ImperialUnits.MILE),
+      chargeState.getManagedChargingActive(),
+      chargeState.getManagedChargingStartTime(),
+      chargeState.getManagedChargingUserCanceled(),
+      chargeState.getMaxRangeChargerCounter(),
+      Duration.ofMinutes(chargeState.getMinutesToFullCharge()),
+      chargeState.getNotEnoughPowerToHeat().orElse(null),
+      chargeState.getScheduledChargingPending(),
+      chargeState.getScheduledChargingStartTime().map(Instant::parse).orElse(null),
+      Duration.ofMinutes((int) (chargeState.getTimeToFullCharge() * 60)),
+      Instant.ofEpochSecond(chargeState.getTimestamp()),
+      chargeState.isTripCharging(),
+      Quantities.getQuantity(chargeState.getUsableBatteryLevel(), Units.PERCENT),
+      chargeState.getUserChargeEnableRequest()
+    );
   }
 
-
-  public long getMinutesToFullCharge(){
-    return minutes_to_full_charge;
+  public boolean isBatteryHeaterOn(){
+    return batteryHeaterOn;
   }
 
-  public double getBatteryRange(){
-    return battery_range;
+  @Nonnull
+  public Quantity<Dimensionless> getBatteryLevel(){
+    return batteryLevel;
   }
 
-  public int getChargeCurrentRequest(){
-    return charge_current_request;
+  @Nonnull
+  public Quantity<Length> getBatteryRange(){
+    return batteryRange;
   }
 
-  public int getChargeCurrentRequestMax(){
-    return charge_current_request_max;
+  @Nonnull
+  public Quantity<ElectricCurrent> getChargeCurrentRequest(){
+    return chargeCurrentRequest;
+  }
+
+  @Nonnull
+  public Quantity<ElectricCurrent> getChargeCurrentRequestMax(){
+    return chargeCurrentRequestMax;
   }
 
   public boolean isChargeEnableRequest(){
-    return charge_enable_request;
+    return chargeEnableRequest;
   }
 
-  public double getChargeEnergyAdded(){
-    return charge_energy_added;
+  @Nonnull
+  public Quantity<Power> getChargeEnergyAdded(){
+    return chargeEnergyAdded;
   }
 
-  public int getChargeLimitSoc(){
-    return charge_limit_soc;
+  @Nonnull
+  public Quantity<Dimensionless> getChargeLimitSOC(){
+    return chargeLimitSOC;
   }
 
-  public int getChargeLimitSocMax(){
-    return charge_limit_soc_max;
+  @Nonnull
+  public Quantity<Dimensionless> getChargeLimitSOCMax(){
+    return chargeLimitSOCMax;
   }
 
-  public int getChargeLimitSocMin(){
-    return charge_limit_soc_min;
+  @Nonnull
+  public Quantity<Dimensionless> getChargeLimitSOCMin(){
+    return chargeLimitSOCMin;
   }
 
-  public int getChargeLimitSocStd(){
-    return charge_limit_soc_std;
+  @Nonnull
+  public Quantity<Dimensionless> getChargeLimitSOCStandard(){
+    return chargeLimitSOCStandard;
   }
 
-  public double getChargeMilesAddedIdeal(){
-    return charge_miles_added_ideal;
+  @Nonnull
+  public Quantity<Length> getChargeDistanceAddedIdeal(){
+    return chargeDistanceAddedIdeal;
   }
 
-  public double getChargeMilesAddedRated(){
-    return charge_miles_added_rated;
+  @Nonnull
+  public Quantity<Length> getChargeDistanceAddedRated(){
+    return chargeDistanceAddedRated;
   }
 
-  public boolean getChargePortColdWeatherMode(){
-    return charge_port_cold_weather_mode;
+  public boolean isChargePortColdWeatherMode(){
+    return chargePortColdWeatherMode;
   }
 
-  public boolean getChargePortDoorOpen(){
-    return charge_port_door_open;
+  public boolean isChargePortDoorOpen(){
+    return chargePortDoorOpen;
   }
 
-  public String getChargePortLatch(){
-    return charge_port_latch;
+  @Nonnull
+  public LatchState getChargePortLatch(){
+    return chargePortLatch;
   }
 
-  public double getChargeRate(){
-    return charge_rate;
+  @Nonnull
+  public Quantity<ElectricCurrent> getChargeRate(){
+    return chargeRate;
   }
 
-  public boolean getChargeToMaxRange(){
-    return charge_to_max_range;
+  public boolean isChargeToMaxRange(){
+    return chargeToMaxRange;
   }
 
-  public int getChargerActualCurrent(){
-    return charger_actual_current;
+  @Nonnull
+  public Quantity<ElectricCurrent> getChargerActualCurrent(){
+    return chargerActualCurrent;
   }
 
-  public String getChargerPhases(){
-    return charger_phases;
+  @Nonnull
+  public Optional<String> getChargerPhases(){
+    return Optional.ofNullable(chargerPhases);
   }
 
-  public int getChargePilotCurrent(){
-    return charger_pilot_current;
+  @Nonnull
+  public Quantity<ElectricCurrent> getChargerPilotCurrent(){
+    return chargerPilotCurrent;
   }
 
-  public int getChargerPower(){
-    return charger_power;
+  @Nonnull
+  public Quantity<Power> getChargerPower(){
+    return chargerPower;
   }
 
-  public int getChargerVoltage(){
-    return charger_voltage;
+  @Nonnull
+  public Quantity<ElectricPotential> getChargerVoltage(){
+    return chargerVoltage;
   }
 
-  public String getChargingState(){
-    return charging_state;
+  @Nonnull
+  public ChargingState getChargingState(){
+    return chargingState;
   }
 
+  @Nonnull
   public String getConnChargeCable(){
-    return conn_charge_cable;
+    return connChargeCable;
   }
 
-  public double getEstBatteryRange(){
-    return est_battery_range;
+  @Nonnull
+  public Quantity<Length> getEstimatedBatteryRange(){
+    return estimatedBatteryRange;
   }
 
+  @Nonnull
   public String getFastChargerBrand(){
-    return fast_charger_brand;
+    return fastChargerBrand;
   }
 
-  public boolean getFastChargerPresent(){
-    return fast_charger_present;
+  public boolean isFastChargerPresent(){
+    return fastChargerPresent;
   }
 
+  @Nonnull
   public String getFastChargerType(){
-    return fast_charger_type;
+    return fastChargerType;
   }
 
-  public double getIdealBatteryRange(){
-    return ideal_battery_range;
+  @Nonnull
+  public Quantity<Length> getIdealBatteryRange(){
+    return idealBatteryRange;
   }
 
-  public boolean getManagedChargingActive(){
-    return managed_charging_active;
+  public boolean isManagedChargingActive(){
+    return managedChargingActive;
   }
 
+  @Nonnull
   public String getManagedChargingStartTime(){
-    return managed_charging_start_time;
+    return managedChargingStartTime;
   }
 
-  public boolean getManagedChargingUserCanceled(){
-    return managed_charging_user_canceled;
+  public boolean isManagedChargingUserCanceled(){
+    return managedChargingUserCanceled;
   }
 
-  public int getMaxRangeChargerCounter(){
-    return max_range_charge_counter;
-  }
-
-  @Nonnull
-  public Optional<Boolean> getNotEnoughPowerToHeat(){
-    return Optional.ofNullable(not_enough_power_to_heat);
-  }
-
-  public boolean getScheduledChargingPending(){
-    return scheduled_charging_pending;
+  @Nonnegative
+  public int getMaxRangeChargeCounter(){
+    return maxRangeChargeCounter;
   }
 
   @Nonnull
-  public Optional<String> getScheduledChargingStartTime(){
-    return Optional.ofNullable(scheduled_charging_start_time);
+  public Duration getDurationToFullCharge(){
+    return durationToFullCharge;
   }
 
-  public double getTimeToFullCharge(){
-    return time_to_full_charge;
+  @Nonnull
+  public Optional<Boolean> isNotEnoughPowerToHeat(){
+    return Optional.ofNullable(notEnoughPowerToHeat);
   }
 
-  public long getTimestamp(){
+  public boolean isScheduledChargingPending(){
+    return scheduledChargingPending;
+  }
+
+  @Nonnull
+  public Optional<Instant> getScheduledChargingStartTime(){
+    return Optional.ofNullable(scheduledChargingStartTime);
+  }
+
+  @Nonnull
+  public Duration getTimeToFullCharge(){
+    return timeToFullCharge;
+  }
+
+  @Nonnull
+  public Instant getTimestamp(){
     return timestamp;
   }
 
-  public int getUsableBatteryLevel(){
-    return usable_battery_level;
+  public boolean isTripCharging(){
+    return tripCharging;
   }
 
+  @Nonnull
+  public Quantity<Dimensionless> getUsableBatteryLevel(){
+    return usableBatteryLevel;
+  }
+
+  @Nonnull
   public String getUserChargeEnableRequest(){
-    return user_charge_enable_request;
-  }
-
-  public int getBatteryLevel(){
-    return battery_level;
-  }
-
-  public boolean getBatteryHeaterOn(){
-    return battery_heater_on;
-  }
-
-  @Override
-  public String toString(){
-    return simpleToString(this);
+    return userChargeEnableRequest;
   }
 }

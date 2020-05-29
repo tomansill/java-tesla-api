@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.high.model;
 
-import com.ansill.tesla.api.med.model.ChargeState;
+import com.ansill.tesla.api.low.model.ChargeState;
 import com.ansill.utility.Utility;
 
 import javax.annotation.Nonnull;

@@ -63,7 +63,7 @@ public final class ClimateSettings{
    * @return high-level object
    */
   @Nonnull
-  public static ClimateSettings convert(@Nonnull com.ansill.tesla.api.med.model.ClimateState state){
+  public static ClimateSettings convert(@Nonnull com.ansill.tesla.api.low.model.ClimateState state){
     return new ClimateSettings(
       state.getDriverTempSetting(),
       state.getPassengerTempSetting(),

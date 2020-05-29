@@ -125,7 +125,7 @@ public final class VehicleSnapshot{
    * @return high-level object
    */
   @Nonnull
-  public static VehicleSnapshot convert(@Nonnull com.ansill.tesla.api.med.model.CompleteData data){
+  public static VehicleSnapshot convert(@Nonnull com.ansill.tesla.api.low.model.CompleteData data){
     return new VehicleSnapshot(
       BatteryState.convert(data.getChargeState()),
       ChargeState.convert(data.getChargeState()),

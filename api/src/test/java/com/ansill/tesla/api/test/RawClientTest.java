@@ -3,19 +3,19 @@ package com.ansill.tesla.api.test;
 import com.ansill.tesla.api.exception.VehicleInServiceException;
 import com.ansill.tesla.api.exception.VehicleOfflineException;
 import com.ansill.tesla.api.exception.VehicleSleepingException;
-import com.ansill.tesla.api.low.Client;
-import com.ansill.tesla.api.low.exception.APIProtocolException;
-import com.ansill.tesla.api.low.exception.AuthenticationException;
-import com.ansill.tesla.api.low.exception.ClientException;
-import com.ansill.tesla.api.low.exception.InvalidAccessTokenException;
-import com.ansill.tesla.api.low.exception.ReAuthenticationException;
-import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
-import com.ansill.tesla.api.low.model.CompleteVehicleDataResponse;
-import com.ansill.tesla.api.low.model.GenericErrorResponse;
-import com.ansill.tesla.api.low.model.SuccessfulAuthenticationResponse;
-import com.ansill.tesla.api.low.model.Vehicle;
-import com.ansill.tesla.api.low.model.VehicleResponse;
-import com.ansill.tesla.api.low.model.VehiclesResponse;
+import com.ansill.tesla.api.raw.Client;
+import com.ansill.tesla.api.raw.exception.APIProtocolException;
+import com.ansill.tesla.api.raw.exception.AuthenticationException;
+import com.ansill.tesla.api.raw.exception.ClientException;
+import com.ansill.tesla.api.raw.exception.InvalidAccessTokenException;
+import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
+import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
+import com.ansill.tesla.api.raw.model.CompleteVehicleDataResponse;
+import com.ansill.tesla.api.raw.model.GenericErrorResponse;
+import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.api.raw.model.Vehicle;
+import com.ansill.tesla.api.raw.model.VehicleResponse;
+import com.ansill.tesla.api.raw.model.VehiclesResponse;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -44,7 +44,7 @@ import static com.ansill.tesla.api.test.TestUtility.*;
 import static com.ansill.utility.Utility.generateString;
 import static org.junit.jupiter.api.Assertions.*;
 
-class LowClientTest{
+class RawClientTest{
 
   private static final Gson GSON = new Gson();
 
@@ -475,7 +475,7 @@ class LowClientTest{
 
     // Set up list
     var vehicleMap = new HashMap<String,Vehicle>();
-    var states = Arrays.stream(com.ansill.tesla.api.med.model.Vehicle.State.values())
+    var states = Arrays.stream(com.ansill.tesla.api.low.model.Vehicle.State.values())
                        .map(item -> item.toString()
                                         .toLowerCase())
                        .collect(Collectors.toList());
@@ -967,7 +967,7 @@ class LowClientTest{
       vehicle_temp.getOptionCodes(),
       vehicle_temp.getColor(),
       vehicle_temp.getTokens(),
-      com.ansill.tesla.api.med.model.Vehicle.State.ASLEEP.toString().toLowerCase(),
+      com.ansill.tesla.api.low.model.Vehicle.State.ASLEEP.toString().toLowerCase(),
       vehicle_temp.isInService(),
       vehicle_temp.getOptionCodes(),
       vehicle_temp.isCalendarEnabled(),
@@ -1043,7 +1043,7 @@ class LowClientTest{
       vehicle_temp.getOptionCodes(),
       vehicle_temp.getColor(),
       vehicle_temp.getTokens(),
-      com.ansill.tesla.api.med.model.Vehicle.State.OFFLINE.toString().toLowerCase(),
+      com.ansill.tesla.api.low.model.Vehicle.State.OFFLINE.toString().toLowerCase(),
       vehicle_temp.isInService(),
       vehicle_temp.getOptionCodes(),
       vehicle_temp.isCalendarEnabled(),
@@ -1408,7 +1408,7 @@ class LowClientTest{
       vehicle_temp.getOptionCodes(),
       vehicle_temp.getColor(),
       vehicle_temp.getTokens(),
-      com.ansill.tesla.api.med.model.Vehicle.State.ASLEEP.toString().toLowerCase(),
+      com.ansill.tesla.api.low.model.Vehicle.State.ASLEEP.toString().toLowerCase(),
       vehicle_temp.isInService(),
       vehicle_temp.getOptionCodes(),
       vehicle_temp.isCalendarEnabled(),
@@ -1484,7 +1484,7 @@ class LowClientTest{
       vehicle_temp.getOptionCodes(),
       vehicle_temp.getColor(),
       vehicle_temp.getTokens(),
-      com.ansill.tesla.api.med.model.Vehicle.State.OFFLINE.toString().toLowerCase(),
+      com.ansill.tesla.api.low.model.Vehicle.State.OFFLINE.toString().toLowerCase(),
       vehicle_temp.isInService(),
       vehicle_temp.getOptionCodes(),
       vehicle_temp.isCalendarEnabled(),

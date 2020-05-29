@@ -1,13 +1,13 @@
 package com.ansill.tesla.api.test;
 
-import com.ansill.tesla.api.low.model.ChargeState;
-import com.ansill.tesla.api.low.model.ClimateState;
-import com.ansill.tesla.api.low.model.CompleteVehicleData;
-import com.ansill.tesla.api.low.model.DriveState;
-import com.ansill.tesla.api.low.model.GuiSettings;
-import com.ansill.tesla.api.low.model.Vehicle;
-import com.ansill.tesla.api.low.model.VehicleConfig;
-import com.ansill.tesla.api.low.model.VehicleState;
+import com.ansill.tesla.api.raw.model.ChargeState;
+import com.ansill.tesla.api.raw.model.ClimateState;
+import com.ansill.tesla.api.raw.model.CompleteVehicleData;
+import com.ansill.tesla.api.raw.model.DriveState;
+import com.ansill.tesla.api.raw.model.GuiSettings;
+import com.ansill.tesla.api.raw.model.Vehicle;
+import com.ansill.tesla.api.raw.model.VehicleConfig;
+import com.ansill.tesla.api.raw.model.VehicleState;
 import com.ansill.utility.Utility;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -27,7 +27,7 @@ public final class TestUtility{
 
   private static final Random RANDOM = new SecureRandom((Math.random() + "").getBytes());
 
-  private static final List<String> STATES = Arrays.stream(com.ansill.tesla.api.med.model.Vehicle.State.values()).map(
+  private static final List<String> STATES = Arrays.stream(com.ansill.tesla.api.low.model.Vehicle.State.values()).map(
     item -> item.toString().toLowerCase()).collect(Collectors.toList());
 
 

@@ -1,6 +1,6 @@
-package com.ansill.tesla.api.med.model;
+package com.ansill.tesla.api.low.model;
 
-import com.ansill.tesla.api.low.model.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

@@ -1,4 +1,4 @@
-package com.ansill.tesla.api.low.exception;
+package com.ansill.tesla.api.raw.exception;
 
 public class APIProtocolException extends RuntimeException{
   private static final long serialVersionUID = 1790174781409056143L;

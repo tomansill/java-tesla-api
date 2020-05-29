@@ -72,7 +72,7 @@ public final class ClimateState{
    * @return high-level object
    */
   @Nonnull
-  public static ClimateState convert(@Nonnull com.ansill.tesla.api.med.model.ClimateState state){
+  public static ClimateState convert(@Nonnull com.ansill.tesla.api.low.model.ClimateState state){
     return new ClimateState(
       state.getFanStatus(),
       state.getInsideTemp(),

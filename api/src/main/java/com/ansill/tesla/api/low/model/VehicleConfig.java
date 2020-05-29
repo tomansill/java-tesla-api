@@ -1,231 +1,193 @@
 package com.ansill.tesla.api.low.model;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.time.Instant;
 
-import static com.ansill.utility.Utility.simpleToString;
-
-@SuppressWarnings("unused")
 @Immutable
 public final class VehicleConfig{
+  private final boolean canAcceptNavigationRequests;
 
-  private final boolean can_accept_navigation_requests;
+  private final boolean canActuateTrunks;
 
-  private final boolean can_actuate_trunks;
+  private final String carSpecialType;
 
-  private final String car_special_type;
+  private final String carType;
 
-  private final String car_type;
+  private final String chargePortType;
 
-  private final String charge_port_type;
+  private final boolean isEUVehicle;
 
-  private final boolean eu_vehicle;
+  private final String exteriorColor;
 
-  private final String exterior_color;
+  private final boolean hasAirSuspension;
 
-  private final boolean has_air_suspension;
+  private final boolean hasLudicrousMode;
 
-  private final boolean has_ludicrous_mode;
+  private final int keyVersion;
 
-  private final int key_version;
+  private final boolean motorizedChargePort;
 
-  private final boolean motorized_charge_port;
-
-  private final String perf_config;
+  private final String perfConfig; // TODO what is this
 
   private final boolean plg;
 
-  private final int rear_seat_heaters;
+  private final int rearSeatHeaters;
 
-  private final int rear_seat_type;
+  private final int rearSeatType;
 
-  private final boolean rhd;
+  private final boolean isRightHandDrive;
 
-  private final String roof_color;
+  private final String roofColor;
 
-  private final int seat_type;
+  private final int seatType; // TODO What are the types?
 
-  private final String spoiler_type;
+  private final String spoilerType;
 
-  private final int sun_roof_installed;
+  private final int sunRoofInstalled;
 
-  private final String third_row_seats;
+  private final String thirdRowSeats;
 
-  private final long timestamp;
+  @Nonnull
+  private final Instant timestamp;
 
-  private final String trim_badging;
+  private final String trimBadging;
 
-  private final String wheel_type;
+  private final String wheelType;
 
-  private final boolean use_range_badging;
-
-  @Override
-  public boolean equals(Object o){
-    if(this == o) return true;
-    if(o == null || getClass() != o.getClass()) return false;
-
-    VehicleConfig that = (VehicleConfig) o;
-
-    if(can_accept_navigation_requests != that.can_accept_navigation_requests) return false;
-    if(can_actuate_trunks != that.can_actuate_trunks) return false;
-    if(eu_vehicle != that.eu_vehicle) return false;
-    if(has_air_suspension != that.has_air_suspension) return false;
-    if(has_ludicrous_mode != that.has_ludicrous_mode) return false;
-    if(key_version != that.key_version) return false;
-    if(motorized_charge_port != that.motorized_charge_port) return false;
-    if(plg != that.plg) return false;
-    if(rear_seat_heaters != that.rear_seat_heaters) return false;
-    if(rear_seat_type != that.rear_seat_type) return false;
-    if(rhd != that.rhd) return false;
-    if(seat_type != that.seat_type) return false;
-    if(sun_roof_installed != that.sun_roof_installed) return false;
-    if(timestamp != that.timestamp) return false;
-    if(use_range_badging != that.use_range_badging) return false;
-    if(!car_special_type.equals(that.car_special_type)) return false;
-    if(!car_type.equals(that.car_type)) return false;
-    if(!charge_port_type.equals(that.charge_port_type)) return false;
-    if(!exterior_color.equals(that.exterior_color)) return false;
-    if(!perf_config.equals(that.perf_config)) return false;
-    if(!roof_color.equals(that.roof_color)) return false;
-    if(!spoiler_type.equals(that.spoiler_type)) return false;
-    if(!third_row_seats.equals(that.third_row_seats)) return false;
-    if(!trim_badging.equals(that.trim_badging)) return false;
-    return wheel_type.equals(that.wheel_type);
-  }
-
-  @Override
-  public int hashCode(){
-    int result = (can_accept_navigation_requests ? 1 : 0);
-    result = 31 * result + (can_actuate_trunks ? 1 : 0);
-    result = 31 * result + car_special_type.hashCode();
-    result = 31 * result + car_type.hashCode();
-    result = 31 * result + charge_port_type.hashCode();
-    result = 31 * result + (eu_vehicle ? 1 : 0);
-    result = 31 * result + exterior_color.hashCode();
-    result = 31 * result + (has_air_suspension ? 1 : 0);
-    result = 31 * result + (has_ludicrous_mode ? 1 : 0);
-    result = 31 * result + key_version;
-    result = 31 * result + (motorized_charge_port ? 1 : 0);
-    result = 31 * result + perf_config.hashCode();
-    result = 31 * result + (plg ? 1 : 0);
-    result = 31 * result + rear_seat_heaters;
-    result = 31 * result + rear_seat_type;
-    result = 31 * result + (rhd ? 1 : 0);
-    result = 31 * result + roof_color.hashCode();
-    result = 31 * result + seat_type;
-    result = 31 * result + spoiler_type.hashCode();
-    result = 31 * result + sun_roof_installed;
-    result = 31 * result + third_row_seats.hashCode();
-    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
-    result = 31 * result + trim_badging.hashCode();
-    result = 31 * result + wheel_type.hashCode();
-    result = 31 * result + (use_range_badging ? 1 : 0);
-    return result;
-  }
+  private final boolean useRangeBadging;
 
   public VehicleConfig(
-    boolean can_accept_navigation_requests,
-    boolean can_actuate_trunks,
-    String car_special_type,
-    String car_type,
-    String charge_port_type,
-    boolean eu_vehicle,
-    String exterior_color,
-    boolean has_air_suspension,
-    boolean has_ludicrous_mode,
-    int key_version,
-    boolean motorized_charge_port,
-    String perf_config,
+    boolean canAcceptNavigationRequests,
+    boolean canActuateTrunks,
+    String carSpecialType,
+    String carType,
+    String chargePortType,
+    boolean isEUVehicle,
+    String exteriorColor,
+    boolean hasAirSuspension,
+    boolean hasLudicrousMode,
+    int keyVersion,
+    boolean motorizedChargePort,
+    String perfConfig,
     boolean plg,
-    int rear_seat_heaters,
-    int rear_seat_type,
-    boolean rhd,
-    String roof_color,
-    int seat_type,
-    String spoiler_type,
-    int sun_roof_installed,
-    String third_row_seats,
-    long timestamp,
-    String trim_badging,
-    String wheel_type,
-    boolean use_range_badging
+    int rearSeatHeaters,
+    int rearSeatType,
+    boolean isRightHandDrive,
+    String roofColor,
+    int seatType,
+    String spoilerType,
+    int sunRoofInstalled,
+    String thirdRowSeats,
+    @Nonnull Instant timestamp,
+    String trimBadging,
+    String wheelType,
+    boolean useRangeBadging
   ){
-    this.can_accept_navigation_requests = can_accept_navigation_requests;
-    this.can_actuate_trunks = can_actuate_trunks;
-    this.car_special_type = car_special_type;
-    this.car_type = car_type;
-    this.charge_port_type = charge_port_type;
-    this.eu_vehicle = eu_vehicle;
-    this.exterior_color = exterior_color;
-    this.has_air_suspension = has_air_suspension;
-    this.has_ludicrous_mode = has_ludicrous_mode;
-    this.key_version = key_version;
-    this.motorized_charge_port = motorized_charge_port;
-    this.perf_config = perf_config;
+    this.canAcceptNavigationRequests = canAcceptNavigationRequests;
+    this.canActuateTrunks = canActuateTrunks;
+    this.carSpecialType = carSpecialType;
+    this.carType = carType;
+    this.chargePortType = chargePortType;
+    this.isEUVehicle = isEUVehicle;
+    this.exteriorColor = exteriorColor;
+    this.hasAirSuspension = hasAirSuspension;
+    this.hasLudicrousMode = hasLudicrousMode;
+    this.keyVersion = keyVersion;
+    this.motorizedChargePort = motorizedChargePort;
+    this.perfConfig = perfConfig;
     this.plg = plg;
-    this.rear_seat_heaters = rear_seat_heaters;
-    this.rear_seat_type = rear_seat_type;
-    this.rhd = rhd;
-    this.roof_color = roof_color;
-    this.seat_type = seat_type;
-    this.spoiler_type = spoiler_type;
-    this.sun_roof_installed = sun_roof_installed;
-    this.third_row_seats = third_row_seats;
+    this.rearSeatHeaters = rearSeatHeaters;
+    this.rearSeatType = rearSeatType;
+    this.isRightHandDrive = isRightHandDrive;
+    this.roofColor = roofColor;
+    this.seatType = seatType;
+    this.spoilerType = spoilerType;
+    this.sunRoofInstalled = sunRoofInstalled;
+    this.thirdRowSeats = thirdRowSeats;
     this.timestamp = timestamp;
-    this.trim_badging = trim_badging;
-    this.wheel_type = wheel_type;
-    this.use_range_badging = use_range_badging;
+    this.trimBadging = trimBadging;
+    this.wheelType = wheelType;
+    this.useRangeBadging = useRangeBadging;
   }
 
-  public boolean isUseRangeBadging(){
-    return use_range_badging;
+  @Nonnull
+  public static VehicleConfig convert(@Nonnull com.ansill.tesla.api.raw.model.VehicleConfig config){
+    return new VehicleConfig(
+      config.isCanAcceptNavigationRequests(),
+      config.isCanActuateTrunks(),
+      config.getCarSpecialType(),
+      config.getCarType(),
+      config.getChargePortType(),
+      config.getEuVehicle(),
+      config.getExteriorColor(),
+      config.getHasAirSuspension(),
+      config.getHasLudicrousMode(),
+      config.getKeyVersion(),
+      config.getMotorizedChargePort(),
+      config.getPerfConfig(),
+      config.isPlg(),
+      config.getRearSeatHeaters(),
+      config.getRearSeatType(),
+      config.isCanAcceptNavigationRequests(),
+      config.getRoofColor(),
+      config.getSeatType(),
+      config.getSpoilerType(),
+      config.getSunRoofInstalled(),
+      config.getThirdRowSeats(),
+      Instant.ofEpochSecond(config.getTimestamp()),
+      config.getTrimBadging(),
+      config.getWheelType(),
+      config.isUseRangeBadging()
+    );
   }
 
   public boolean isCanAcceptNavigationRequests(){
-    return can_accept_navigation_requests;
+    return canAcceptNavigationRequests;
   }
 
   public boolean isCanActuateTrunks(){
-    return can_actuate_trunks;
+    return canActuateTrunks;
   }
 
   public String getCarSpecialType(){
-    return car_special_type;
+    return carSpecialType;
   }
 
   public String getCarType(){
-    return car_type;
+    return carType;
   }
 
   public String getChargePortType(){
-    return charge_port_type;
+    return chargePortType;
   }
 
-  public boolean getEuVehicle(){
-    return eu_vehicle;
+  public boolean isEUVehicle(){
+    return isEUVehicle;
   }
 
   public String getExteriorColor(){
-    return exterior_color;
+    return exteriorColor;
   }
 
-  public boolean getHasAirSuspension(){
-    return has_air_suspension;
+  public boolean isHasAirSuspension(){
+    return hasAirSuspension;
   }
 
-  public boolean getHasLudicrousMode(){
-    return has_ludicrous_mode;
+  public boolean isHasLudicrousMode(){
+    return hasLudicrousMode;
   }
 
   public int getKeyVersion(){
-    return key_version;
+    return keyVersion;
   }
 
-  public boolean getMotorizedChargePort(){
-    return motorized_charge_port;
+  public boolean isMotorizedChargePort(){
+    return motorizedChargePort;
   }
 
   public String getPerfConfig(){
-    return perf_config;
+    return perfConfig;
   }
 
   public boolean isPlg(){
@@ -233,51 +195,51 @@ public final class VehicleConfig{
   }
 
   public int getRearSeatHeaters(){
-    return rear_seat_heaters;
+    return rearSeatHeaters;
   }
 
   public int getRearSeatType(){
-    return rear_seat_type;
+    return rearSeatType;
   }
 
-  public boolean getRhd(){
-    return rhd;
+  public boolean isRightHandDrive(){
+    return isRightHandDrive;
   }
 
   public String getRoofColor(){
-    return roof_color;
+    return roofColor;
   }
 
   public int getSeatType(){
-    return seat_type;
+    return seatType;
   }
 
   public String getSpoilerType(){
-    return spoiler_type;
+    return spoilerType;
   }
 
   public int getSunRoofInstalled(){
-    return sun_roof_installed;
+    return sunRoofInstalled;
   }
 
   public String getThirdRowSeats(){
-    return third_row_seats;
+    return thirdRowSeats;
   }
 
-  public long getTimestamp(){
+  @Nonnull
+  public Instant getTimestamp(){
     return timestamp;
   }
 
   public String getTrimBadging(){
-    return trim_badging;
+    return trimBadging;
   }
 
   public String getWheelType(){
-    return wheel_type;
+    return wheelType;
   }
 
-  @Override
-  public String toString(){
-    return simpleToString(this);
+  public boolean isUseRangeBadging(){
+    return useRangeBadging;
   }
 }

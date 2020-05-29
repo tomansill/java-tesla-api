@@ -1,4 +1,4 @@
-package com.ansill.tesla.api.low.exception;
+package com.ansill.tesla.api.raw.exception;
 
 /** Authentication Exception */
 public class ReAuthenticationException extends Exception{

@@ -48,7 +48,7 @@ public final class ChargeAdded{
    * @return high-level object
    */
   @Nonnull
-  public static ChargeAdded convert(@Nonnull com.ansill.tesla.api.med.model.ChargeState state){
+  public static ChargeAdded convert(@Nonnull com.ansill.tesla.api.low.model.ChargeState state){
     return new ChargeAdded(
       state.getChargeEnergyAdded(),
       state.getChargeDistanceAddedIdeal(),

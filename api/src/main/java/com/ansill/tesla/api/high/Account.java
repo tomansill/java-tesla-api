@@ -2,10 +2,10 @@ package com.ansill.tesla.api.high;
 
 import com.ansill.lock.autolock.ALock;
 import com.ansill.lock.autolock.AutoLock;
-import com.ansill.tesla.api.low.exception.ReAuthenticationException;
-import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
-import com.ansill.tesla.api.med.Client;
-import com.ansill.tesla.api.med.model.AccountCredentials;
+import com.ansill.tesla.api.low.Client;
+import com.ansill.tesla.api.low.model.AccountCredentials;
+import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
+import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
 import com.ansill.validation.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

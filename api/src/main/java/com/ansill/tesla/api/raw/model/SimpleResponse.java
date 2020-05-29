@@ -1,4 +1,4 @@
-package com.ansill.tesla.api.low.model;
+package com.ansill.tesla.api.raw.model;
 
 import com.ansill.validation.Validation;
 

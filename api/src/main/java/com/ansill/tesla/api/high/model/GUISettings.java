@@ -56,7 +56,7 @@ public final class GUISettings{
    * @return high-level object
    */
   @Nonnull
-  public static GUISettings convert(@Nonnull com.ansill.tesla.api.med.model.GuiSettings settings){
+  public static GUISettings convert(@Nonnull com.ansill.tesla.api.low.model.GuiSettings settings){
     return new GUISettings(
       settings.isUsing24HoursTime(),
       settings.getChargeRateUnits(),

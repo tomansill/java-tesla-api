@@ -59,7 +59,7 @@ public final class SpeedLimitModeSettings{
    * @return high-level object
    */
   @Nonnull
-  public static SpeedLimitModeSettings convert(@Nonnull com.ansill.tesla.api.med.model.VehicleState.SpeedLimitMode state){
+  public static SpeedLimitModeSettings convert(@Nonnull com.ansill.tesla.api.low.model.VehicleState.SpeedLimitMode state){
     return new SpeedLimitModeSettings(
       state.isActive(),
       state.getCurrentSpeedLimit(),

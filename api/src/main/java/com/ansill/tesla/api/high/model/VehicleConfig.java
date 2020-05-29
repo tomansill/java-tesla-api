@@ -121,7 +121,7 @@ public final class VehicleConfig{
    * @return high-level object
    */
   @Nonnull
-  public static VehicleConfig convert(@Nonnull com.ansill.tesla.api.med.model.VehicleConfig config){
+  public static VehicleConfig convert(@Nonnull com.ansill.tesla.api.low.model.VehicleConfig config){
     return new VehicleConfig(
       config.isCanAcceptNavigationRequests(),
       config.isCanActuateTrunks(),

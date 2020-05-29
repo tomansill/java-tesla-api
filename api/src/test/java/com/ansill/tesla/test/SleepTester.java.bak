@@ -1,10 +1,10 @@
 package com.ansill.tesla.test;
 
 import com.ansill.tesla.api.exception.VehicleSleepingException;
-import com.ansill.tesla.api.low.Client;
-import com.ansill.tesla.api.low.exception.AuthenticationException;
-import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
-import com.ansill.tesla.api.low.model.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.api.raw.Client;
+import com.ansill.tesla.api.raw.exception.AuthenticationException;
+import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
+import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

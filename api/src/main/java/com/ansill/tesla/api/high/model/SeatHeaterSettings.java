@@ -74,7 +74,7 @@ public final class SeatHeaterSettings{
    * @return high-level object
    */
   @Nonnull
-  public static SeatHeaterSettings convert(@Nonnull com.ansill.tesla.api.med.model.ClimateState state){
+  public static SeatHeaterSettings convert(@Nonnull com.ansill.tesla.api.low.model.ClimateState state){
     return new SeatHeaterSettings(
       state.getSeatHeaterLeft(),
       state.getSeatHeaterRight(),

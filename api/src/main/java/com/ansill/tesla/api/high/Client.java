@@ -1,9 +1,9 @@
 package com.ansill.tesla.api.high;
 
-import com.ansill.tesla.api.low.exception.AuthenticationException;
-import com.ansill.tesla.api.low.exception.ReAuthenticationException;
-import com.ansill.tesla.api.med.model.AccountCredentials;
+import com.ansill.tesla.api.low.model.AccountCredentials;
 import com.ansill.tesla.api.model.ClientBuilder;
+import com.ansill.tesla.api.raw.exception.AuthenticationException;
+import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
@@ -29,15 +29,15 @@ public final class Client{
   private static final AtomicReference<Duration> GLOBAL_SLOW_CHANGING_DATA_LIFETIME = new AtomicReference<>(
     DEFAULT_SLOW_CHANGING_DATA_LIFETIME);
 
-  /** Med-level client */
-  private final com.ansill.tesla.api.med.Client client;
+  /** Low-level client */
+  private final com.ansill.tesla.api.low.Client client;
 
   /**
    * Constructor that constructs high-level client using medium-level client
    *
    * @param client medium-level client
    */
-  private Client(@Nonnull com.ansill.tesla.api.med.Client client){
+  private Client(@Nonnull com.ansill.tesla.api.low.Client client){
     this.client = client;
   }
 
@@ -57,7 +57,7 @@ public final class Client{
     @Nonnull
     @Override
     public com.ansill.tesla.api.high.Client build(){
-      return new com.ansill.tesla.api.high.Client(com.ansill.tesla.api.med.Client.builder()
+      return new com.ansill.tesla.api.high.Client(com.ansill.tesla.api.low.Client.builder()
                                                                                  .setUrl(this.url)
                                                                                  .setClientId(clientId)
                                                                                  .setClientSecret(clientSecret)

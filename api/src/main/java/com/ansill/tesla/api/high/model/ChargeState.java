@@ -61,7 +61,7 @@ public final class ChargeState{
    * @return high-level object
    */
   @Nonnull
-  public static ChargeState convert(@Nonnull com.ansill.tesla.api.med.model.ChargeState state){
+  public static ChargeState convert(@Nonnull com.ansill.tesla.api.low.model.ChargeState state){
     return new ChargeState(
       state.isChargePortDoorOpen(),
       state.isChargePortColdWeatherMode(),

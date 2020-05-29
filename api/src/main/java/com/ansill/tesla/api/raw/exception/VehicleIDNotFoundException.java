@@ -1,4 +1,4 @@
-package com.ansill.tesla.api.low.exception;
+package com.ansill.tesla.api.raw.exception;
 
 import javax.annotation.Nonnull;
 

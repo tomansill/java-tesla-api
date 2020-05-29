@@ -13,9 +13,9 @@ import com.ansill.tesla.api.high.model.Location;
 import com.ansill.tesla.api.high.model.SentryModeState;
 import com.ansill.tesla.api.high.model.VehicleConfig;
 import com.ansill.tesla.api.high.model.VehicleSnapshot;
-import com.ansill.tesla.api.low.exception.VehicleIDNotFoundException;
 import com.ansill.tesla.api.model.CachedValue;
 import com.ansill.tesla.api.model.ShiftState;
+import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
 import com.ansill.validation.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,35 +56,35 @@ public class Vehicle{
 
   /** Cached vehicle data */
   @Nonnull
-  private final CachedValue<com.ansill.tesla.api.med.model.Vehicle> cachedVehicle;
+  private final CachedValue<com.ansill.tesla.api.low.model.Vehicle> cachedVehicle;
 
   /** Cached drive state */
   @Nonnull
-  private final CachedValue<com.ansill.tesla.api.med.model.DriveState> cachedDriveState;
+  private final CachedValue<com.ansill.tesla.api.low.model.DriveState> cachedDriveState;
 
   /** Cached charge state */
   @Nonnull
-  private final CachedValue<com.ansill.tesla.api.med.model.ChargeState> cachedChargeState;
+  private final CachedValue<com.ansill.tesla.api.low.model.ChargeState> cachedChargeState;
 
   /** Cached vehicle state */
   @Nonnull
-  private final CachedValue<com.ansill.tesla.api.med.model.VehicleState> cachedVehicleState;
+  private final CachedValue<com.ansill.tesla.api.low.model.VehicleState> cachedVehicleState;
 
   /** Cached vehicle state */
   @Nonnull
-  private final CachedValue<com.ansill.tesla.api.med.model.GuiSettings> cachedGuiSettings;
+  private final CachedValue<com.ansill.tesla.api.low.model.GuiSettings> cachedGuiSettings;
 
   /** Cached vehicle state */
   @Nonnull
-  private final CachedValue<com.ansill.tesla.api.med.model.ClimateState> cachedClimateState;
+  private final CachedValue<com.ansill.tesla.api.low.model.ClimateState> cachedClimateState;
 
   /** Cached vehicle state */
   @Nonnull
-  private final CachedValue<com.ansill.tesla.api.med.model.VehicleConfig> cachedVehicleConfig;
+  private final CachedValue<com.ansill.tesla.api.low.model.VehicleConfig> cachedVehicleConfig;
 
   /** Cached complete data */
   @Nonnull
-  private final CachedValue<com.ansill.tesla.api.med.model.CompleteData> cachedCompleteData;
+  private final CachedValue<com.ansill.tesla.api.low.model.CompleteData> cachedCompleteData;
 
   /**
    * Vehicle constructor
@@ -99,7 +99,7 @@ public class Vehicle{
     @Nonnull String id,
     @Nonnull String vin,
     @Nonnull Account parent,
-    @Nonnull com.ansill.tesla.api.med.model.Vehicle vehicle,
+    @Nonnull com.ansill.tesla.api.low.model.Vehicle vehicle,
     @Nonnull AtomicReference<AtomicReference<Duration>> fastChangingDataLifetime,
     @Nonnull AtomicReference<AtomicReference<Duration>> slowChangingDataLifetime
   ){
@@ -127,7 +127,7 @@ public class Vehicle{
    * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
    */
   @Nonnull
-  static Vehicle convert(@Nonnull com.ansill.tesla.api.med.model.Vehicle vehicle, @Nonnull Account parent){
+  static Vehicle convert(@Nonnull com.ansill.tesla.api.low.model.Vehicle vehicle, @Nonnull Account parent){
     return new Vehicle(
       vehicle.getId(),
       vehicle.getVin(),
@@ -215,7 +215,7 @@ public class Vehicle{
         if(exceptionCatcher.get() != null) throw exceptionCatcher.get();
 
         // Check if vehicle state is not sleeping anymore
-        if(vehicle.getState() != com.ansill.tesla.api.med.model.Vehicle.State.ASLEEP){
+        if(vehicle.getState() != com.ansill.tesla.api.low.model.Vehicle.State.ASLEEP){
 
           // Update
           success = true;
@@ -424,11 +424,11 @@ public class Vehicle{
    * Returns vehicle
    *
    * @return charge settings
-   * @throws VehicleNotFoundException    in a rare event if vehicle gets removed from the account, this exception will be thrown
+   * @throws VehicleNotFoundException in a rare event if vehicle gets removed from the account, this exception will be thrown
    * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  private com.ansill.tesla.api.med.model.Vehicle getRawVehicle()
+  private com.ansill.tesla.api.low.model.Vehicle getRawVehicle()
   throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
@@ -462,7 +462,7 @@ public class Vehicle{
    * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  private com.ansill.tesla.api.med.model.DriveState getRawDriveState()
+  private com.ansill.tesla.api.low.model.DriveState getRawDriveState()
   throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
@@ -500,7 +500,7 @@ public class Vehicle{
    * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  private com.ansill.tesla.api.med.model.ChargeState getRawChargeState()
+  private com.ansill.tesla.api.low.model.ChargeState getRawChargeState()
   throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
@@ -538,7 +538,7 @@ public class Vehicle{
    * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  private com.ansill.tesla.api.med.model.GuiSettings getRawGuiSettings()
+  private com.ansill.tesla.api.low.model.GuiSettings getRawGuiSettings()
   throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
@@ -577,7 +577,7 @@ public class Vehicle{
    * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  private com.ansill.tesla.api.med.model.CompleteData getRawCompleteVehicleData()
+  private com.ansill.tesla.api.low.model.CompleteData getRawCompleteVehicleData()
   throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
@@ -628,7 +628,7 @@ public class Vehicle{
    * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  private com.ansill.tesla.api.med.model.VehicleState getRawVehicleState()
+  private com.ansill.tesla.api.low.model.VehicleState getRawVehicleState()
   throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
@@ -666,7 +666,7 @@ public class Vehicle{
    * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  private com.ansill.tesla.api.med.model.ClimateState getRawClimateState()
+  private com.ansill.tesla.api.low.model.ClimateState getRawClimateState()
   throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it
@@ -705,7 +705,7 @@ public class Vehicle{
    * @throws VehicleSleepingException when the vehicle is possibly in sleeping state, this exception will be thrown
    */
   @Nonnull
-  private com.ansill.tesla.api.med.model.VehicleConfig getRawVehicleConfig()
+  private com.ansill.tesla.api.low.model.VehicleConfig getRawVehicleConfig()
   throws VehicleNotFoundException, VehicleSleepingException{
 
     // Lock it

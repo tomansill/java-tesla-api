@@ -1,103 +1,102 @@
 package com.ansill.tesla.api.low.model;
 
+import com.ansill.tesla.api.utility.UnitUtility;
+
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import javax.measure.Unit;
+import javax.measure.quantity.Speed;
+import javax.measure.quantity.Temperature;
+import java.time.Instant;
 
-import static com.ansill.utility.Utility.simpleToString;
-
-@SuppressWarnings("unused")
 @Immutable
 public final class GuiSettings{
 
-  private final boolean gui_24_hour_time;
+  private final boolean use24HoursTime;
 
-  private final String gui_charge_rate_units;
+  @Nonnull
+  private final Unit<Speed> chargeRateUnits;
 
-  private final String gui_distance_units;
+  @Nonnull
+  private final Unit<Speed> distanceUnits;
 
-  private final String gui_range_display;
+  @Nonnull
+  private final Display rangeDisplay; // Find all possible enums one of them is "Rated"
 
-  private final String gui_temperature_units;
+  @Nonnull
+  private final Unit<Temperature> temperatureUnits;
 
-  private final long timestamp;
+  @Nonnull
+  private final Instant timestamp;
 
-  private final boolean show_range_units;
-
-  @Override
-  public boolean equals(Object o){
-    if(this == o) return true;
-    if(o == null || getClass() != o.getClass()) return false;
-
-    GuiSettings that = (GuiSettings) o;
-
-    if(gui_24_hour_time != that.gui_24_hour_time) return false;
-    if(timestamp != that.timestamp) return false;
-    if(show_range_units != that.show_range_units) return false;
-    if(!gui_charge_rate_units.equals(that.gui_charge_rate_units)) return false;
-    if(!gui_distance_units.equals(that.gui_distance_units)) return false;
-    if(!gui_range_display.equals(that.gui_range_display)) return false;
-    return gui_temperature_units.equals(that.gui_temperature_units);
-  }
-
-  @Override
-  public int hashCode(){
-    int result = (gui_24_hour_time ? 1 : 0);
-    result = 31 * result + gui_charge_rate_units.hashCode();
-    result = 31 * result + gui_distance_units.hashCode();
-    result = 31 * result + gui_range_display.hashCode();
-    result = 31 * result + gui_temperature_units.hashCode();
-    result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
-    result = 31 * result + (show_range_units ? 1 : 0);
-    return result;
-  }
+  private final boolean showRangeUnits;
 
   public GuiSettings(
-    boolean gui_24_hour_time,
-    String gui_charge_rate_units,
-    String gui_distance_units,
-    String gui_range_display,
-    String gui_temperature_units,
-    long timestamp,
-    boolean show_range_units
+    boolean use24HoursTime,
+    @Nonnull Unit<Speed> chargeRateUnits,
+    @Nonnull Unit<Speed> distanceUnits,
+    @Nonnull Display rangeDisplay,
+    @Nonnull Unit<Temperature> temperatureUnits,
+    @Nonnull Instant timestamp,
+    boolean showRangeUnits
   ){
-    this.gui_24_hour_time = gui_24_hour_time;
-    this.gui_charge_rate_units = gui_charge_rate_units;
-    this.gui_distance_units = gui_distance_units;
-    this.gui_range_display = gui_range_display;
-    this.gui_temperature_units = gui_temperature_units;
+    this.use24HoursTime = use24HoursTime;
+    this.chargeRateUnits = chargeRateUnits;
+    this.distanceUnits = distanceUnits;
+    this.rangeDisplay = rangeDisplay;
+    this.temperatureUnits = temperatureUnits;
     this.timestamp = timestamp;
-    this.show_range_units = show_range_units;
+    this.showRangeUnits = showRangeUnits;
   }
 
-  public boolean isShowRangeUnits(){
-    return show_range_units;
+  @Nonnull
+  public static GuiSettings convert(@Nonnull com.ansill.tesla.api.raw.model.GuiSettings settings){
+    return new GuiSettings(
+      settings.getGui24HourTime(),
+      UnitUtility.getSpeedUnit(settings.getGuiChargeRateUnits()),
+      UnitUtility.getSpeedUnit(settings.getGuiDistanceUnits()),
+      Display.valueOf(settings.getGuiRangeDisplay().toUpperCase()),
+      UnitUtility.getTemperatureUnit(settings.getGuiTemperatureUnits()),
+      Instant.ofEpochSecond(settings.getTimestamp()),
+      settings.isShowRangeUnits()
+    );
   }
 
-  public boolean getGui24HourTime(){
-    return gui_24_hour_time;
+  public boolean isUsing24HoursTime(){
+    return use24HoursTime;
   }
 
-  public String getGuiChargeRateUnits(){
-    return gui_charge_rate_units;
+  @Nonnull
+  public Unit<Speed> getChargeRateUnits(){
+    return chargeRateUnits;
   }
 
-  public String getGuiDistanceUnits(){
-    return gui_distance_units;
+  @Nonnull
+  public Unit<Speed> getDistanceUnits(){
+    return distanceUnits;
   }
 
-  public String getGuiRangeDisplay(){
-    return gui_range_display;
+  @Nonnull
+  public Display getRangeDisplay(){
+    return rangeDisplay;
   }
 
-  public String getGuiTemperatureUnits(){
-    return gui_temperature_units;
+  @Nonnull
+  public Unit<Temperature> getTemperatureUnits(){
+    return temperatureUnits;
   }
 
-  public long getTimestamp(){
+  @Nonnull
+  public Instant getTimestamp(){
     return timestamp;
   }
 
-  @Override
-  public String toString(){
-    return simpleToString(this);
+  public boolean isShowingRangeUnits(){
+    return showRangeUnits;
   }
+
+  public enum Display{
+    RATED
+  }
+
 }
