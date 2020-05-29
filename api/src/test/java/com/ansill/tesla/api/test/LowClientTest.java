@@ -1,5 +1,7 @@
 package com.ansill.tesla.api.test;
 
+import com.ansill.tesla.api.exception.VehicleInServiceException;
+import com.ansill.tesla.api.exception.VehicleSleepingException;
 import com.ansill.tesla.api.low.Client;
 import com.ansill.tesla.api.low.exception.APIProtocolException;
 import com.ansill.tesla.api.low.exception.AuthenticationException;
@@ -860,6 +862,88 @@ class LowClientTest{
   }
 
   @Test
+  void testCompleteVehicleInService(){
+
+    // Get old refresh token
+    var accessToken = generateString(32);
+
+    // Id
+    var vehicleId = generateString(32);
+
+    // Set up 'catch' function
+    VEHICLE_HANDLER.set(ctx -> {
+
+      // Ensure no leftovers
+      try{
+        var pathParams = new HashSet<>(ctx.pathParamMap().keySet());
+        assertTrue(pathParams.remove("id"));
+        assertTrue(pathParams.remove("type"));
+        assertEquals(Collections.emptySet(), pathParams);
+        assertEquals(Collections.emptySet(), ctx.formParamMap().keySet());
+        assertEquals(Collections.emptySet(), ctx.queryParamMap().keySet());
+
+        // Must be get
+        assertEquals("get", ctx.method().toLowerCase());
+
+        // Bearer must exist and path params must match
+        assertEquals("Bearer " + accessToken, ctx.header("Authorization"));
+        assertEquals("vehicle_data", ctx.pathParam("type"));
+
+        // Send response
+        ctx.status(405);
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+
+    // Fire it
+    assertThrows(VehicleInServiceException.class, () -> client.getVehicleData(accessToken, vehicleId));
+
+  }
+
+  @Test
+  void testCompleteVehicleSleeping(){
+
+    // Get old refresh token
+    var accessToken = generateString(32);
+
+    // Id
+    var vehicleId = generateString(32);
+
+    // Set up 'catch' function
+    VEHICLE_HANDLER.set(ctx -> {
+
+      // Ensure no leftovers
+      try{
+        var pathParams = new HashSet<>(ctx.pathParamMap().keySet());
+        assertTrue(pathParams.remove("id"));
+        assertTrue(pathParams.remove("type"));
+        assertEquals(Collections.emptySet(), pathParams);
+        assertEquals(Collections.emptySet(), ctx.formParamMap().keySet());
+        assertEquals(Collections.emptySet(), ctx.queryParamMap().keySet());
+
+        // Must be get
+        assertEquals("get", ctx.method().toLowerCase());
+
+        // Bearer must exist and path params must match
+        assertEquals("Bearer " + accessToken, ctx.header("Authorization"));
+        assertEquals("vehicle_data", ctx.pathParam("type"));
+
+        // Send response
+        ctx.status(408);
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+
+    // Fire it
+    assertThrows(VehicleSleepingException.class, () -> client.getVehicleData(accessToken, vehicleId));
+
+  }
+
+  @Test
   void testCompleteVehicleUnexpected(){
 
     // Get old refresh token
@@ -1027,6 +1111,88 @@ class LowClientTest{
 
   }
 
+  void testVehicleDataInService(String path, CheckedBiConsumer<String,String> function){
+
+    // Get old refresh token
+    var accessToken = generateString(32);
+
+    // Id
+    var vehicleId = generateString(32);
+
+    // Set up 'catch' function
+    VEHICLE_DATA_HANDLER.set(ctx -> {
+
+      // Ensure no leftovers
+      try{
+        var pathParams = new HashSet<>(ctx.pathParamMap().keySet());
+        assertTrue(pathParams.remove("id"));
+        assertTrue(pathParams.remove("type"));
+        assertEquals(Collections.emptySet(), pathParams);
+        assertEquals(Collections.emptySet(), ctx.formParamMap().keySet());
+        assertEquals(Collections.emptySet(), ctx.queryParamMap().keySet());
+
+        // Must be get
+        assertEquals("get", ctx.method().toLowerCase());
+
+        // Bearer must exist and path params must match
+        assertEquals("Bearer " + accessToken, ctx.header("Authorization"));
+        assertEquals(vehicleId, ctx.pathParam("id"));
+        assertEquals(path, ctx.pathParam("type"));
+
+        // Send response
+        ctx.status(405);
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+
+    // get
+    assertThrows(VehicleInServiceException.class, () -> function.accept(accessToken, vehicleId));
+
+  }
+
+  void testVehicleDataSleeping(String path, CheckedBiConsumer<String,String> function){
+
+    // Get old refresh token
+    var accessToken = generateString(32);
+
+    // Id
+    var vehicleId = generateString(32);
+
+    // Set up 'catch' function
+    VEHICLE_DATA_HANDLER.set(ctx -> {
+
+      // Ensure no leftovers
+      try{
+        var pathParams = new HashSet<>(ctx.pathParamMap().keySet());
+        assertTrue(pathParams.remove("id"));
+        assertTrue(pathParams.remove("type"));
+        assertEquals(Collections.emptySet(), pathParams);
+        assertEquals(Collections.emptySet(), ctx.formParamMap().keySet());
+        assertEquals(Collections.emptySet(), ctx.queryParamMap().keySet());
+
+        // Must be get
+        assertEquals("get", ctx.method().toLowerCase());
+
+        // Bearer must exist and path params must match
+        assertEquals("Bearer " + accessToken, ctx.header("Authorization"));
+        assertEquals(vehicleId, ctx.pathParam("id"));
+        assertEquals(path, ctx.pathParam("type"));
+
+        // Send response
+        ctx.status(408);
+
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    });
+
+    // get
+    assertThrows(VehicleSleepingException.class, () -> function.accept(accessToken, vehicleId));
+
+  }
+
   void testVehicleDataUnexpected(String path, CheckedBiConsumer<String,String> function){
 
     // Get old refresh token
@@ -1117,6 +1283,16 @@ class LowClientTest{
   }
 
   @Test
+  void testVehicleChargeStateInService(){
+    testVehicleDataInService("charge_state", (token, id) -> client.getVehicleChargeState(token, id));
+  }
+
+  @Test
+  void testVehicleChargeStateSleeping(){
+    testVehicleDataSleeping("charge_state", (token, id) -> client.getVehicleChargeState(token, id));
+  }
+
+  @Test
   void testVehicleClimateStateInvalidVehicleId(){
     testVehicleDataInvalidVehicleId("climate_state", (token, id) -> client.getVehicleClimateState(token, id));
   }
@@ -1129,6 +1305,16 @@ class LowClientTest{
   @Test
   void testVehicleClimateStateUnexpected(){
     testVehicleDataUnexpected("climate_state", (token, id) -> client.getVehicleClimateState(token, id));
+  }
+
+  @Test
+  void testVehicleClimateStateInService(){
+    testVehicleDataInService("climate_state", (token, id) -> client.getVehicleClimateState(token, id));
+  }
+
+  @Test
+  void testVehicleClimateStateSleeping(){
+    testVehicleDataSleeping("climate_state", (token, id) -> client.getVehicleClimateState(token, id));
   }
 
   @Test
@@ -1147,6 +1333,16 @@ class LowClientTest{
   }
 
   @Test
+  void testVehicleDriveStateInService(){
+    testVehicleDataInService("drive_state", (token, id) -> client.getVehicleDriveState(token, id));
+  }
+
+  @Test
+  void testVehicleDriveStateSleeping(){
+    testVehicleDataSleeping("drive_state", (token, id) -> client.getVehicleDriveState(token, id));
+  }
+
+  @Test
   void testVehicleGuiSettingsInvalidVehicleId(){
     testVehicleDataInvalidVehicleId("gui_settings", (token, id) -> client.getVehicleGuiSettings(token, id));
   }
@@ -1159,6 +1355,16 @@ class LowClientTest{
   @Test
   void testVehicleGuiSettingsUnexpected(){
     testVehicleDataUnexpected("gui_settings", (token, id) -> client.getVehicleGuiSettings(token, id));
+  }
+
+  @Test
+  void testVehicleGuiSettingsInService(){
+    testVehicleDataInService("gui_settings", (token, id) -> client.getVehicleGuiSettings(token, id));
+  }
+
+  @Test
+  void testVehicleGuiSettingsSleeping(){
+    testVehicleDataSleeping("gui_settings", (token, id) -> client.getVehicleGuiSettings(token, id));
   }
 
   @Test
@@ -1177,6 +1383,16 @@ class LowClientTest{
   }
 
   @Test
+  void testVehicleVehicleStateInService(){
+    testVehicleDataInService("vehicle_state", (token, id) -> client.getVehicleVehicleState(token, id));
+  }
+
+  @Test
+  void testVehicleVehicleStateSleeping(){
+    testVehicleDataSleeping("vehicle_state", (token, id) -> client.getVehicleVehicleState(token, id));
+  }
+
+  @Test
   void testVehicleVehicleConfigInvalidVehicleId(){
     testVehicleDataInvalidVehicleId("vehicle_config", (token, id) -> client.getVehicleVehicleConfig(token, id));
   }
@@ -1189,5 +1405,15 @@ class LowClientTest{
   @Test
   void testVehicleVehicleConfigUnexpected(){
     testVehicleDataUnexpected("vehicle_config", (token, id) -> client.getVehicleVehicleConfig(token, id));
+  }
+
+  @Test
+  void testVehicleVehicleConfigInService(){
+    testVehicleDataInService("vehicle_config", (token, id) -> client.getVehicleVehicleConfig(token, id));
+  }
+
+  @Test
+  void testVehicleVehicleConfigSleeping(){
+    testVehicleDataSleeping("vehicle_config", (token, id) -> client.getVehicleVehicleConfig(token, id));
   }
 }
