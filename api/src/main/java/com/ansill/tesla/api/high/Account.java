@@ -33,7 +33,7 @@ public class Account implements AutoCloseable{
 
   /** Time before credentials expires */
   @Nonnull
-  private static final Duration DEFAULT_TIME_OFFSET_BEFORE_REFRESH = Duration.ofMinutes(2);
+  private static final Duration DEFAULT_TIME_OFFSET_BEFORE_REFRESH = Duration.ofDays(1); // Lets not get things too close to the chest, 1 day left out of 45 days should be reasonable
 
   /** Low Level Client */
   @Nonnull
@@ -67,52 +67,61 @@ public class Account implements AutoCloseable{
   @Nullable
   private RefreshSubscription refreshSubscription;
 
-  /**
-   * Creates Tesla Account and starts the refresh timer
-   *
-   * @param client                   low level client
-   * @param credentials              good credentials
-   * @param fastChangingDataLifetime lifetime for fast-changing data
-   * @param slowChangingDataLifetime lifetime for slow-changing data
-   */
-  Account(
-    @Nonnull Client client,
-    @Nonnull AccountCredentials credentials,
-    @Nonnull AtomicReference<AtomicReference<Duration>> fastChangingDataLifetime,
-    @Nonnull AtomicReference<AtomicReference<Duration>> slowChangingDataLifetime
-  ){
-    this(client, credentials, fastChangingDataLifetime, slowChangingDataLifetime, null);
-  }
-
+  @Nonnull
+  private final AtomicReference<Duration> refreshDurationBeforeExpiration = new AtomicReference<>();
 
   /**
    * Creates Tesla Account and starts the refresh timer
    *
-   * @param client                   low level client
-   * @param credentials              good credentials
-   * @param fastChangingDataLifetime lifetime for fast-changing data
-   * @param slowChangingDataLifetime lifetime for slow-changing data
+   * @param client                          low level client
+   * @param credentials                     good credentials
+   * @param fastChangingDataLifetime        lifetime for fast-changing data
+   * @param slowChangingDataLifetime        lifetime for slow-changing data
+   * @param refreshDurationBeforeExpiration duration before the expiration for Account to refresh the credentials
    */
   Account(
     @Nonnull Client client,
     @Nonnull AccountCredentials credentials,
     @Nonnull AtomicReference<AtomicReference<Duration>> fastChangingDataLifetime,
     @Nonnull AtomicReference<AtomicReference<Duration>> slowChangingDataLifetime,
-    @Nullable RefreshSubscription subscription
+    @Nullable RefreshSubscription subscription,
+    @Nullable Duration refreshDurationBeforeExpiration
   ){
     this.client = client;
     this.credentials = credentials;
     this.fastChangingDataLifetime = fastChangingDataLifetime;
     this.slowChangingDataLifetime = slowChangingDataLifetime;
     this.refreshSubscription = subscription;
+    this.refreshDurationBeforeExpiration.set(refreshDurationBeforeExpiration !=
+                                             null ? refreshDurationBeforeExpiration : DEFAULT_TIME_OFFSET_BEFORE_REFRESH);
     resetTimer();
   }
 
-  public void setGlobalFastChangingDataLifetime(@Nonnull Duration duration){
+  /**
+   * Sets lifetime in duration for fast-changing data to be cached in the memory before it's purged
+   *
+   * @param duration duration
+   */
+  public void setDefaultTimeOffsetBeforeRefresh(@Nonnull Duration duration){
+    refreshDurationBeforeExpiration.set(Validation.assertNonnull(duration, "duration"));
+    resetTimer();
+  }
+
+  /**
+   * Sets lifetime in duration for fast-changing data to be cached in the memory before it's purged
+   *
+   * @param duration lifetime in duration
+   */
+  public void setFastChangingDataLifetime(@Nonnull Duration duration){
     fastChangingDataLifetime.set(new AtomicReference<>(duration));
   }
 
-  public void setGlobalSlowChangingDataLifetime(@Nonnull Duration duration){
+  /**
+   * Sets lifetime in duration for slow-changing data to be cached in the memory before it's purged
+   *
+   * @param duration lifetime in duration
+   */
+  public void setSlowChangingDataLifetime(@Nonnull Duration duration){
     slowChangingDataLifetime.set(new AtomicReference<>(duration));
   }
 
@@ -157,7 +166,7 @@ public class Account implements AutoCloseable{
     // Figure out the delay
     var delay = Duration.between(
       Instant.now(),
-      credentials.getExpirationTime().minus(DEFAULT_TIME_OFFSET_BEFORE_REFRESH)
+      credentials.getExpirationTime().minus(refreshDurationBeforeExpiration.get())
     );
 
     // Log the delay

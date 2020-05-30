@@ -7,6 +7,8 @@ import javax.annotation.concurrent.Immutable;
 import java.time.Duration;
 import java.time.Instant;
 
+import static com.ansill.utility.Utility.simpleToString;
+
 @Immutable
 public final class AccountCredentials{
 
@@ -73,5 +75,30 @@ public final class AccountCredentials{
   @Nonnull
   public Instant getExpirationTime(){
     return expirationTime;
+  }
+
+  @Override
+  public boolean equals(Object o){
+    if(this == o) return true;
+    if(!(o instanceof AccountCredentials that)) return false;
+
+    if(!accessToken.equals(that.accessToken)) return false;
+    if(!refreshToken.equals(that.refreshToken)) return false;
+    if(!creationTime.equals(that.creationTime)) return false;
+    return expirationTime.equals(that.expirationTime);
+  }
+
+  @Override
+  public int hashCode(){
+    int result = accessToken.hashCode();
+    result = 31 * result + refreshToken.hashCode();
+    result = 31 * result + creationTime.hashCode();
+    result = 31 * result + expirationTime.hashCode();
+    return result;
+  }
+
+  @Override
+  public String toString(){
+    return simpleToString(this);
   }
 }

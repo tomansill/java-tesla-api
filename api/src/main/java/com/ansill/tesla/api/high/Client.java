@@ -105,7 +105,119 @@ public final class Client{
         client,
         client.authenticate(emailAddress, password),
         new AtomicReference<>(fastChangingDataLifetime),
-        new AtomicReference<>(slowChangingDataLifetime)
+        new AtomicReference<>(slowChangingDataLifetime),
+        null,
+        null
+      ));
+    }catch(AuthenticationException e){
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * Authenticates to tesla account
+   *
+   * @param emailAddress          email address
+   * @param password              password
+   * @param refreshOffsetDuration duration of offset before credential expires for service to attempt to refresh
+   * @return optional object that may contain the tesla account. If it is empty, then authentication has failed
+   */
+  @Nonnull
+  public Optional<Account> authenticate(
+    @Nonnull String emailAddress,
+    @Nonnull String password,
+    @Nonnull Duration refreshOffsetDuration
+  ){
+    refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
+    try{
+      return Optional.of(new Account(
+        client,
+        client.authenticate(emailAddress, password),
+        new AtomicReference<>(fastChangingDataLifetime),
+        new AtomicReference<>(slowChangingDataLifetime),
+        null,
+        refreshOffsetDuration
+      ));
+    }catch(AuthenticationException e){
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * Authenticates to tesla account
+   *
+   * @param emailAddress email address
+   * @param password     password
+   * @param consumer     consumer that consumes new credentials
+   * @param onError      runnable that runs when there's an error
+   * @return optional object that may contain the tesla account. If it is empty, then authentication has failed
+   */
+  @Nonnull
+  public Optional<Account> authenticate(
+    @Nonnull String emailAddress,
+    @Nonnull String password,
+    @Nonnull Consumer<AccountCredentials> consumer,
+    @Nonnull Consumer<ReAuthenticationException> onError
+  ){
+    try{
+
+      // Refresh now
+      AccountCredentials newCred = client.authenticate(emailAddress, password);
+      Validation.assertNonnull(consumer, "consumer").accept(newCred);
+
+      return Optional.of(new Account(
+        client,
+        newCred,
+        new AtomicReference<>(fastChangingDataLifetime),
+        new AtomicReference<>(slowChangingDataLifetime),
+        new RefreshSubscription(
+          consumer,
+          Validation.assertNonnull(onError, "onError")
+        ),
+        null
+      ));
+    }catch(AuthenticationException e){
+      return Optional.empty();
+    }
+  }
+
+
+  /**
+   * Authenticates to tesla account
+   *
+   * @param emailAddress          email address
+   * @param password              password
+   * @param consumer              consumer that consumes new credentials
+   * @param onError               runnable that runs when there's an error
+   * @param refreshOffsetDuration duration of offset before credential expires for service to attempt to refresh
+   * @return optional object that may contain the tesla account. If it is empty, then authentication has failed
+   */
+  @Nonnull
+  public Optional<Account> authenticate(
+    @Nonnull String emailAddress,
+    @Nonnull String password,
+    @Nonnull Consumer<AccountCredentials> consumer,
+    @Nonnull Consumer<ReAuthenticationException> onError,
+    @Nonnull Duration refreshOffsetDuration
+  ){
+    try{
+
+      refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
+
+      // Refresh now
+      AccountCredentials newCred = client.authenticate(emailAddress, password);
+      Validation.assertNonnull(consumer, "consumer").accept(newCred);
+
+      return Optional.of(new Account(
+        client,
+        newCred,
+        new AtomicReference<>(fastChangingDataLifetime),
+        new AtomicReference<>(slowChangingDataLifetime),
+        new RefreshSubscription(
+          consumer,
+          Validation.assertNonnull(onError, "onError")
+        ),
+        refreshOffsetDuration
       ));
     }catch(AuthenticationException e){
       return Optional.empty();
@@ -125,7 +237,33 @@ public final class Client{
         client,
         client.refreshToken(refreshToken),
         new AtomicReference<>(fastChangingDataLifetime),
-        new AtomicReference<>(slowChangingDataLifetime)
+        new AtomicReference<>(slowChangingDataLifetime),
+        null,
+        null
+      ));
+    }catch(ReAuthenticationException e){
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * Authenticates to tesla account
+   *
+   * @param refreshToken          token used to refresh the credentials
+   * @param refreshOffsetDuration duration of offset before credential expires for service to attempt to refresh
+   * @return optional object that may contain the tesla account. If it is empty, then authentication has failed
+   */
+  @Nonnull
+  public Optional<Account> authenticate(@Nonnull String refreshToken, @Nonnull Duration refreshOffsetDuration){
+    refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
+    try{
+      return Optional.of(new Account(
+        client,
+        client.refreshToken(refreshToken),
+        new AtomicReference<>(fastChangingDataLifetime),
+        new AtomicReference<>(slowChangingDataLifetime),
+        null,
+        refreshOffsetDuration
       ));
     }catch(ReAuthenticationException e){
       return Optional.empty();
@@ -161,7 +299,48 @@ public final class Client{
         new RefreshSubscription(
           consumer,
           Validation.assertNonnull(onError, "onError")
-        )
+        ),
+        null
+      ));
+    }catch(ReAuthenticationException e){
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * Authenticates to tesla account while returning credentials
+   *
+   * @param refreshToken          token used to refresh the credentials
+   * @param consumer              consumer that consumes new credentials
+   * @param onError               runnable that runs when there's an error
+   * @param refreshOffsetDuration duration of offset before credential expires for service to attempt to refresh
+   * @return optional object that may contain the tesla account. If it is empty, then authentication has failed
+   */
+  @Nonnull
+  public Optional<Account> authenticate(
+    @Nonnull String refreshToken,
+    @Nonnull Consumer<AccountCredentials> consumer,
+    @Nonnull Consumer<ReAuthenticationException> onError,
+    @Nonnull Duration refreshOffsetDuration
+  ){
+    refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
+    try{
+
+      // Refresh now
+      AccountCredentials newCred = client.refreshToken(refreshToken);
+      Validation.assertNonnull(consumer, "consumer").accept(newCred);
+
+      // Return new account
+      return Optional.of(new Account(
+        client,
+        newCred,
+        new AtomicReference<>(fastChangingDataLifetime),
+        new AtomicReference<>(slowChangingDataLifetime),
+        new RefreshSubscription(
+          consumer,
+          Validation.assertNonnull(onError, "onError")
+        ),
+        refreshOffsetDuration
       ));
     }catch(ReAuthenticationException e){
       return Optional.empty();

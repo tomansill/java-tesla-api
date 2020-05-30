@@ -46,6 +46,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RawClientTest{
 
+  private static final Consumer<Context> DEFAULT_FAIL = context -> context.status(600);
+
   private static final Gson GSON = new Gson();
 
   private static final AtomicReference<Consumer<Context>> AUTHENTICATION_HANDLER = new AtomicReference<>();
@@ -118,6 +120,11 @@ class RawClientTest{
                    .setClientId(client_id)
                    .setClientSecret(client_secret)
                    .build();
+    AUTHENTICATION_HANDLER.set(DEFAULT_FAIL);
+    REVOKE_HANDLER.set(DEFAULT_FAIL);
+    VEHICLES_HANDLER.set(DEFAULT_FAIL);
+    VEHICLE_HANDLER.set(DEFAULT_FAIL);
+    VEHICLE_DATA_HANDLER.set(DEFAULT_FAIL);
   }
 
   @AfterEach
