@@ -4,17 +4,25 @@ import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static com.ansill.tesla.api.mock.MockUtility.generateString;
 
 public class MockSessionManager{
 
-  private final Map<MockAccount,Set<MockSession>> accountsToSessions = new HashMap<>();
+  private final Map<MockAccount,Set<MockSession>> accountsToSessions = new ConcurrentHashMap<>();
 
-  private final Map<MockSession,MockAccount> sessionToAccounts = new HashMap<>();
+  private final Map<MockSession,MockAccount> sessionToAccounts = new ConcurrentHashMap<>();
+
+  private final Map<String,MockSession> accessTokensToSessions = new ConcurrentHashMap<>();
+
+  private final Map<String,MockSession> refreshTokensToSessions = new ConcurrentHashMap<>();
 
   @Nonnull
   private Duration defaultSessionDuration = Duration.ofMinutes(120);
@@ -29,14 +37,47 @@ public class MockSessionManager{
   }
 
   @Nonnull
-  public synchronized MockSession createSession(@Nonnull MockAccount account){
-    MockSession session = new MockSession(defaultSessionDuration, this::removeSession);
+  private MockSession getSession(){
+
+    // Set up reference
+    var session = new AtomicReference<MockSession>();
+
+    // Repeat until no collision for both access and refresh tokens
+    var found1 = new AtomicBoolean(false);
+    do{
+      accessTokensToSessions.computeIfAbsent(generateString(32), accessToken -> {
+        found1.set(true);
+        var found2 = new AtomicBoolean(false);
+        do{
+          refreshTokensToSessions.computeIfAbsent(generateString(32), refreshToken -> {
+            found2.set(true);
+            session.set(new MockSession(accessToken, refreshToken, getDefaultSessionDuration(), this::removeSession));
+            return session.get();
+          });
+        }while(!found2.get());
+        return session.get();
+      });
+    }while(!found1.get());
+
+    // Return it
+    return session.get();
+  }
+
+  @Nonnull
+  public MockSession createSession(@Nonnull MockAccount account){
+
+    // Get session
+    var session = getSession();
+
+    // Put session in appropriate maps
     accountsToSessions.compute(account, (acct, sessions) -> {
       if(sessions == null) sessions = new HashSet<>();
+      sessionToAccounts.put(session, account);
       sessions.add(session);
       return sessions;
     });
-    sessionToAccounts.put(session, account);
+
+    // Return it
     return session;
   }
 
@@ -54,13 +95,57 @@ public class MockSessionManager{
     var account = sessionToAccounts.remove(session);
     if(account == null) return false;
     accountsToSessions.get(account).remove(session);
+    refreshTokensToSessions.remove(session.getRefreshToken());
+    accessTokensToSessions.remove(session.getAccessToken());
     return true;
   }
 
   public synchronized boolean removeAllSession(@Nonnull MockAccount account){
     var sessions = accountsToSessions.get(account);
     if(sessions == null) return false;
-    sessions.clear();
+    sessions.forEach(this::removeSession);
     return true;
+  }
+
+  @Nonnull
+  public Optional<MockSession> refreshSession(@Nonnull String token){
+
+    // Get session from token
+    var session = refreshTokensToSessions.remove(token);
+    if(session == null) return Optional.empty();
+
+    // Get account
+    var account = sessionToAccounts.get(session);
+
+    // Remove old session
+    removeSession(session);
+
+    // Get new session
+    var newSession = getSession();
+
+    // Put session in appropriate maps
+    accountsToSessions.compute(account, (acct, sessions) -> {
+      if(sessions == null) sessions = new HashSet<>();
+      sessionToAccounts.put(newSession, account);
+      sessions.add(newSession);
+      return sessions;
+    });
+
+    // Return it
+    return Optional.of(newSession);
+  }
+
+  public boolean removeSessionWithToken(@Nonnull String token){
+    var session = refreshTokensToSessions.get(token);
+    if(session == null) return false;
+    removeSession(session);
+    return true;
+  }
+
+  @Nonnull
+  public Optional<MockAccount> getAccountByToken(String token){
+    var session = accessTokensToSessions.get(token);
+    if(session == null) return Optional.empty();
+    return Optional.ofNullable(sessionToAccounts.get(session));
   }
 }

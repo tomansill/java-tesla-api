@@ -1,6 +1,5 @@
 package com.ansill.tesla.api.mock.model;
 
-import com.ansill.tesla.api.mock.MockUtility;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
@@ -15,10 +14,10 @@ import java.util.function.Consumer;
 public class MockSession{
 
   @Nonnull
-  private final String accessToken = MockUtility.generateString(32);
+  private final String accessToken;
 
   @Nonnull
-  private final String refreshToken = MockUtility.generateString(32);
+  private final String refreshToken;
 
   @Nonnull
   private final Consumer<MockSession> expirationConsumer;
@@ -33,21 +32,14 @@ public class MockSession{
   private Duration expiresIn;
 
   public MockSession(
+    @Nonnull String accessToken,
+    @Nonnull String refreshToken,
     @Nonnull Duration expiresIn,
     @Nonnull Consumer<MockSession> expirationConsumer
   ){
-    this.creationTime = Validation.assertNonnull(Instant.now(), "creationTime");
-    this.expiresIn = Validation.assertNonnull(expiresIn, "expiresIn");
-    this.expirationConsumer = Validation.assertNonnull(expirationConsumer, "expirationRunnable");
-    this.timer = new AtomicReference<>(buildTimer());
-  }
-
-  public MockSession(
-    @Nonnull Instant creationTime,
-    @Nonnull Duration expiresIn,
-    @Nonnull Consumer<MockSession> expirationConsumer
-  ){
-    this.creationTime = Validation.assertNonnull(creationTime, "creationTime");
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
+    this.creationTime = Instant.now();
     this.expiresIn = Validation.assertNonnull(expiresIn, "expiresIn");
     this.expirationConsumer = Validation.assertNonnull(expirationConsumer, "expirationRunnable");
     this.timer = new AtomicReference<>(buildTimer());

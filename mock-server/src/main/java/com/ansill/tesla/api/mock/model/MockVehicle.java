@@ -3,10 +3,13 @@ package com.ansill.tesla.api.mock.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+import static com.ansill.tesla.api.mock.MockUtility.generateString;
 import static com.ansill.tesla.api.mock.MockUtility.simpleToString;
 
 @SuppressWarnings("unused")
@@ -113,6 +116,33 @@ public class MockVehicle{
     this.gui_settings = guiSettings;
     this.vehicle_state = vehicleState;
     this.vehicle_config = vehicleConfig;
+  }
+
+  public static MockVehicle randomParked(String id){
+    var random = new Random();
+    return new MockVehicle(
+      Long.parseLong(id),
+      random.nextLong(),
+      random.nextLong(),
+      generateString(32),
+      generateString(32),
+      generateString(32),
+      generateString(5),
+      Collections.singletonList(generateString(32)),
+      "online",
+      false,
+      id,
+      true,
+      6,
+      null,
+      null,
+      DriveState.generateParked(),
+      ClimateState.generate(),
+      ChargeState.generateUnplugged(),
+      GUISettings.generate(),
+      VehicleState.generate(),
+      VehicleConfig.generate()
+    );
   }
 
   public long getUserId(){
@@ -347,6 +377,25 @@ public class MockVehicle{
       this.timestamp = timestamp;
     }
 
+    @Nonnull
+    public static DriveState generateParked(){
+      var rand = new Random();
+      return new DriveState(
+        rand.nextLong(),
+        rand.nextInt(360),
+        rand.nextDouble(),
+        rand.nextDouble(),
+        rand.nextDouble(),
+        0,
+        rand.nextDouble(),
+        "wgs",
+        0,
+        null,
+        0,
+        Instant.now().toEpochMilli()
+      );
+    }
+
     public long getGpsAsOf(){
       return gps_as_of;
     }
@@ -477,7 +526,7 @@ public class MockVehicle{
 
     private boolean is_rear_defroster_on;
 
-    private String left_temp_direction;
+    private int left_temp_direction;
 
     private double max_avail_temp;
 
@@ -490,7 +539,7 @@ public class MockVehicle{
 
     private boolean remote_heater_control_enabled;
 
-    private String right_temp_direction;
+    private int right_temp_direction;
 
     @Nullable
     private Integer seat_heater_left; // Entry could disapppear from JSON
@@ -541,13 +590,13 @@ public class MockVehicle{
       boolean is_front_defroster_on,
       boolean is_preconditioning,
       boolean is_rear_defroster_on,
-      String left_temp_direction,
+      int left_temp_direction,
       double max_avail_temp,
       double min_avail_temp,
       @Nullable Double outside_temp,
       double passenger_temp_setting,
       boolean remote_heater_control_enabled,
-      String right_temp_direction,
+      int right_temp_direction,
       @Nullable Integer seat_heater_left,
       @Nullable Integer seat_heater_rear_center,
       @Nullable Integer seat_heater_rear_left,
@@ -593,6 +642,43 @@ public class MockVehicle{
       this.timestamp = timestamp;
       this.wiper_blade_heater = wiper_blade_heater;
       this.defrost_mode = defrost_mode;
+    }
+
+    public static ClimateState generate(){
+      var random = new Random();
+      return new ClimateState(
+        false,
+        false,
+        "off",
+        0,
+        0,
+        random.nextDouble(),
+        random.nextBoolean(),
+        random.nextBoolean(),
+        random.nextBoolean(),
+        random.nextBoolean(),
+        random.nextBoolean(),
+        random.nextInt(),
+        random.nextDouble(),
+        random.nextDouble(),
+        random.nextDouble(),
+        random.nextDouble(),
+        random.nextBoolean(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextBoolean(),
+        random.nextBoolean(),
+        random.nextBoolean(),
+        random.nextLong(),
+        random.nextBoolean(),
+        random.nextInt()
+      );
     }
 
     public int getDefrostMode(){
@@ -644,7 +730,7 @@ public class MockVehicle{
       return is_rear_defroster_on;
     }
 
-    public String getLeftTempDirection(){
+    public int getLeftTempDirection(){
       return left_temp_direction;
     }
 
@@ -669,7 +755,7 @@ public class MockVehicle{
       return remote_heater_control_enabled;
     }
 
-    public String getRightTempDirection(){
+    public int getRightTempDirection(){
       return right_temp_direction;
     }
 
@@ -785,7 +871,7 @@ public class MockVehicle{
       this.is_rear_defroster_on = is_rear_defroster_on;
     }
 
-    public void setLeft_temp_direction(String left_temp_direction){
+    public void setLeft_temp_direction(int left_temp_direction){
       this.left_temp_direction = left_temp_direction;
     }
 
@@ -809,7 +895,7 @@ public class MockVehicle{
       this.remote_heater_control_enabled = remote_heater_control_enabled;
     }
 
-    public void setRight_temp_direction(String right_temp_direction){
+    public void setRight_temp_direction(int right_temp_direction){
       this.right_temp_direction = right_temp_direction;
     }
 
@@ -1037,6 +1123,55 @@ public class MockVehicle{
       this.usable_battery_level = usable_battery_level;
       this.user_charge_enable_request = user_charge_enable_request;
       this.trip_charging = trip_charging;
+    }
+
+    public static ChargeState generateUnplugged(){
+      var random = new Random();
+      return new ChargeState(
+        false,
+        random.nextInt(100),
+        random.nextDouble(),
+        0,
+        0,
+        true,
+        80,
+        100,
+        50,
+        80,
+        0,
+        0,
+        0,
+        false,
+        false,
+        null,
+        0,
+        false,
+        0,
+        "",
+        0,
+        0,
+        0,
+        "disconnected",
+        null,
+        random.nextInt(),
+        null,
+        false,
+        0,
+        null,
+        random.nextDouble(),
+        false,
+        null,
+        false,
+        0,
+        false,
+        false,
+        null,
+        0,
+        Instant.now().toEpochMilli(),
+        random.nextInt(),
+        null,
+        false
+      );
     }
 
     public boolean isTripCharging(){
@@ -1426,6 +1561,18 @@ public class MockVehicle{
       this.show_range_units = show_range_units;
     }
 
+    public static GUISettings generate(){
+      return new GUISettings(
+        true,
+        "mi/hr",
+        "mi/hr",
+        "Rated",
+        "F",
+        Instant.now().toEpochMilli(),
+        false
+      );
+    }
+
     public boolean isShowRangeUnits(){
       return show_range_units;
     }
@@ -1651,6 +1798,51 @@ public class MockVehicle{
       this.valet_mode = valet_mode;
       this.valet_pin_needed = valet_pin_needed;
       this.vehicle_name = vehicle_name;
+    }
+
+    public static VehicleState generate(){
+      var random = new Random();
+      return new VehicleState(
+        random.nextInt(),
+        null,
+        null,
+        true,
+        generateString(32),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextBoolean(),
+        random.nextInt(),
+        random.nextBoolean(),
+        null,
+        random.nextBoolean(),
+        MediaState.generate(),
+        true,
+        random.nextDouble(),
+        true,
+        random.nextInt(),
+        random.nextInt(),
+        random.nextBoolean(),
+        random.nextBoolean(),
+        random.nextBoolean(),
+        random.nextInt(),
+        random.nextBoolean(),
+        SoftwareUpdate.generate(),
+        SpeedLimitMode.generate(),
+        random.nextInt(),
+        "unavailable",
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextInt(),
+        random.nextBoolean(),
+        null,
+        Instant.now().toEpochMilli(),
+        false,
+        false,
+        generateString(32)
+      );
     }
 
     public String getAutoparkStateV3(){
@@ -1981,6 +2173,10 @@ public class MockVehicle{
         this.remote_control_enabled = remote_control_enabled;
       }
 
+      public static MediaState generate(){
+        return new MediaState(Math.random() < 0.5);
+      }
+
       public boolean isRemoteControlEnabled(){
         return remote_control_enabled;
       }
@@ -2014,6 +2210,17 @@ public class MockVehicle{
         this.version = version;
         this.expected_duration_sec = expected_duration_sec;
         this.status = status;
+      }
+
+      public static SoftwareUpdate generate(){
+        var random = new Random();
+        return new SoftwareUpdate(
+          random.nextInt(),
+          random.nextInt(),
+          generateString(32),
+          random.nextLong(),
+          ""
+        );
       }
 
       public int getDownloadPercent(){
@@ -2081,6 +2288,17 @@ public class MockVehicle{
         this.max_limit_mph = max_limit_mph;
         this.min_limit_mph = min_limit_mph;
         this.pin_code_set = pin_code_set;
+      }
+
+      public static SpeedLimitMode generate(){
+        var random = new Random();
+        return new SpeedLimitMode(
+          false,
+          random.nextDouble(),
+          random.nextInt(),
+          random.nextInt(),
+          false
+        );
       }
 
       public boolean getActive(){
@@ -2229,6 +2447,37 @@ public class MockVehicle{
       this.trim_badging = trim_badging;
       this.wheel_type = wheel_type;
       this.use_range_badging = use_range_badging;
+    }
+
+    public static VehicleConfig generate(){
+      var random = new Random();
+      return new VehicleConfig(
+        true,
+        random.nextBoolean(),
+        "base",
+        "model3",
+        "US",
+        false,
+        generateString(32),
+        false,
+        false,
+        2,
+        true,
+        null,
+        false,
+        random.nextInt(),
+        random.nextInt(),
+        false,
+        "Glass",
+        random.nextInt(),
+        "None",
+        random.nextInt(),
+        "<invalid>",
+        Instant.now().toEpochMilli(),
+        "Long Range",
+        "Pinwheel18",
+        random.nextBoolean()
+      );
     }
 
     public boolean isUseRangeBadging(){

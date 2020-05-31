@@ -189,7 +189,7 @@ public final class MockUtility{
 
   @Nonnull
   public static String generateEmailAddress(){
-    return generateString(getRandom().nextInt(12) + 1) + "@" + generateString(getRandom().nextInt(8) + 1) + ".com";
+    return generateString(getRandom().nextInt(12) + 5) + "@fake.com";
   }
 
   @Nonnull
