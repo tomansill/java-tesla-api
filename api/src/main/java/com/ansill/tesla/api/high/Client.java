@@ -9,6 +9,7 @@ import com.ansill.validation.Validation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -345,6 +346,47 @@ public final class Client{
     }catch(ReAuthenticationException e){
       return Optional.empty();
     }
+  }
+
+
+  /**
+   * Authenticates to tesla account while returning credentials
+   *
+   * <b>NOTE:</b> This method entrusts the user to provide correct credentials. This method will not verify if any of
+   * the credentials are correct. (Except for obvious things like incorrect creation/expiration times.)
+   *
+   * @param credentials           credentials
+   * @param consumer              consumer that consumes new credentials
+   * @param onError               runnable that runs when there's an error
+   * @param refreshOffsetDuration duration of offset before credential expires for service to attempt to refresh
+   * @return optional that may contain unverified tesla account if all looks fine, otherwise returns empty if expiration time is obviously expired
+   */
+  @Nonnull
+  public Optional<Account> authenticateTrusted(
+    @Nonnull AccountCredentials credentials,
+    @Nonnull Consumer<AccountCredentials> consumer,
+    @Nonnull Consumer<ReAuthenticationException> onError,
+    @Nonnull Duration refreshOffsetDuration
+  ){
+
+    // Check all inputs
+    Validation.assertNonnull(credentials, "credentials");
+    Validation.assertNonnull(consumer, "consumer");
+    Validation.assertNonnull(onError, "onError");
+    Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
+
+    // Check if expire time is valid
+    if(Instant.now().isBefore(credentials.getExpirationTime())) return Optional.empty();
+
+    // Return account
+    return Optional.of(new Account(
+      client,
+      credentials,
+      new AtomicReference<>(fastChangingDataLifetime),
+      new AtomicReference<>(slowChangingDataLifetime),
+      new RefreshSubscription(consumer, onError),
+      refreshOffsetDuration
+    ));
   }
 
   /** Builder */

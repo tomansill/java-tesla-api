@@ -1,6 +1,7 @@
 package com.ansill.tesla.api.low.model;
 
 import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
+import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -24,16 +25,23 @@ public final class AccountCredentials{
   @Nonnull
   private final Instant expirationTime;
 
-  private AccountCredentials(
+  public AccountCredentials(
     @Nonnull String accessToken,
     @Nonnull String refreshToken,
     @Nonnull Instant creationTime,
     @Nonnull Instant expirationTime
   ){
-    this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
-    this.creationTime = creationTime;
-    this.expirationTime = expirationTime;
+
+    // Save values
+    this.accessToken = Validation.assertNonnull(accessToken, "accessToken");
+    this.refreshToken = Validation.assertNonnull(refreshToken, "refreshToken");
+    this.creationTime = Validation.assertNonnull(creationTime, "creationTime");
+    this.expirationTime = Validation.assertNonnull(expirationTime, "expirationTime");
+
+    // Ensure that creation and expiration times are valid
+    if(expirationTime.isBefore(creationTime) || expirationTime.equals(creationTime)){
+      throw new IllegalArgumentException("The expiration time is on or before creation time");
+    }
   }
 
   @Nonnull

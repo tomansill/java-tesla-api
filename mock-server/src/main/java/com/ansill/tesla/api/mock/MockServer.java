@@ -67,7 +67,7 @@ public class MockServer implements AutoCloseable{
   private static OpenApiPlugin getConfiguredOpenApiPlugin(){
     Info info = new Info().version("0.5.0").description("Tesla API");
     OpenApiOptions options = new OpenApiOptions(info)
-      .activateAnnotationScanningFor("com.ansill.tesla.api.mock")
+      //.activateAnnotationScanningFor("com.ansill.tesla.api.mock")
       .path("/swagger-docs") // endpoint for OpenAPI json
       .swagger(new SwaggerOptions("/swagger-ui")) // endpoint for swagger-ui
       .reDoc(new ReDocOptions("/redoc")) // endpoint for redoc
@@ -82,7 +82,7 @@ public class MockServer implements AutoCloseable{
     method = HttpMethod.GET,    // only necessary to include when using static method references
     ignore = true // Not important endpoint
   )
-  public static void root(Context context){
+  public void root(Context context){
     context.status(200);
     context.contentType("text/html");
     context.result("<h1>You have reached Mock Tesla Service!</h1>");
@@ -109,7 +109,7 @@ public class MockServer implements AutoCloseable{
     server.routes(() -> {
 
       // Default route
-      get(MockServer::root);
+      get(this::root);
 
       // OAuth endpoint
       path("oauth", new OAuthEndpoint(model));
