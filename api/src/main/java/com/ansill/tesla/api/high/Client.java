@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /** Highly-Opinionated client */
 public final class Client{
@@ -432,6 +433,42 @@ public final class Client{
     public Builder setSlowChangingDataLifetime(Duration slowChangingDataLifetime){
       this.slowChangingDataLifetime = slowChangingDataLifetime;
       return this;
+    }
+
+    @Nonnull
+    @Override
+    public Builder setUrl(@Nullable String url){
+      return (Builder) super.setUrl(url);
+    }
+
+    @Nonnull
+    @Override
+    public Builder setClientId(@Nullable String clientId){
+      return (Builder) super.setClientId(clientId);
+    }
+
+    @Nonnull
+    @Override
+    public Builder setClientSecret(@Nullable String clientSecret){
+      return (Builder) super.setClientSecret(clientSecret);
+    }
+
+    @Nonnull
+    @Override
+    public Builder setDebugFunction(@Nullable Function<Object,Boolean> debug){
+      return (Builder) super.setDebugFunction(debug);
+    }
+
+    @Nonnull
+    @Override
+    public Builder setConnectionTimeoutDuration(@Nullable Duration timeout){
+      return (Builder) super.setConnectionTimeoutDuration(timeout);
+    }
+
+    @Nonnull
+    @Override
+    public Builder setReadTimeoutDuration(@Nullable Duration timeout){
+      return (Builder) super.setReadTimeoutDuration(timeout);
     }
   }
 }

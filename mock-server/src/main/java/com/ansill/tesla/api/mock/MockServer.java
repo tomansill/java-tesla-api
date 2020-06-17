@@ -30,7 +30,7 @@ public class MockServer implements AutoCloseable{
     this.model = model;
     this.port = port;
     server = Javalin.create(config -> {
-      config.registerPlugin(getConfiguredOpenApiPlugin());
+      config.registerPlugin(new OpenApiPlugin(getOpenApiOptions()));
       config.defaultContentType = "application/json";
     });
     run();
@@ -64,7 +64,8 @@ public class MockServer implements AutoCloseable{
     }
   }
 
-  private static OpenApiPlugin getConfiguredOpenApiPlugin(){
+  private static OpenApiOptions getOpenApiOptions(){
+    /*
     Info info = new Info().version("0.5.0").description("Tesla API");
     OpenApiOptions options = new OpenApiOptions(info)
       //.activateAnnotationScanningFor("com.ansill.tesla.api.mock")
@@ -75,6 +76,13 @@ public class MockServer implements AutoCloseable{
         doc.json("500", ErrorResponse.class);
       });
     return new OpenApiPlugin(options);
+     */
+    var openapi = new Info().version("0.5.0").description("Tesla API");
+    return new OpenApiOptions(openapi).path("/swagger-docs")
+                                      .defaultDocumentation(doc -> {
+                                        doc.json("500", ErrorResponse.class);
+                                      })
+                                      .swagger(new SwaggerOptions("/swagger-ui")).reDoc(new ReDocOptions("/redoc"));
   }
 
   @OpenApi(

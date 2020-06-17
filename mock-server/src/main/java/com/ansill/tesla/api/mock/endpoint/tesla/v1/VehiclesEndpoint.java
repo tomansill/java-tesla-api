@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.mock.endpoint.tesla.v1;
 
+import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.CompleteVehicleResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.GenericErrorResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.Response;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.SimpleVehicle;
@@ -39,7 +40,7 @@ public class VehiclesEndpoint implements EndpointGroup{
     path(":vehicle_id", () -> {
       get(this::vehicle);
       get("vehicle_data", this::vehicleData);
-      get("data", this::vehicleData);
+      get("data", this::vehicleDataAlias);
       path("data_request", new DataRequestEndpoint(model, this));
       path("commands", new CommandsEndpoint(model, this));
     });
@@ -102,7 +103,7 @@ public class VehiclesEndpoint implements EndpointGroup{
   }
 
   @OpenApi(
-    //path = "/api/v1/vehicles/{vehicle_id}",
+    path = "/api/v1/vehicles/:vehicle_id",
     method = HttpMethod.GET,
     summary = "Simplified Vehicle Data",
     description = "Returns vehicle associated with vehicle id",
@@ -123,7 +124,7 @@ public class VehiclesEndpoint implements EndpointGroup{
       )
     },
     responses = {
-      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = VehiclesResponse.class)}),
+      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = SimpleVehicleResponse.class)}),
       @OpenApiResponse(status = "401"),
       @OpenApiResponse(status = "404", content = {@OpenApiContent(from = GenericErrorResponse.class)})
     }
@@ -157,6 +158,65 @@ public class VehiclesEndpoint implements EndpointGroup{
     context.status(200);
   }
 
+
+  @OpenApi(
+    path = "/api/v1/vehicles/:vehicle_id/data",
+    method = HttpMethod.GET,
+    summary = "Legacy Vehicle Data",
+    description = "Returns vehicle with complete data associated with vehicle id. NOTE: This is same as vehicle_data endpoint.",
+    operationId = "vehicle",
+    tags = {"Vehicle Data"},
+    headers = {
+      @OpenApiParam(
+        name = "Authorization",
+        required = true,
+        description = "Bearer {access_token}"
+      )
+    },
+    pathParams = {
+      @OpenApiParam(
+        name = "vehicle_id",
+        required = true,
+        description = "Vehicle Id"
+      )
+    },
+    responses = {
+      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = CompleteVehicleResponse.class)}),
+      @OpenApiResponse(status = "401"),
+      @OpenApiResponse(status = "404", content = {@OpenApiContent(from = GenericErrorResponse.class)})
+    }
+  )
+  private void vehicleDataAlias(@Nonnull Context context){
+    this.vehicleData(context);
+  }
+
+  @OpenApi(
+    path = "/api/v1/vehicles/:vehicle_id/vehicle_data",
+    method = HttpMethod.GET,
+    summary = "Complete Vehicle Data",
+    description = "Returns vehicle with complete data associated with vehicle id",
+    operationId = "vehicle",
+    tags = {"Vehicle Data"},
+    headers = {
+      @OpenApiParam(
+        name = "Authorization",
+        required = true,
+        description = "Bearer {access_token}"
+      )
+    },
+    pathParams = {
+      @OpenApiParam(
+        name = "vehicle_id",
+        required = true,
+        description = "Vehicle Id"
+      )
+    },
+    responses = {
+      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = CompleteVehicleResponse.class)}),
+      @OpenApiResponse(status = "401"),
+      @OpenApiResponse(status = "404", content = {@OpenApiContent(from = GenericErrorResponse.class)})
+    }
+  )
   private void vehicleData(Context context){
 
     // Get account

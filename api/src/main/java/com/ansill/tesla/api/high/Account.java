@@ -1,6 +1,5 @@
 package com.ansill.tesla.api.high;
 
-import com.ansill.lock.autolock.ALock;
 import com.ansill.lock.autolock.AutoLock;
 import com.ansill.tesla.api.low.Client;
 import com.ansill.tesla.api.low.model.AccountCredentials;
@@ -142,7 +141,7 @@ public class Account implements AutoCloseable{
    */
   @Nonnull
   AutoLock getReadLock(){
-    return new ALock(rrwl.readLock());
+    return AutoLock.create(rrwl.readLock());
   }
 
   /** Resets the timer so it will refresh credentials before its expiry time */
@@ -222,7 +221,7 @@ public class Account implements AutoCloseable{
     if(this.closed.get()) throw new IllegalStateException("Account is closed!");
 
     // Lock it
-    try(var ignored = new ALock(rrwl.writeLock()).doLock()){
+    try(var ignored = AutoLock.create(rrwl.writeLock()).doLock()){
 
       // Refresh it and update response
       credentials = client.refreshToken(credentials.getRefreshToken());
