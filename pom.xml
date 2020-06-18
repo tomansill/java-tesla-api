@@ -103,13 +103,7 @@
         <dependency>
             <groupId>com.ansill.utility</groupId>
             <artifactId>utility</artifactId>
-            <version>0.2.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.ansill.validation</groupId>
-                    <artifactId>validation</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.ansill.validation</groupId>
