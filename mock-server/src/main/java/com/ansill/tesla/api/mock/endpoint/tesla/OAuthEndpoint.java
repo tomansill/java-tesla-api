@@ -1,9 +1,9 @@
 package com.ansill.tesla.api.mock.endpoint.tesla;
 
+import com.ansill.tesla.api.data.model.response.GenericErrorResponse;
+import com.ansill.tesla.api.data.model.response.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.api.mock.MockUtility;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.EmptyResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.GenericErrorResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.api.mock.model.MockModel;
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
@@ -201,7 +201,7 @@ public class OAuthEndpoint implements EndpointGroup{
         // Handle result
         if(result.isPresent()){
           context.status(200);
-          context.json(SuccessfulAuthenticationResponse.convert(result.get()));
+          context.json(result.get().convert());
         }else{
           context.status(401);
           context.json(new GenericErrorResponse(
@@ -233,7 +233,7 @@ public class OAuthEndpoint implements EndpointGroup{
         // Handle result
         if(result.isPresent()){
           context.status(200);
-          context.json(SuccessfulAuthenticationResponse.convert(result.get()));
+          context.json(result.get().convert());
         }else{
           context.status(401);
           context.json(new GenericErrorResponse(

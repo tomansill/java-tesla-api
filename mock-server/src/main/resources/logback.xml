@@ -1,0 +1,17 @@
+<configuration scan="true" scanPeriod="15 seconds">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- hour:minutes:seconds:milliseconds level [classpath.method:line] message -->
+            <pattern>%d{HH:mm:ss.SSS} %highlight{%-5level} [%c{2.}.%M:%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.ansill.tesla.api.mock" level="DEBUG"/>
+    <logger name="com.ansill.tesla.api.data" level="DEBUG"/>
+    <logger name="com.ansill.tesla.api.high" level="DEBUG"/>
+    <logger name="io.javalin" level="DEBUG"/>
+
+    <root level="warn">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

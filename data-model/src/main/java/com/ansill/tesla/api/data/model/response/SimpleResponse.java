@@ -1,27 +1,30 @@
-package com.ansill.tesla.api.raw.model;
+package com.ansill.tesla.api.data.model.response;
 
-import com.ansill.validation.Validation;
+import com.ansill.tesla.api.data.utility.SimpleSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import static com.ansill.utility.Utility.simpleToString;
 
 /** Simple Response */
+@JsonSerialize(using = SimpleSerializer.class)
 @Immutable
 public class SimpleResponse<T>{
 
   /** Response */
-  @Nonnull
-  private final T response;
+  private T response;
+
+  public SimpleResponse(){
+  }
 
   /**
    * Response
    *
    * @param response response
    */
-  protected SimpleResponse(@Nonnull T response){
-    this.response = Validation.assertNonnull(response);
+  public SimpleResponse(T response){
+    this.response = response;
   }
 
   /**
@@ -29,7 +32,6 @@ public class SimpleResponse<T>{
    *
    * @return response
    */
-  @Nonnull
   public T getResponse(){
     return response;
   }

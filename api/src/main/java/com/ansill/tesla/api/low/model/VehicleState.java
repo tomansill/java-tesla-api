@@ -16,44 +16,91 @@ import java.util.Optional;
 @Immutable
 public final class VehicleState{
 
+  @Nullable
+  private final String autoparkStateV3;
+
   private final int apiVersion;
 
-  @Nullable
-  private final String autoparkStateV2;
-
-  private final String autoparkStyle;
+  @Nonnull
+  private final CenterDisplayState centerDisplayState;
 
   private final boolean calendarSupported;
 
   private final String carVersion;
 
-  private final int centerDisplayState; // TODO what is this
+  private final int driverFront;
 
-  private final int df;
+  private final int driverRear;
 
-  private final int dr;
+  private final int frontTrunk;
 
-  private final int ft;
+  private final int passengerFront;
 
-  private final int pf;
+  private final int passengerRear;
 
-  private final int pr;
+  private final int rearTrunk;
 
-  private final int rt;
-
-  @Nullable
-  private final Boolean homelinkNearby; // Could disappear from json
-
-  @Nullable
-  private final Integer homelinkDeviceCount; // Could disappear from json
-
-  @Nullable
-  private final Integer sunRoofPercentOpen;  // Could disappear from json
+  public VehicleState(
+    int apiVersion,
+    @Nullable String autoparkStateV2,
+    boolean calendarSupported,
+    String carVersion,
+    CenterDisplayState centerDisplayState,
+    int driverFront,
+    int driverRear,
+    int frontTrunk,
+    int passengerFront,
+    int passengerRear,
+    int rearTrunk,
+    boolean isUserPresent,
+    boolean locked,
+    @Nonnull MediaState mediaState,
+    boolean notificationsSupported,
+    Quantity<Length> odometer,
+    boolean parsedCalendarSupported,
+    boolean remoteStart,
+    boolean remoteStartEnabled,
+    boolean remoteStartSupported,
+    boolean sentryMode,
+    @Nonnull SoftwareUpdate softwareUpdate,
+    @Nonnull SpeedLimitMode speedLimitMode,
+    int frontDriverSideWindow,
+    int frontPassengerSideWindow,
+    int rearDriverSideWindow,
+    int rearPassengerSideWindow,
+    boolean sentryModeAvailable
+  ){
+    this.apiVersion = apiVersion;
+    this.autoparkStateV3 = autoparkStateV2;
+    this.calendarSupported = calendarSupported;
+    this.carVersion = carVersion;
+    this.centerDisplayState = centerDisplayState;
+    this.driverFront = driverFront;
+    this.driverRear = driverRear;
+    this.frontTrunk = frontTrunk;
+    this.passengerFront = passengerFront;
+    this.passengerRear = passengerRear;
+    this.rearTrunk = rearTrunk;
+    this.isUserPresent = isUserPresent;
+    this.locked = locked;
+    this.mediaState = mediaState;
+    this.notificationsSupported = notificationsSupported;
+    this.odometer = odometer;
+    this.parsedCalendarSupported = parsedCalendarSupported;
+    this.remoteStart = remoteStart;
+    this.remoteStartEnabled = remoteStartEnabled;
+    this.remoteStartSupported = remoteStartSupported;
+    this.sentryMode = sentryMode;
+    this.softwareUpdate = softwareUpdate;
+    this.speedLimitMode = speedLimitMode;
+    this.frontDriverSideWindow = frontDriverSideWindow;
+    this.frontPassengerSideWindow = frontPassengerSideWindow;
+    this.rearDriverSideWindow = rearDriverSideWindow;
+    this.rearPassengerSideWindow = rearPassengerSideWindow;
+    this.sentryModeAvailable = sentryModeAvailable;
+  }
 
   private final boolean isUserPresent;
-
-  @Nullable
-  private final String lastAutoparkError;
 
   private final boolean locked;
 
@@ -80,9 +127,6 @@ public final class VehicleState{
   @Nonnull
   private final SpeedLimitMode speedLimitMode;
 
-  @Nullable
-  private final String autoparkStateV3;
-
   private final int frontDriverSideWindow;
 
   private final int frontPassengerSideWindow;
@@ -93,110 +137,32 @@ public final class VehicleState{
 
   private final boolean sentryModeAvailable;
 
-  public VehicleState(
-    int apiVersion,
-    @Nullable String autoparkStateV2,
-    String autoparkStyle,
-    boolean calendarSupported,
-    String carVersion,
-    int centerDisplayState,
-    int df,
-    int dr,
-    int ft,
-    int pf,
-    int pr,
-    int rt,
-    @Nullable Boolean homelinkNearby,
-    @Nullable Integer homelinkDeviceCount,
-    @Nullable Integer sunRoofPercentOpen,
-    boolean isUserPresent,
-    @Nullable String lastAutoparkError,
-    boolean locked,
-    @Nonnull MediaState mediaState,
-    boolean notificationsSupported,
-    Quantity<Length> odometer,
-    boolean parsedCalendarSupported,
-    boolean remoteStart,
-    boolean remoteStartEnabled,
-    boolean remoteStartSupported,
-    boolean sentryMode,
-    @Nonnull SoftwareUpdate softwareUpdate,
-    @Nonnull SpeedLimitMode speedLimitMode,
-    @Nullable String autoparkStateV3,
-    int frontDriverSideWindow,
-    int frontPassengerSideWindow,
-    int rearDriverSideWindow,
-    int rearPassengerSideWindow,
-    boolean sentryModeAvailable
-  ){
-    this.apiVersion = apiVersion;
-    this.autoparkStateV2 = autoparkStateV2;
-    this.autoparkStyle = autoparkStyle;
-    this.calendarSupported = calendarSupported;
-    this.carVersion = carVersion;
-    this.centerDisplayState = centerDisplayState;
-    this.df = df;
-    this.dr = dr;
-    this.ft = ft;
-    this.pf = pf;
-    this.pr = pr;
-    this.rt = rt;
-    this.homelinkNearby = homelinkNearby;
-    this.homelinkDeviceCount = homelinkDeviceCount;
-    this.sunRoofPercentOpen = sunRoofPercentOpen;
-    this.isUserPresent = isUserPresent;
-    this.lastAutoparkError = lastAutoparkError;
-    this.locked = locked;
-    this.mediaState = mediaState;
-    this.notificationsSupported = notificationsSupported;
-    this.odometer = odometer;
-    this.parsedCalendarSupported = parsedCalendarSupported;
-    this.remoteStart = remoteStart;
-    this.remoteStartEnabled = remoteStartEnabled;
-    this.remoteStartSupported = remoteStartSupported;
-    this.sentryMode = sentryMode;
-    this.softwareUpdate = softwareUpdate;
-    this.speedLimitMode = speedLimitMode;
-    this.autoparkStateV3 = autoparkStateV3;
-    this.frontDriverSideWindow = frontDriverSideWindow;
-    this.frontPassengerSideWindow = frontPassengerSideWindow;
-    this.rearDriverSideWindow = rearDriverSideWindow;
-    this.rearPassengerSideWindow = rearPassengerSideWindow;
-    this.sentryModeAvailable = sentryModeAvailable;
-  }
-
   @Nonnull
-  public static VehicleState convert(@Nonnull com.ansill.tesla.api.raw.model.VehicleState state){
+  public static VehicleState convert(@Nonnull com.ansill.tesla.api.data.model.VehicleState state){
     return new VehicleState(
-      state.getApiVersion(),
-      state.getAutoparkStateV2(),
-      state.getAutoparkStyle(),
-      state.getCalendarSupported(),
+      state.getAPIVersion(),
+      state.getAutoparkStateV3().orElse(null),
+      state.isCalendarSupported(),
       state.getCarVersion(),
-      state.getCenterDisplayState(),
+      CenterDisplayState.valueOfLabel(state.getCenterDisplayState()),
       state.getDf(),
       state.getDr(),
       state.getFt(),
       state.getPf(),
       state.getPr(),
       state.getRt(),
-      state.getHomelinkNearby().orElse(null),
-      state.getHomelinkDeviceCount().orElse(null),
-      state.getSunRoofPercentOpen().orElse(null),
-      state.getIsUserPresent(),
-      state.getLastAutoparkError(),
-      state.getLocked(),
+      state.isUserPresent(),
+      state.isLocked(),
       MediaState.convert(state.getMediaState()),
-      state.getNotificationsSupported(),
+      state.isNotificationsSupported(),
       Quantities.getQuantity(state.getOdometer(), ImperialUnits.MILE),
-      state.getParsed_calendarSupported(),
-      state.getRemoteStart(),
-      state.getRemoteStartEnabled(),
-      state.getRemoteStartSupported(),
-      state.getSentryMode(),
+      state.isParsedCalendarSupported(),
+      state.isRemoteStart(),
+      state.isRemoteStartEnabled(),
+      state.isRemoteStartSupported(),
+      state.isSentryModeEnabled(),
       SoftwareUpdate.convert(state.getSoftwareUpdate()),
       SpeedLimitMode.convert(state.getSpeedLimitMode()),
-      state.getAutoparkStateV3(),
       state.getFdWindow(),
       state.getFdWindow(),
       state.getFdWindow(),
@@ -205,18 +171,15 @@ public final class VehicleState{
     );
   }
 
+  @Nonnull
+  public CenterDisplayState getCenterDisplayState(){
+    return centerDisplayState;
+  }
+
   public int getApiVersion(){
     return apiVersion;
   }
 
-  @Nonnull
-  public Optional<String> getAutoparkStateV2(){
-    return Optional.ofNullable(autoparkStateV2);
-  }
-
-  public String getAutoparkStyle(){
-    return autoparkStyle;
-  }
 
   public boolean isCalendarSupported(){
     return calendarSupported;
@@ -226,56 +189,61 @@ public final class VehicleState{
     return carVersion;
   }
 
-  public int getCenterDisplayState(){
-    return centerDisplayState;
+  public int getDriverFront(){
+    return driverFront;
   }
 
-  public int getDf(){
-    return df;
+  public int getDriverRear(){
+    return driverRear;
   }
 
-  public int getDr(){
-    return dr;
+  public int getFrontTrunk(){
+    return frontTrunk;
   }
 
-  public int getFt(){
-    return ft;
+  public int getPassengerFront(){
+    return passengerFront;
   }
 
-  public int getPf(){
-    return pf;
+  public int getPassengerRear(){
+    return passengerRear;
   }
 
-  public int getPr(){
-    return pr;
+  public int getRearTrunk(){
+    return rearTrunk;
   }
 
-  public int getRt(){
-    return rt;
-  }
+  public enum CenterDisplayState{
+    UNKNOWN(-1),
+    OFF(0),
+    NORMAL_ON(2),
+    CHARGING_SCREEN(3),
+    SENTRY_MODE(7),
+    DOG_MODE(8);
+    // TODO find out camp mode
 
-  @Nonnull
-  public Optional<Boolean> getHomelinkNearby(){
-    return Optional.ofNullable(homelinkNearby);
-  }
+    final int value;
 
-  @Nonnull
-  public Optional<Integer> getHomelinkDeviceCount(){
-    return Optional.ofNullable(homelinkDeviceCount);
-  }
+    CenterDisplayState(int value){
+      this.value = value;
+    }
 
-  @Nonnull
-  public Optional<Integer> getSunRoofPercentOpen(){
-    return Optional.ofNullable(sunRoofPercentOpen);
+    @Nonnull
+    static CenterDisplayState valueOfLabel(int value){
+
+      for(var e : values()){
+        if(e == UNKNOWN) continue;
+        if(e.value == value) return e;
+      }
+
+
+      // Otherwise return unknown
+      return UNKNOWN;
+    }
   }
 
   public boolean isUserPresent(){
     return isUserPresent;
-  }
-
-  @Nonnull
-  public Optional<String> getLastAutoparkError(){
-    return Optional.ofNullable(lastAutoparkError);
   }
 
   public boolean isLocked(){
@@ -360,7 +328,7 @@ public final class VehicleState{
     }
 
     @Nonnull
-    public static MediaState convert(@Nonnull com.ansill.tesla.api.raw.model.VehicleState.MediaState state){
+    public static MediaState convert(@Nonnull com.ansill.tesla.api.data.model.MediaState state){
       return new MediaState(state.isRemoteControlEnabled());
     }
 
@@ -392,7 +360,7 @@ public final class VehicleState{
     }
 
     @Nonnull
-    public static SoftwareUpdate convert(@Nonnull com.ansill.tesla.api.raw.model.VehicleState.SoftwareUpdate update){
+    public static SoftwareUpdate convert(@Nonnull com.ansill.tesla.api.data.model.SoftwareUpdate update){
       return new SoftwareUpdate(
         Quantities.getQuantity(update.getDownloadPercent(), Units.PERCENT),
         Quantities.getQuantity(update.getInstallPercent(), Units.PERCENT),
@@ -447,13 +415,13 @@ public final class VehicleState{
     }
 
     @Nonnull
-    public static SpeedLimitMode convert(@Nonnull com.ansill.tesla.api.raw.model.VehicleState.SpeedLimitMode mode){
+    public static SpeedLimitMode convert(@Nonnull com.ansill.tesla.api.data.model.SpeedLimitMode mode){
       return new SpeedLimitMode(
-        mode.getActive(),
+        mode.isActive(),
         Quantities.getQuantity(mode.getCurrentLimitMph(), ImperialUnits.MILE_PER_HOUR),
         Quantities.getQuantity(mode.getMaxLimitMph(), ImperialUnits.MILE_PER_HOUR),
         Quantities.getQuantity(mode.getMinLimitMph(), ImperialUnits.MILE_PER_HOUR),
-        mode.getPinCodeSet()
+        mode.isPinCodeSet()
       );
     }
 

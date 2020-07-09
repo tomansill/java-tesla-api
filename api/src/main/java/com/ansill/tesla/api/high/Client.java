@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.high;
 
-import com.ansill.tesla.api.low.model.AccountCredentials;
+import com.ansill.tesla.api.high.model.AccountCredentials;
 import com.ansill.tesla.api.model.ClientBuilder;
 import com.ansill.tesla.api.raw.exception.AuthenticationException;
 import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -105,7 +106,7 @@ public final class Client{
     try{
       return Optional.of(new Account(
         client,
-        client.authenticate(emailAddress, password),
+        AccountCredentials.convert(client.authenticate(emailAddress, password)),
         new AtomicReference<>(fastChangingDataLifetime),
         new AtomicReference<>(slowChangingDataLifetime),
         null,
@@ -134,7 +135,7 @@ public final class Client{
     try{
       return Optional.of(new Account(
         client,
-        client.authenticate(emailAddress, password),
+        AccountCredentials.convert(client.authenticate(emailAddress, password)),
         new AtomicReference<>(fastChangingDataLifetime),
         new AtomicReference<>(slowChangingDataLifetime),
         null,
@@ -164,7 +165,7 @@ public final class Client{
     try{
 
       // Refresh now
-      AccountCredentials newCred = client.authenticate(emailAddress, password);
+      AccountCredentials newCred = AccountCredentials.convert(client.authenticate(emailAddress, password));
       Validation.assertNonnull(consumer, "consumer").accept(newCred);
 
       return Optional.of(new Account(
@@ -207,7 +208,7 @@ public final class Client{
       refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
 
       // Refresh now
-      AccountCredentials newCred = client.authenticate(emailAddress, password);
+      AccountCredentials newCred = AccountCredentials.convert(client.authenticate(emailAddress, password));
       Validation.assertNonnull(consumer, "consumer").accept(newCred);
 
       return Optional.of(new Account(
@@ -237,7 +238,7 @@ public final class Client{
     try{
       return Optional.of(new Account(
         client,
-        client.refreshToken(refreshToken),
+        AccountCredentials.convert(client.refreshToken(refreshToken)),
         new AtomicReference<>(fastChangingDataLifetime),
         new AtomicReference<>(slowChangingDataLifetime),
         null,
@@ -261,7 +262,7 @@ public final class Client{
     try{
       return Optional.of(new Account(
         client,
-        client.refreshToken(refreshToken),
+        AccountCredentials.convert(client.refreshToken(refreshToken)),
         new AtomicReference<>(fastChangingDataLifetime),
         new AtomicReference<>(slowChangingDataLifetime),
         null,
@@ -289,7 +290,7 @@ public final class Client{
     try{
 
       // Refresh now
-      AccountCredentials newCred = client.refreshToken(refreshToken);
+      AccountCredentials newCred = AccountCredentials.convert(client.refreshToken(refreshToken));
       Validation.assertNonnull(consumer, "consumer").accept(newCred);
 
       // Return new account
@@ -329,7 +330,7 @@ public final class Client{
     try{
 
       // Refresh now
-      AccountCredentials newCred = client.refreshToken(refreshToken);
+      AccountCredentials newCred = AccountCredentials.convert(client.refreshToken(refreshToken));
       Validation.assertNonnull(consumer, "consumer").accept(newCred);
 
       // Return new account
@@ -349,6 +350,42 @@ public final class Client{
     }
   }
 
+  /**
+   * Authenticates to tesla account while returning credentials
+   *
+   * <b>NOTE:</b> This method entrusts the user to provide correct credentials. This method will not verify if any of
+   * the credentials are correct. (Except for obvious things like incorrect creation/expiration times.)
+   *
+   * @param credentials credentials
+   * @param consumer    consumer that consumes new credentials
+   * @param onError     runnable that runs when there's an error
+   * @return optional that may contain unverified tesla account if all looks fine, otherwise returns empty if expiration time is obviously expired
+   */
+  @Nonnull
+  public Optional<Account> authenticateTrusted(
+    @Nonnull AccountCredentials credentials,
+    @Nonnull Consumer<AccountCredentials> consumer,
+    @Nonnull Consumer<ReAuthenticationException> onError
+  ){
+
+    // Check all inputs
+    Validation.assertNonnull(credentials, "credentials");
+    Validation.assertNonnull(consumer, "consumer");
+    Validation.assertNonnull(onError, "onError");
+
+    // Check if expire time is valid
+    if(Instant.now().isAfter(credentials.getExpirationTime())) return Optional.empty();
+
+    // Return account
+    return Optional.of(new Account(
+      client,
+      credentials,
+      new AtomicReference<>(fastChangingDataLifetime),
+      new AtomicReference<>(slowChangingDataLifetime),
+      new RefreshSubscription(consumer, onError),
+      null
+    ));
+  }
 
   /**
    * Authenticates to tesla account while returning credentials
@@ -377,7 +414,7 @@ public final class Client{
     Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
 
     // Check if expire time is valid
-    if(Instant.now().isBefore(credentials.getExpirationTime())) return Optional.empty();
+    if(Instant.now().isAfter(credentials.getExpirationTime())) return Optional.empty();
 
     // Return account
     return Optional.of(new Account(
@@ -406,7 +443,7 @@ public final class Client{
                                                   .setUrl(this.url)
                                                   .setClientId(clientId)
                                                   .setClientSecret(clientSecret)
-                                                  .setDebugFunction(debug)
+                                                  .setUnknownFieldsFunction(unknownFieldsFunction)
                                                   .build();
       return new com.ansill.tesla.api.high.Client(client, fastChangingDataLifetime, slowChangingDataLifetime);
     }
@@ -455,8 +492,8 @@ public final class Client{
 
     @Nonnull
     @Override
-    public Builder setDebugFunction(@Nullable Function<Object,Boolean> debug){
-      return (Builder) super.setDebugFunction(debug);
+    public Builder setUnknownFieldsFunction(@Nullable Function<Map<String,Optional<Object>>,Boolean> debug){
+      return (Builder) super.setUnknownFieldsFunction(debug);
     }
 
     @Nonnull

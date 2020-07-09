@@ -1,7 +1,7 @@
 package com.ansill.tesla.api.mock.test;
 
+import com.ansill.tesla.api.data.model.response.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.api.mock.MockServer;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.api.mock.model.MockModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.FormBody;
@@ -84,10 +84,10 @@ class MockServerTest{
       var mockSessions = MODEL.get().getSessions(acct).orElseThrow();
       assertEquals(1, mockSessions.size());
       var mockSession = mockSessions.iterator().next();
-      assertEquals(mockSession.getAccessToken(), session.access_token);
-      assertEquals(mockSession.getRefreshToken(), session.refresh_token);
-      assertEquals(mockSession.getCreationTime().getEpochSecond(), session.created_at);
-      assertEquals(mockSession.getExpiresIn().getSeconds(), session.expireIn);
+      assertEquals(mockSession.getAccessToken(), session.getAccessToken());
+      assertEquals(mockSession.getRefreshToken(), session.getRefreshToken());
+      assertEquals(mockSession.getCreationTime().getEpochSecond(), session.getCreatedAt());
+      assertEquals(mockSession.getExpiresIn().getSeconds(), session.getExpiresIn());
     }
   }
 
@@ -134,10 +134,10 @@ class MockServerTest{
       var mockSessions = MODEL.get().getSessions(acct).orElseThrow();
       assertEquals(1, mockSessions.size());
       var mockSession = mockSessions.iterator().next();
-      assertEquals(mockSession.getAccessToken(), session.access_token);
-      assertEquals(mockSession.getRefreshToken(), session.refresh_token);
-      assertEquals(mockSession.getCreationTime().getEpochSecond(), session.created_at);
-      assertEquals(mockSession.getExpiresIn().getSeconds(), session.expireIn);
+      assertEquals(mockSession.getAccessToken(), session.getAccessToken());
+      assertEquals(mockSession.getRefreshToken(), session.getRefreshToken());
+      assertEquals(mockSession.getCreationTime().getEpochSecond(), session.getCreatedAt());
+      assertEquals(mockSession.getExpiresIn().getSeconds(), session.getExpiresIn());
     }
   }
 }

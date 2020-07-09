@@ -1,5 +1,11 @@
 package com.ansill.tesla.api.test;
 
+import com.ansill.tesla.api.data.model.Vehicle;
+import com.ansill.tesla.api.data.model.response.CompleteVehicleDataResponse;
+import com.ansill.tesla.api.data.model.response.GenericErrorResponse;
+import com.ansill.tesla.api.data.model.response.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.api.data.model.response.VehicleResponse;
+import com.ansill.tesla.api.data.model.response.VehiclesResponse;
 import com.ansill.tesla.api.exception.VehicleInServiceException;
 import com.ansill.tesla.api.exception.VehicleOfflineException;
 import com.ansill.tesla.api.exception.VehicleSleepingException;
@@ -10,13 +16,6 @@ import com.ansill.tesla.api.raw.exception.ClientException;
 import com.ansill.tesla.api.raw.exception.InvalidAccessTokenException;
 import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
 import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
-import com.ansill.tesla.api.raw.model.CompleteVehicleDataResponse;
-import com.ansill.tesla.api.raw.model.GenericErrorResponse;
-import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
-import com.ansill.tesla.api.raw.model.Vehicle;
-import com.ansill.tesla.api.raw.model.VehicleResponse;
-import com.ansill.tesla.api.raw.model.VehiclesResponse;
-import com.google.gson.Gson;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import org.junit.jupiter.api.AfterAll;
@@ -47,8 +46,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class RawClientTest{
 
   private static final Consumer<Context> DEFAULT_FAIL = context -> context.status(600);
-
-  private static final Gson GSON = new Gson();
 
   private static final AtomicReference<Consumer<Context>> AUTHENTICATION_HANDLER = new AtomicReference<>();
 
@@ -185,7 +182,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(200);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -219,7 +216,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(401);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -250,7 +247,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(401);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -280,7 +277,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(401);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -350,7 +347,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(200);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -381,7 +378,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(401);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -406,7 +403,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(401);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -433,7 +430,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(401);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -463,7 +460,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(200);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -508,7 +505,7 @@ class RawClientTest{
 
       // Send response
       ctx.status(200);
-      ctx.result(writeToJson(GSON, response));
+      ctx.json(response);
     });
 
     // Fire it
@@ -607,7 +604,7 @@ class RawClientTest{
 
         // Send response
         ctx.status(200);
-        ctx.result(writeToJson(GSON, response));
+        ctx.json(response);
       }catch(Exception e){
         e.printStackTrace();
       }
@@ -776,7 +773,7 @@ class RawClientTest{
 
         // Send response
         ctx.status(200);
-        ctx.result(writeToJson(GSON, response));
+        ctx.json(response);
       }catch(Exception e){
         e.printStackTrace();
       }
@@ -972,15 +969,14 @@ class RawClientTest{
       vehicle_temp.getVIN(),
       vehicle_temp.getDisplayName(),
       vehicle_temp.getOptionCodes(),
-      vehicle_temp.getColor(),
+      vehicle_temp.getColor().orElse(null),
       vehicle_temp.getTokens(),
       com.ansill.tesla.api.low.model.Vehicle.State.ASLEEP.toString().toLowerCase(),
       vehicle_temp.isInService(),
-      vehicle_temp.getOptionCodes(),
       vehicle_temp.isCalendarEnabled(),
       vehicle_temp.getApiVersion(),
-      vehicle_temp.getBackseatToken(),
-      vehicle_temp.getBackseatTokenUpdatedAt()
+      vehicle_temp.getBackseatToken().orElse(null),
+      vehicle_temp.getBackseatTokenUpdatedAt().orElse(null)
     );
 
     // Set up 'catch' function
@@ -993,7 +989,7 @@ class RawClientTest{
 
         // Return vehicle data
         ctx.status(200);
-        ctx.result(writeToJson(GSON, new VehicleResponse(vehicle)));
+        ctx.json(new VehicleResponse(vehicle));
 
         return;
       }
@@ -1048,15 +1044,14 @@ class RawClientTest{
       vehicle_temp.getVIN(),
       vehicle_temp.getDisplayName(),
       vehicle_temp.getOptionCodes(),
-      vehicle_temp.getColor(),
+      vehicle_temp.getColor().orElse(null),
       vehicle_temp.getTokens(),
       com.ansill.tesla.api.low.model.Vehicle.State.OFFLINE.toString().toLowerCase(),
       vehicle_temp.isInService(),
-      vehicle_temp.getOptionCodes(),
       vehicle_temp.isCalendarEnabled(),
       vehicle_temp.getApiVersion(),
-      vehicle_temp.getBackseatToken(),
-      vehicle_temp.getBackseatTokenUpdatedAt()
+      vehicle_temp.getBackseatToken().orElse(null),
+      vehicle_temp.getBackseatTokenUpdatedAt().orElse(null)
     );
 
     // Set up 'catch' function
@@ -1069,7 +1064,7 @@ class RawClientTest{
 
         // Return vehicle data
         ctx.status(200);
-        ctx.result(writeToJson(GSON, new VehicleResponse(vehicle)));
+        ctx.json(new VehicleResponse(vehicle));
 
         return;
       }
@@ -1181,7 +1176,7 @@ class RawClientTest{
 
         // Send response
         ctx.status(200);
-        ctx.result(writeToJson(GSON, response));
+        ctx.json(response);
       }catch(Exception e){
         e.printStackTrace();
       }
@@ -1413,15 +1408,14 @@ class RawClientTest{
       vehicle_temp.getVIN(),
       vehicle_temp.getDisplayName(),
       vehicle_temp.getOptionCodes(),
-      vehicle_temp.getColor(),
+      vehicle_temp.getColor().orElse(null),
       vehicle_temp.getTokens(),
       com.ansill.tesla.api.low.model.Vehicle.State.ASLEEP.toString().toLowerCase(),
       vehicle_temp.isInService(),
-      vehicle_temp.getOptionCodes(),
       vehicle_temp.isCalendarEnabled(),
       vehicle_temp.getApiVersion(),
-      vehicle_temp.getBackseatToken(),
-      vehicle_temp.getBackseatTokenUpdatedAt()
+      vehicle_temp.getBackseatToken().orElse(null),
+      vehicle_temp.getBackseatTokenUpdatedAt().orElse(null)
     );
 
     // Set up 'catch' function
@@ -1432,7 +1426,7 @@ class RawClientTest{
 
         // Return vehicle data
         ctx.status(200);
-        ctx.result(writeToJson(GSON, new VehicleResponse(vehicle)));
+        ctx.json(new VehicleResponse(vehicle));
 
       }catch(Exception e){
         e.printStackTrace();
@@ -1489,15 +1483,14 @@ class RawClientTest{
       vehicle_temp.getVIN(),
       vehicle_temp.getDisplayName(),
       vehicle_temp.getOptionCodes(),
-      vehicle_temp.getColor(),
+      vehicle_temp.getColor().orElse(null),
       vehicle_temp.getTokens(),
       com.ansill.tesla.api.low.model.Vehicle.State.OFFLINE.toString().toLowerCase(),
       vehicle_temp.isInService(),
-      vehicle_temp.getOptionCodes(),
       vehicle_temp.isCalendarEnabled(),
       vehicle_temp.getApiVersion(),
-      vehicle_temp.getBackseatToken(),
-      vehicle_temp.getBackseatTokenUpdatedAt()
+      vehicle_temp.getBackseatToken().orElse(null),
+      vehicle_temp.getBackseatTokenUpdatedAt().orElse(null)
     );
 
     // Set up 'catch' function
@@ -1508,7 +1501,7 @@ class RawClientTest{
 
         // Return vehicle data
         ctx.status(200);
-        ctx.result(writeToJson(GSON, new VehicleResponse(vehicle)));
+        ctx.json(new VehicleResponse(vehicle));
 
       }catch(Exception e){
         e.printStackTrace();

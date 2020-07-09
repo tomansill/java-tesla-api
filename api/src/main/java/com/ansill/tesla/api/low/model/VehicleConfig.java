@@ -1,8 +1,10 @@
 package com.ansill.tesla.api.low.model;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.time.Instant;
+import java.util.Optional;
 
 @Immutable
 public final class VehicleConfig{
@@ -28,30 +30,27 @@ public final class VehicleConfig{
 
   private final boolean motorizedChargePort;
 
-  private final String perfConfig; // TODO what is this
-
   private final boolean plg;
 
   private final int rearSeatHeaters;
 
-  private final int rearSeatType;
+  private final String rearSeatType;
 
   private final boolean isRightHandDrive;
 
   private final String roofColor;
 
-  private final int seatType; // TODO What are the types?
+  @Nullable
+  private final String seatType; // TODO What are the types?
 
   private final String spoilerType;
 
-  private final int sunRoofInstalled;
+  private final String sunRoofInstalled;
 
   private final String thirdRowSeats;
 
   @Nonnull
   private final Instant timestamp;
-
-  private final String trimBadging;
 
   private final String wheelType;
 
@@ -69,18 +68,16 @@ public final class VehicleConfig{
     boolean hasLudicrousMode,
     int keyVersion,
     boolean motorizedChargePort,
-    String perfConfig,
     boolean plg,
     int rearSeatHeaters,
-    int rearSeatType,
+    @Nullable String rearSeatType,
     boolean isRightHandDrive,
     String roofColor,
-    int seatType,
+    @Nullable String seatType,
     String spoilerType,
-    int sunRoofInstalled,
+    @Nullable String sunRoofInstalled,
     String thirdRowSeats,
     @Nonnull Instant timestamp,
-    String trimBadging,
     String wheelType,
     boolean useRangeBadging
   ){
@@ -95,7 +92,6 @@ public final class VehicleConfig{
     this.hasLudicrousMode = hasLudicrousMode;
     this.keyVersion = keyVersion;
     this.motorizedChargePort = motorizedChargePort;
-    this.perfConfig = perfConfig;
     this.plg = plg;
     this.rearSeatHeaters = rearSeatHeaters;
     this.rearSeatType = rearSeatType;
@@ -106,39 +102,36 @@ public final class VehicleConfig{
     this.sunRoofInstalled = sunRoofInstalled;
     this.thirdRowSeats = thirdRowSeats;
     this.timestamp = timestamp;
-    this.trimBadging = trimBadging;
     this.wheelType = wheelType;
     this.useRangeBadging = useRangeBadging;
   }
 
   @Nonnull
-  public static VehicleConfig convert(@Nonnull com.ansill.tesla.api.raw.model.VehicleConfig config){
+  public static VehicleConfig convert(@Nonnull com.ansill.tesla.api.data.model.VehicleConfig config){
     return new VehicleConfig(
       config.isCanAcceptNavigationRequests(),
       config.isCanActuateTrunks(),
       config.getCarSpecialType(),
       config.getCarType(),
       config.getChargePortType(),
-      config.getEuVehicle(),
+      config.isEuVehicle(),
       config.getExteriorColor(),
-      config.getHasAirSuspension(),
-      config.getHasLudicrousMode(),
+      config.hasAirSuspension(),
+      config.hasLudicrousMode(),
       config.getKeyVersion(),
-      config.getMotorizedChargePort(),
-      config.getPerfConfig(),
+      config.hasMotorizedChargePort(),
       config.isPlg(),
       config.getRearSeatHeaters(),
-      config.getRearSeatType(),
+      config.getRearSeatType().orElse(null),
       config.isCanAcceptNavigationRequests(),
       config.getRoofColor(),
-      config.getSeatType(),
+      config.getSeatType().orElse(null),
       config.getSpoilerType(),
-      config.getSunRoofInstalled(),
+      config.getSunRoofInstalled().orElse(null),
       config.getThirdRowSeats(),
       Instant.ofEpochSecond(config.getTimestamp()),
-      config.getTrimBadging(),
       config.getWheelType(),
-      config.isUseRangeBadging()
+      config.usesRangeBadging()
     );
   }
 
@@ -186,10 +179,6 @@ public final class VehicleConfig{
     return motorizedChargePort;
   }
 
-  public String getPerfConfig(){
-    return perfConfig;
-  }
-
   public boolean isPlg(){
     return plg;
   }
@@ -198,8 +187,9 @@ public final class VehicleConfig{
     return rearSeatHeaters;
   }
 
-  public int getRearSeatType(){
-    return rearSeatType;
+  @Nonnull
+  public Optional<String> getRearSeatType(){
+    return Optional.ofNullable(rearSeatType);
   }
 
   public boolean isRightHandDrive(){
@@ -210,16 +200,18 @@ public final class VehicleConfig{
     return roofColor;
   }
 
-  public int getSeatType(){
-    return seatType;
+  @Nonnull
+  public Optional<String> getSeatType(){
+    return Optional.ofNullable(seatType);
   }
 
   public String getSpoilerType(){
     return spoilerType;
   }
 
-  public int getSunRoofInstalled(){
-    return sunRoofInstalled;
+  @Nonnull
+  public Optional<String> getSunRoofInstalled(){
+    return Optional.ofNullable(sunRoofInstalled);
   }
 
   public String getThirdRowSeats(){
@@ -229,10 +221,6 @@ public final class VehicleConfig{
   @Nonnull
   public Instant getTimestamp(){
     return timestamp;
-  }
-
-  public String getTrimBadging(){
-    return trimBadging;
   }
 
   public String getWheelType(){

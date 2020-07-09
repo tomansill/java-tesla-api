@@ -1,16 +1,19 @@
 package com.ansill.tesla.api.test;
 
-import com.ansill.tesla.api.raw.model.ChargeState;
-import com.ansill.tesla.api.raw.model.ClimateState;
-import com.ansill.tesla.api.raw.model.CompleteVehicleData;
-import com.ansill.tesla.api.raw.model.DriveState;
-import com.ansill.tesla.api.raw.model.GuiSettings;
-import com.ansill.tesla.api.raw.model.Vehicle;
-import com.ansill.tesla.api.raw.model.VehicleConfig;
-import com.ansill.tesla.api.raw.model.VehicleState;
+import com.ansill.tesla.api.data.model.ChargeState;
+import com.ansill.tesla.api.data.model.ClimateState;
+import com.ansill.tesla.api.data.model.CompleteVehicle;
+import com.ansill.tesla.api.data.model.DriveState;
+import com.ansill.tesla.api.data.model.GuiSettings;
+import com.ansill.tesla.api.data.model.MediaState;
+import com.ansill.tesla.api.data.model.SoftwareUpdate;
+import com.ansill.tesla.api.data.model.SpeedLimitMode;
+import com.ansill.tesla.api.data.model.Vehicle;
+import com.ansill.tesla.api.data.model.VehicleConfig;
+import com.ansill.tesla.api.data.model.VehicleState;
 import com.ansill.utility.Utility;
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.annotation.Nonnull;
 import java.security.SecureRandom;
@@ -36,30 +39,30 @@ public final class TestUtility{
   }
 
   @Nonnull
-  public static CompleteVehicleData generateCompleteVehicle(){
+  public static CompleteVehicle generateCompleteVehicle(){
     Collections.shuffle(STATES);
-    return new CompleteVehicleData(
+    return new CompleteVehicle(
       RANDOM.nextLong(),
       RANDOM.nextLong(),
-      generateString(32),
       RANDOM.nextLong(),
       generateString(8),
       generateString(6),
       generateString(6),
+      generateString(4),
       IntStream.range(0, RANDOM.nextInt(3)).mapToObj(j -> generateString(4)).collect(Collectors.toList()),
       STATES.get(0),
       RANDOM.nextBoolean(),
-      generateString(32),
       RANDOM.nextBoolean(),
       RANDOM.nextInt(),
-      null,
-      null,
-      generateGuiSettings(),
+      RANDOM.nextBoolean() ? null : generateString(9),
+      RANDOM.nextBoolean() ? null : generateString(9),
+      Collections.emptyMap(),
+      generateClimateState(),
       generateDriveState(),
       generateChargeState(),
-      generateClimateState(),
-      generateVehicleState(),
-      generateVehicleConfig()
+      generateGuiSettings(),
+      generateVehicleConfig(),
+      generateVehicleState()
     );
   }
 
@@ -71,25 +74,24 @@ public final class TestUtility{
       generateString(32),
       generateString(32),
       RANDOM.nextBoolean(),
-      generateString(32),
-      RANDOM.nextBoolean(),
-      RANDOM.nextBoolean(),
-      RANDOM.nextInt(),
       RANDOM.nextBoolean(),
       generateString(32),
       RANDOM.nextBoolean(),
-      RANDOM.nextInt(),
+      RANDOM.nextBoolean(),
       RANDOM.nextInt(),
       RANDOM.nextBoolean(),
-      generateString(32),
+      RANDOM.nextBoolean(),
       RANDOM.nextInt(),
       generateString(32),
-      RANDOM.nextInt(),
-      generateString(32),
-      RANDOM.nextInt(),
+      RANDOM.nextBoolean(),
       generateString(32),
       generateString(32),
-      RANDOM.nextBoolean()
+      generateString(32),
+      generateString(32),
+      generateString(32),
+      RANDOM.nextLong(),
+      RANDOM.nextBoolean(),
+      generateString(8)
     );
   }
 
@@ -97,17 +99,15 @@ public final class TestUtility{
     return new VehicleState(
       RANDOM.nextInt(),
       generateString(32),
-      generateString(32),
       RANDOM.nextBoolean(),
       generateString(32),
       RANDOM.nextInt(),
       RANDOM.nextInt(),
       RANDOM.nextInt(),
       RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextBoolean(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextInt(),
       RANDOM.nextBoolean(),
-      generateString(32),
       RANDOM.nextBoolean(),
       generateMediaState(),
       RANDOM.nextBoolean(),
@@ -115,21 +115,16 @@ public final class TestUtility{
       RANDOM.nextBoolean(),
       RANDOM.nextInt(),
       RANDOM.nextInt(),
+      RANDOM.nextInt(),
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
       RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
       generateSoftwareUpdate(),
       generateSpeedLimitMode(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
-      generateString(32),
-      RANDOM.nextInt(),
-      RANDOM.nextInt(),
-      RANDOM.nextInt(),
-      RANDOM.nextInt(),
-      RANDOM.nextBoolean(),
-      generateString(32),
       RANDOM.nextLong(),
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
@@ -137,8 +132,8 @@ public final class TestUtility{
     );
   }
 
-  private static VehicleState.SpeedLimitMode generateSpeedLimitMode(){
-    return new VehicleState.SpeedLimitMode(
+  private static SpeedLimitMode generateSpeedLimitMode(){
+    return new SpeedLimitMode(
       RANDOM.nextBoolean(),
       RANDOM.nextDouble(),
       RANDOM.nextInt(),
@@ -147,18 +142,18 @@ public final class TestUtility{
     );
   }
 
-  private static VehicleState.SoftwareUpdate generateSoftwareUpdate(){
-    return new VehicleState.SoftwareUpdate(
+  private static SoftwareUpdate generateSoftwareUpdate(){
+    return new SoftwareUpdate(
+      RANDOM.nextInt(),
       RANDOM.nextInt(),
       RANDOM.nextInt(),
       generateString(32),
-      RANDOM.nextLong(),
       generateString(21)
     );
   }
 
-  private static VehicleState.MediaState generateMediaState(){
-    return new VehicleState.MediaState(RANDOM.nextBoolean());
+  private static MediaState generateMediaState(){
+    return new MediaState(RANDOM.nextBoolean());
   }
 
   public static ClimateState generateClimateState(){
@@ -166,34 +161,32 @@ public final class TestUtility{
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
       generateString(32),
+      RANDOM.nextInt(),
       RANDOM.nextDouble(),
       RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextDouble(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextBoolean(),
-      RANDOM.nextBoolean(),
-      RANDOM.nextBoolean(),
-      RANDOM.nextBoolean(),
-      RANDOM.nextBoolean(),
-      generateString(32),
-      RANDOM.nextDouble(),
-      RANDOM.nextDouble(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextDouble(),
       RANDOM.nextDouble(),
       RANDOM.nextBoolean(),
-      generateString(32),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextBoolean(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextBoolean(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextBoolean(),
+      RANDOM.nextBoolean(),
+      RANDOM.nextBoolean(),
+      RANDOM.nextBoolean(),
+      RANDOM.nextBoolean(),
+      RANDOM.nextInt(),
+      RANDOM.nextDouble(),
+      RANDOM.nextDouble(),
+      RANDOM.nextDouble(),
+      RANDOM.nextDouble(),
+      RANDOM.nextBoolean(),
+      RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextInt(),
+      RANDOM.nextBoolean(),
       RANDOM.nextLong(),
-      RANDOM.nextBoolean() ? null : RANDOM.nextBoolean(),
-      RANDOM.nextInt()
+      RANDOM.nextBoolean()
     );
   }
 
@@ -218,7 +211,7 @@ public final class TestUtility{
       RANDOM.nextDouble(),
       RANDOM.nextBoolean(),
       RANDOM.nextInt(),
-      generateString(32),
+      RANDOM.nextInt(),
       RANDOM.nextInt(),
       RANDOM.nextInt(),
       RANDOM.nextInt(),
@@ -227,21 +220,21 @@ public final class TestUtility{
       RANDOM.nextDouble(),
       generateString(32),
       RANDOM.nextBoolean(),
-      RANDOM.nextLong(),
       generateString(32),
       RANDOM.nextDouble(),
       RANDOM.nextBoolean(),
       generateString(32),
       RANDOM.nextBoolean(),
+      RANDOM.nextInt(),
       RANDOM.nextInt(),
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean() ? null : generateString(32),
       RANDOM.nextDouble(),
       RANDOM.nextLong(),
+      RANDOM.nextBoolean(),
       RANDOM.nextInt(),
-      generateString(32),
-      RANDOM.nextBoolean()
+      generateString(32)
     );
   }
 
@@ -257,7 +250,7 @@ public final class TestUtility{
       generateString(32),
       RANDOM.nextInt(),
       RANDOM.nextBoolean() ? null : generateString(32),
-      RANDOM.nextBoolean() ? null : RANDOM.nextInt(),
+      RANDOM.nextBoolean() ? null : RANDOM.nextLong(),
       RANDOM.nextLong()
     );
   }
@@ -269,8 +262,8 @@ public final class TestUtility{
       generateString(32),
       generateString(32),
       generateString(32),
-      RANDOM.nextLong(),
-      RANDOM.nextBoolean()
+      RANDOM.nextBoolean(),
+      RANDOM.nextLong()
     );
   }
 
@@ -288,11 +281,11 @@ public final class TestUtility{
       IntStream.range(0, RANDOM.nextInt(3)).mapToObj(j -> generateString(4)).collect(Collectors.toList()),
       STATES.get(0),
       RANDOM.nextBoolean(),
-      generateString(32),
       RANDOM.nextBoolean(),
       RANDOM.nextInt(),
-      null,
-      null
+      RANDOM.nextBoolean() ? null : generateString(9),
+      RANDOM.nextBoolean() ? null : generateString(9),
+      Collections.emptyMap()
     );
   }
 
@@ -304,10 +297,10 @@ public final class TestUtility{
            Utility.generateString((int) ((Math.random() * 5) + 3));
   }
 
-  public static String writeToJson(Gson om, Object value){
+  public static String writeToJson(ObjectMapper om, Object value){
     try{
-      return om.toJson(value);
-    }catch(JsonParseException e){
+      return om.writeValueAsString(value);
+    }catch(JsonProcessingException e){
       throw new RuntimeException(e);
     }
   }

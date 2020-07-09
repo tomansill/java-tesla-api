@@ -1,8 +1,8 @@
 package com.ansill.tesla.api.high;
 
 import com.ansill.lock.autolock.AutoLock;
+import com.ansill.tesla.api.high.model.AccountCredentials;
 import com.ansill.tesla.api.low.Client;
-import com.ansill.tesla.api.low.model.AccountCredentials;
 import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
 import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
 import com.ansill.validation.Validation;
@@ -168,6 +168,14 @@ public class Account implements AutoCloseable{
       credentials.getExpirationTime().minus(refreshDurationBeforeExpiration.get())
     );
 
+    // If the returned delay time is short (negative value), plan on renewing only 5 minutes before
+    if(delay.isNegative()) delay = Duration.between(Instant.now(), credentials.getExpirationTime())
+                                           .minus(Duration.ofMinutes(5));
+
+    // If still too short, try just 15 seconds before (more risky), but cannot proceed any more shorter
+    if(delay.isNegative()) delay = Duration.between(Instant.now(), credentials.getExpirationTime())
+                                           .minus(Duration.ofSeconds(15));
+
     // Log the delay
     LOGGER.debug("The delay until new firing event is {}", delay);
 
@@ -224,7 +232,7 @@ public class Account implements AutoCloseable{
     try(var ignored = AutoLock.create(rrwl.writeLock()).doLock()){
 
       // Refresh it and update response
-      credentials = client.refreshToken(credentials.getRefreshToken());
+      credentials = AccountCredentials.convert(client.refreshToken(credentials.getRefreshToken()));
 
       // Log the successful refresh
       LOGGER.debug("Refresh is successful");

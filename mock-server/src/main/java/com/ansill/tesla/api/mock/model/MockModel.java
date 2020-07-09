@@ -4,15 +4,16 @@ import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static com.ansill.utility.Utility.generateString;
+import java.util.function.BiConsumer;
 
 public class MockModel{
 
@@ -33,6 +34,13 @@ public class MockModel{
 
   @Nonnull
   private String clientSecret;
+
+  //######### SUBSCRIPTIONS #############
+  private final Map<AutoCloseable,BiConsumer<String,Optional<MockSession>>> refreshTokenSubscriptions = new HashMap<>();
+
+  private final Map<AutoCloseable,BiConsumer<String,Set<MockVehicle>>> vehiclesSubscription = new HashMap<>();
+
+  private final Map<AutoCloseable,BiConsumer<String,Optional<MockVehicle>>> vehicleDataRequestSubscription = new HashMap<>();
 
   public MockModel(@Nonnull String clientId, @Nonnull String clientSecret){
     this.clientId = Validation.assertNonnull(clientId, "clientId");
@@ -73,7 +81,7 @@ public class MockModel{
     var found = new AtomicBoolean(false);
     MockVehicle vehicle;
     do{
-      vehicle = idToVehicles.computeIfAbsent(generateString(32), id -> {
+      vehicle = idToVehicles.computeIfAbsent(Math.abs(new Random().nextLong()) + "", id -> {
         found.set(true);
         return MockVehicle.randomParked(id);
       });
@@ -133,8 +141,46 @@ public class MockModel{
   }
 
   @Nonnull
+  public AutoCloseable subscribeToRefreshTokenCall(@Nonnull BiConsumer<String,Optional<MockSession>> consumer){
+    var subscriber = new AutoCloseable(){
+      @Override
+      public void close(){
+        refreshTokenSubscriptions.remove(this);
+      }
+    };
+    refreshTokenSubscriptions.put(subscriber, consumer);
+    return subscriber;
+  }
+
+  @Nonnull
+  public AutoCloseable subscribeToVehiclesCall(@Nonnull BiConsumer<String,Set<MockVehicle>> consumer){
+    var subscriber = new AutoCloseable(){
+      @Override
+      public void close(){
+        vehiclesSubscription.remove(this);
+      }
+    };
+    vehiclesSubscription.put(subscriber, consumer);
+    return subscriber;
+  }
+
+  @Nonnull
+  public AutoCloseable subscribeToVehicleDataRequest(@Nonnull BiConsumer<String,Optional<MockVehicle>> consumer){
+    var subscriber = new AutoCloseable(){
+      @Override
+      public void close(){
+        vehicleDataRequestSubscription.remove(this);
+      }
+    };
+    vehicleDataRequestSubscription.put(subscriber, consumer);
+    return subscriber;
+  }
+
+  @Nonnull
   public Optional<MockSession> refreshToken(@Nonnull String token){
-    return sessionManager.refreshSession(token);
+    var result = sessionManager.refreshSession(token);
+    refreshTokenSubscriptions.values().forEach(consumer -> consumer.accept(token, result));
+    return result;
   }
 
   public boolean revokeToken(@Nonnull String token){
@@ -152,12 +198,16 @@ public class MockModel{
 
   @Nonnull
   public Set<MockVehicle> getVehicles(@Nonnull MockAccount account){
-    return new HashSet<>(vehicles.getOrDefault(account, Collections.emptyMap()).values());
+    var vehicle = new HashSet<>(vehicles.getOrDefault(account, Collections.emptyMap()).values());
+    vehiclesSubscription.values().forEach(consumer -> consumer.accept(account.getEmailAddress(), vehicle));
+    return vehicle;
   }
 
   @Nonnull
   public Optional<MockVehicle> getVehicle(MockAccount account, String id){
-    return Optional.ofNullable(vehicles.getOrDefault(account, Collections.emptyMap()).get(id));
+    var result = Optional.ofNullable(vehicles.getOrDefault(account, Collections.emptyMap()).get(id));
+    vehicleDataRequestSubscription.values().forEach(consumer -> consumer.accept(id, result));
+    return result;
   }
 
   @Nonnull

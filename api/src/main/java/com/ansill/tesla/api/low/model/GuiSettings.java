@@ -50,15 +50,15 @@ public final class GuiSettings{
   }
 
   @Nonnull
-  public static GuiSettings convert(@Nonnull com.ansill.tesla.api.raw.model.GuiSettings settings){
+  public static GuiSettings convert(@Nonnull com.ansill.tesla.api.data.model.GuiSettings settings){
     return new GuiSettings(
-      settings.getGui24HourTime(),
+      settings.isGuiUsing24HoursTime(),
       UnitUtility.getSpeedUnit(settings.getGuiChargeRateUnits()),
       UnitUtility.getSpeedUnit(settings.getGuiDistanceUnits()),
       Display.valueOf(settings.getGuiRangeDisplay().toUpperCase()),
       UnitUtility.getTemperatureUnit(settings.getGuiTemperatureUnits()),
       Instant.ofEpochSecond(settings.getTimestamp()),
-      settings.isShowRangeUnits()
+      settings.isShowingRangeUnits()
     );
   }
 

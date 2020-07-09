@@ -1,18 +1,22 @@
-package com.ansill.tesla.api.raw.model;
+package com.ansill.tesla.api.data.model.response;
 
-import javax.annotation.concurrent.Immutable;
+import com.ansill.tesla.api.data.utility.SimpleSerializer;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import static com.ansill.utility.Utility.simpleToString;
 
+@JsonSerialize(using = SimpleSerializer.class)
 @SuppressWarnings("unused")
-@Immutable
 public final class SimpleReasonResponse{
 
+  @JsonProperty
   private final boolean result;
 
+  @JsonProperty
   private final String reason;
 
-  public SimpleReasonResponse(boolean result, String reason){
+  public SimpleReasonResponse(@JsonProperty boolean result, @JsonProperty String reason){
     this.result = result;
     this.reason = reason;
   }

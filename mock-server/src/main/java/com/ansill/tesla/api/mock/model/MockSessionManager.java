@@ -45,11 +45,11 @@ public class MockSessionManager{
     // Repeat until no collision for both access and refresh tokens
     var found1 = new AtomicBoolean(false);
     do{
-      accessTokensToSessions.computeIfAbsent(generateString(32), accessToken -> {
+      accessTokensToSessions.computeIfAbsent(generateString(64).toLowerCase(), accessToken -> {
         found1.set(true);
         var found2 = new AtomicBoolean(false);
         do{
-          refreshTokensToSessions.computeIfAbsent(generateString(32), refreshToken -> {
+          refreshTokensToSessions.computeIfAbsent(generateString(64).toLowerCase(), refreshToken -> {
             found2.set(true);
             session.set(new MockSession(accessToken, refreshToken, getDefaultSessionDuration(), this::removeSession));
             return session.get();

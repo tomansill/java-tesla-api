@@ -6,4 +6,8 @@ public class APIProtocolException extends RuntimeException{
   public APIProtocolException(String message){
     super(message);
   }
+
+  public APIProtocolException(String message, Throwable e){
+    super(message, e);
+  }
 }

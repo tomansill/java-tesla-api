@@ -1,5 +1,8 @@
 package com.ansill.tesla.api.low.model;
 
+import com.ansill.tesla.api.data.model.AbstractVehicle;
+import com.ansill.tesla.api.data.model.response.VehicleResponse;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
@@ -67,12 +70,12 @@ public final class Vehicle{
   }
 
   @Nonnull
-  public static Vehicle convert(@Nonnull com.ansill.tesla.api.raw.model.VehicleResponse vehicle){
+  public static Vehicle convert(@Nonnull VehicleResponse vehicle){
     return convert(vehicle.getResponse());
   }
 
   @Nonnull
-  public static Vehicle convert(@Nonnull com.ansill.tesla.api.raw.model.Vehicle vehicle){
+  public static Vehicle convert(@Nonnull AbstractVehicle vehicle){
 
     // Clean up option codes
     Set<String> optionCodes = new HashSet<>(Arrays.asList(vehicle.getOptionCodes().split(",")));

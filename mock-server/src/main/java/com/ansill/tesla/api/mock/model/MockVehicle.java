@@ -1,6 +1,10 @@
 
 package com.ansill.tesla.api.mock.model;
 
+import com.ansill.tesla.api.data.model.CompleteVehicle;
+import com.ansill.tesla.api.data.model.GuiSettings;
+import com.ansill.tesla.api.data.model.Vehicle;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
@@ -20,15 +24,15 @@ public class MockVehicle{
 
   private long id;
 
-  private long vehicle_id;
+  private long vehicleId;
 
-  private long user_id;
-
-  @Nonnull
-  private String display_name;
+  private long userId;
 
   @Nonnull
-  private String option_codes;
+  private String displayName;
+
+  @Nonnull
+  private String optionCodes;
 
   @Nonnull
   private String color;
@@ -39,55 +43,51 @@ public class MockVehicle{
   @Nonnull
   private String state;
 
-  private boolean in_service;
+  private boolean inService;
 
-  @Nonnull
-  private String id_s;
+  private boolean calendarEnabled;
 
-  private boolean calendar_enabled;
-
-  private int api_version;
+  private int apiVersion;
 
   @Nullable
-  private String backseat_token; // TODO confirm String
+  private String backseatToken; // TODO confirm String
 
   @Nullable
-  private String backseat_token_updated_at; // TODO confirm String
+  private String backseatTokenUpdatedAt; // TODO confirm String
 
   @Nonnull
-  private DriveState drive_state;
+  private DriveState driveState;
 
   @Nonnull
-  private ClimateState climate_state;
+  private ClimateState climateState;
 
   @Nonnull
-  private ChargeState charge_state;
+  private ChargeState chargeState;
 
   @Nonnull
-  private GUISettings gui_settings;
+  private GUISettings guiSettings;
 
   @Nonnull
-  private VehicleState vehicle_state;
+  private VehicleState vehicleState;
 
   @Nonnull
-  private VehicleConfig vehicle_config;
+  private VehicleConfig vehicleConfig;
 
   public MockVehicle(
     long id,
-    long vehicle_id,
-    long user_id,
+    long vehicleId,
+    long userId,
     @Nonnull String vin,
-    @Nonnull String display_name,
-    @Nonnull String option_codes,
+    @Nonnull String displayName,
+    @Nonnull String optionCodes,
     @Nonnull String color,
     @Nonnull List<String> tokens,
     @Nonnull String state,
-    boolean in_service,
-    @Nonnull String id_s,
-    boolean calendar_enabled,
-    int api_version,
-    @Nullable String backseat_token,
-    @Nullable String backseat_token_updated_at,
+    boolean inService,
+    boolean calendarEnabled,
+    int apiVersion,
+    @Nullable String backseatToken,
+    @Nullable String backseatTokenUpdatedAt,
     @Nonnull DriveState driveState,
     @Nonnull ClimateState climateState,
     @Nonnull ChargeState chargeState,
@@ -96,26 +96,25 @@ public class MockVehicle{
     @Nonnull VehicleConfig vehicleConfig
   ){
     this.id = id;
-    this.vehicle_id = vehicle_id;
-    this.user_id = user_id;
+    this.vehicleId = vehicleId;
+    this.userId = userId;
     this.vin = vin;
-    this.display_name = display_name;
-    this.option_codes = option_codes;
+    this.displayName = displayName;
+    this.optionCodes = optionCodes;
     this.color = color;
     this.tokens = tokens;
     this.state = state;
-    this.in_service = in_service;
-    this.id_s = id_s;
-    this.calendar_enabled = calendar_enabled;
-    this.api_version = api_version;
-    this.backseat_token = backseat_token;
-    this.backseat_token_updated_at = backseat_token_updated_at;
-    this.drive_state = driveState;
-    this.climate_state = climateState;
-    this.charge_state = chargeState;
-    this.gui_settings = guiSettings;
-    this.vehicle_state = vehicleState;
-    this.vehicle_config = vehicleConfig;
+    this.inService = inService;
+    this.calendarEnabled = calendarEnabled;
+    this.apiVersion = apiVersion;
+    this.backseatToken = backseatToken;
+    this.backseatTokenUpdatedAt = backseatTokenUpdatedAt;
+    this.driveState = driveState;
+    this.climateState = climateState;
+    this.chargeState = chargeState;
+    this.guiSettings = guiSettings;
+    this.vehicleState = vehicleState;
+    this.vehicleConfig = vehicleConfig;
   }
 
   public static MockVehicle randomParked(String id){
@@ -131,7 +130,6 @@ public class MockVehicle{
       Collections.singletonList(generateString(32)),
       "online",
       false,
-      id,
       true,
       6,
       null,
@@ -146,11 +144,11 @@ public class MockVehicle{
   }
 
   public long getUserId(){
-    return user_id;
+    return userId;
   }
 
-  void setUserId(long user_id){
-    this.user_id = user_id;
+  void setUserId(long userId){
+    this.userId = userId;
   }
 
   public long getId(){
@@ -162,25 +160,27 @@ public class MockVehicle{
   }
 
   public long getVehicleId(){
-    return vehicle_id;
+    return vehicleId;
   }
 
-  public void setVehicleId(long vehicle_id){
-    this.vehicle_id = vehicle_id;
+  public void setVehicleId(long vehicleId){
+    this.vehicleId = vehicleId;
   }
 
   public String getVIN(){
     return vin;
   }
 
+  @Nonnull
   public String getOptionCodes(){
-    return option_codes;
+    return optionCodes;
   }
 
-  public void setOptionCodes(@Nonnull String option_codes){
-    this.option_codes = option_codes;
+  public void setOptionCodes(@Nonnull String optionCodes){
+    this.optionCodes = optionCodes;
   }
 
+  @Nonnull
   public String getColor(){
     return color;
   }
@@ -207,47 +207,50 @@ public class MockVehicle{
   }
 
   public boolean isInService(){
-    return in_service;
+    return inService;
   }
 
-  public void setInService(boolean in_service){
-    this.in_service = in_service;
+  public void setInService(boolean inService){
+    this.inService = inService;
   }
 
+  @Nonnull
   public String getIdString(){
-    return id_s;
+    return id + "";
   }
 
   public boolean isCalendarEnabled(){
-    return calendar_enabled;
+    return calendarEnabled;
   }
 
-  public void setCalendarEnabled(boolean calendar_enabled){
-    this.calendar_enabled = calendar_enabled;
+  public void setCalendarEnabled(boolean calendarEnabled){
+    this.calendarEnabled = calendarEnabled;
   }
 
   public int getApiVersion(){
-    return api_version;
+    return apiVersion;
   }
 
-  public void setApiVersion(int api_version){
-    this.api_version = api_version;
+  public void setApiVersion(int apiVersion){
+    this.apiVersion = apiVersion;
   }
 
+  @Nullable
   public String getBackseatToken(){
-    return backseat_token;
+    return backseatToken;
   }
 
-  public void setBackseatToken(@Nullable String backseat_token){
-    this.backseat_token = backseat_token;
+  public void setBackseatToken(@Nullable String backseatToken){
+    this.backseatToken = backseatToken;
   }
 
+  @Nullable
   public String getBackseatTokenUpdatedAt(){
-    return backseat_token_updated_at;
+    return backseatTokenUpdatedAt;
   }
 
-  public void setBackseatTokenUpdatedAt(@Nullable String backseat_token_updated_at){
-    this.backseat_token_updated_at = backseat_token_updated_at;
+  public void setBackseatTokenUpdatedAt(@Nullable String backseatTokenUpdatedAt){
+    this.backseatTokenUpdatedAt = backseatTokenUpdatedAt;
   }
 
   @Override
@@ -255,75 +258,116 @@ public class MockVehicle{
     return simpleToString(this);
   }
 
+  @Nonnull
   public String getDisplayName(){
-    return display_name;
+    return displayName;
   }
 
-  public void setDisplayName(@Nonnull String display_name){
-    this.display_name = display_name;
-  }
-
-  public void setIdS(@Nonnull String id_s){
-    this.id_s = id_s;
+  public void setDisplayName(@Nonnull String displayName){
+    this.displayName = displayName;
   }
 
   @Nonnull
   public DriveState getDriveState(){
-    return drive_state;
+    return driveState;
   }
 
-  public void setDriveState(@Nonnull DriveState drive_state){
-    this.drive_state = drive_state;
+  public void setDriveState(@Nonnull DriveState driveState){
+    this.driveState = driveState;
   }
 
   @Nonnull
   public ClimateState getClimateState(){
-    return climate_state;
+    return climateState;
   }
 
-  public void setClimate_state(@Nonnull ClimateState climate_state){
-    this.climate_state = climate_state;
+  public void setClimateState(@Nonnull ClimateState climateState){
+    this.climateState = climateState;
   }
 
   @Nonnull
   public ChargeState getChargeState(){
-    return charge_state;
+    return chargeState;
   }
 
   public void setChargeState(@Nonnull ChargeState chargeState){
-    this.charge_state = chargeState;
+    this.chargeState = chargeState;
   }
 
   @Nonnull
   public GUISettings getGuiSettings(){
-    return gui_settings;
+    return guiSettings;
   }
 
   public void setGuiSettings(@Nonnull GUISettings guiSettings){
-    this.gui_settings = guiSettings;
+    this.guiSettings = guiSettings;
   }
 
   @Nonnull
   public VehicleState getVehicleState(){
-    return vehicle_state;
+    return vehicleState;
   }
 
   public void setVehicleState(@Nonnull VehicleState vehicleState){
-    this.vehicle_state = vehicleState;
+    this.vehicleState = vehicleState;
   }
 
   @Nonnull
   public VehicleConfig getVehicleConfig(){
-    return vehicle_config;
+    return vehicleConfig;
   }
 
   public void setVehicleConfig(@Nonnull VehicleConfig vehicleConfig){
-    this.vehicle_config = vehicleConfig;
+    this.vehicleConfig = vehicleConfig;
+  }
+
+  public Vehicle convert(){
+    return new Vehicle(
+      id,
+      userId,
+      vehicleId,
+      vin,
+      displayName,
+      optionCodes,
+      color,
+      tokens,
+      state,
+      inService,
+      calendarEnabled,
+      apiVersion,
+      backseatToken,
+      backseatTokenUpdatedAt
+    );
+  }
+
+  public CompleteVehicle convertComplete(){
+    return new CompleteVehicle(
+      id,
+      userId,
+      vehicleId,
+      vin,
+      displayName,
+      optionCodes,
+      color,
+      tokens,
+      state,
+      inService,
+      calendarEnabled,
+      apiVersion,
+      backseatToken,
+      backseatTokenUpdatedAt,
+      climateState.convert(),
+      driveState.convert(),
+      chargeState.convert(),
+      guiSettings.convert(),
+      vehicleConfig.convert(),
+      vehicleState.convert()
+    );
   }
 
   public static class DriveState{
 
-    private long gps_as_of;
+    private long gpsAsOf;
 
     private int heading;
 
@@ -331,48 +375,48 @@ public class MockVehicle{
 
     private double longitude;
 
-    private double native_latitude;
+    private double nativeLatitude;
 
-    private int native_location_supported;
+    private int nativeLocationSupported;
 
-    private double native_longitude;
+    private double nativeLongitude;
 
-    private String native_type;
+    private String nativeType;
 
     private int power;
 
     @Nullable
-    private String shift_state;
+    private String shiftState;
 
     @Nullable
-    private Integer speed;
+    private Long speed;
 
     private long timestamp;
 
     public DriveState(
-      long gps_as_of,
+      long gpsAsOf,
       int heading,
       double latitude,
       double longitude,
-      double native_latitude,
-      int native_location_supported,
-      double native_longitude,
-      String native_type,
+      double nativeLatitude,
+      int nativeLocationSupported,
+      double nativeLongitude,
+      String nativeType,
       int power,
-      @Nullable String shift_state,
-      @Nullable Integer speed,
+      @Nullable String shiftState,
+      @Nullable Long speed,
       long timestamp
     ){
-      this.gps_as_of = gps_as_of;
+      this.gpsAsOf = gpsAsOf;
       this.heading = heading;
       this.latitude = latitude;
       this.longitude = longitude;
-      this.native_latitude = native_latitude;
-      this.native_location_supported = native_location_supported;
-      this.native_longitude = native_longitude;
-      this.native_type = native_type;
+      this.nativeLatitude = nativeLatitude;
+      this.nativeLocationSupported = nativeLocationSupported;
+      this.nativeLongitude = nativeLongitude;
+      this.nativeType = nativeType;
       this.power = power;
-      this.shift_state = shift_state;
+      this.shiftState = shiftState;
       this.speed = speed;
       this.timestamp = timestamp;
     }
@@ -391,13 +435,13 @@ public class MockVehicle{
         "wgs",
         0,
         null,
-        0,
+        null,
         Instant.now().toEpochMilli()
       );
     }
 
     public long getGpsAsOf(){
-      return gps_as_of;
+      return gpsAsOf;
     }
 
     public int getHeading(){
@@ -424,20 +468,20 @@ public class MockVehicle{
       this.longitude = longitude;
     }
 
+    public void setGpsAsOf(long gpsAsOf){
+      this.gpsAsOf = gpsAsOf;
+    }
+
     public double getNativeLatitude(){
-      return native_latitude;
+      return nativeLatitude;
+    }
+
+    public void setNativeLatitude(double nativeLatitude){
+      this.nativeLatitude = nativeLatitude;
     }
 
     public int getNativeLocationSupported(){
-      return native_location_supported;
-    }
-
-    public double getNativeLongitude(){
-      return native_longitude;
-    }
-
-    public String getNativeType(){
-      return native_type;
+      return nativeLocationSupported;
     }
 
     public int getPower(){
@@ -448,18 +492,16 @@ public class MockVehicle{
       this.power = power;
     }
 
-    @Nonnull
-    public Optional<String> getShiftState(){
-      return Optional.ofNullable(shift_state);
+    public void setNativeLocationSupported(int nativeLocationSupported){
+      this.nativeLocationSupported = nativeLocationSupported;
     }
 
-    @Nonnull
-    public Optional<Integer> getSpeed(){
-      return Optional.ofNullable(speed);
+    public double getNativeLongitude(){
+      return nativeLongitude;
     }
 
-    public void setSpeed(@Nullable Integer speed){
-      this.speed = speed;
+    public void setNativeLongitude(double nativeLongitude){
+      this.nativeLongitude = nativeLongitude;
     }
 
     public long getTimestamp(){
@@ -475,173 +517,190 @@ public class MockVehicle{
       return simpleToString(this);
     }
 
-    public void setGps_as_of(long gps_as_of){
-      this.gps_as_of = gps_as_of;
+    public String getNativeType(){
+      return nativeType;
     }
 
-    public void setNative_latitude(double native_latitude){
-      this.native_latitude = native_latitude;
+    public void setNativeType(String nativeType){
+      this.nativeType = nativeType;
     }
 
-    public void setNative_location_supported(int native_location_supported){
-      this.native_location_supported = native_location_supported;
+    @Nonnull
+    public Optional<String> getShiftState(){
+      return Optional.ofNullable(shiftState);
     }
 
-    public void setNative_longitude(double native_longitude){
-      this.native_longitude = native_longitude;
+    public void setShiftState(@Nullable String shiftState){
+      this.shiftState = shiftState;
     }
 
-    public void setNative_type(String native_type){
-      this.native_type = native_type;
+    @Nonnull
+    public Optional<Long> getSpeed(){
+      return Optional.ofNullable(speed);
     }
 
-    public void setShift_state(@Nullable String shift_state){
-      this.shift_state = shift_state;
+    public void setSpeed(@Nullable Long speed){
+      this.speed = speed;
+    }
+
+    public com.ansill.tesla.api.data.model.DriveState convert(){
+      return new com.ansill.tesla.api.data.model.DriveState(
+        gpsAsOf,
+        heading,
+        latitude,
+        longitude,
+        nativeLatitude,
+        nativeLocationSupported,
+        nativeLongitude,
+        nativeType,
+        power,
+        shiftState,
+        speed,
+        timestamp
+      );
     }
   }
 
   public static class ClimateState{
 
-    private boolean battery_heater;
+    private boolean batteryHeater;
 
-    private boolean battery_heater_no_power;
+    private boolean batteryHeaterNoPower;
 
-    private String climate_keeper_mode;
+    private String climateKeeperMode;
 
-    private double driver_temp_setting;
+    private double driverTempSetting;
 
-    private int fan_status;
+    private int fanStatus;
 
-    @Nullable
-    private Double inside_temp;
-
-    @Nullable
-    private Boolean is_auto_conditioning_on;
-
-    private boolean is_climate_on;
-
-    private boolean is_front_defroster_on;
-
-    private boolean is_preconditioning;
-
-    private boolean is_rear_defroster_on;
-
-    private int left_temp_direction;
-
-    private double max_avail_temp;
-
-    private double min_avail_temp;
+    private double insideTemp;
 
     @Nullable
-    private Double outside_temp;
+    private Boolean isAutoConditioningOn;
 
-    private double passenger_temp_setting;
+    private boolean isClimateOn;
 
-    private boolean remote_heater_control_enabled;
+    private boolean isFrontDefrosterOn;
 
-    private int right_temp_direction;
+    private boolean isPreconditioning;
 
-    @Nullable
-    private Integer seat_heater_left; // Entry could disapppear from JSON
+    private boolean isRearDefrosterOn;
 
-    @Nullable
-    private Integer seat_heater_rear_center; // Entry could disapppear from JSON
+    private int leftTempDirection;
 
-    @Nullable
-    private Integer seat_heater_rear_left; // Entry could disapppear from JSON
+    private double maxAvailTemp;
 
-    @Nullable
-    private Integer seat_heater_left_back; // Entry could disapppear from JSON
+    private double minAvailTemp;
 
-    @Nullable
-    private Integer seat_heater_rear_right; // Entry could disapppear from JSON
+    private double outsideTemp;
 
-    @Nullable
-    private Integer seat_heater_right_back; // Entry could disapppear from JSON
+    private double passengerTempSetting;
+
+    private boolean remoteHeaterControlEnabled;
+
+    private int rightTempDirection;
 
     @Nullable
-    private Integer seat_heater_right; // Entry could disapppear from JSON
+    private Integer seatHeaterLeft; // Entry could disapppear from JSON
 
     @Nullable
-    private Boolean side_mirror_heaters; // Entry could disappear from JSON
+    private Integer seatHeaterRearCenter; // Entry could disapppear from JSON
 
     @Nullable
-    private Boolean smart_preconditioning; // Entry could disappear from JSON
+    private Integer seatHeaterRearLeft; // Entry could disapppear from JSON
 
     @Nullable
-    private Boolean steering_wheel_heater; // Entry could disappear from JSON
+    private Integer seatHeaterLeftBack; // Entry could disapppear from JSON
+
+    @Nullable
+    private Integer seatHeaterRearRight; // Entry could disapppear from JSON
+
+    @Nullable
+    private Integer seatHeaterRightBack; // Entry could disapppear from JSON
+
+    @Nullable
+    private Integer seatHeaterRight; // Entry could disapppear from JSON
+
+    @Nullable
+    private Boolean sideMirrorHeaters; // Entry could disappear from JSON
+
+    @Nullable
+    private Boolean smartPreconditioning; // Entry could disappear from JSON
+
+    @Nullable
+    private Boolean steeringWheelHeater; // Entry could disappear from JSON
 
     private long timestamp;
 
     @Nullable
-    private Boolean wiper_blade_heater; // Entry could disappear from JSON
+    private Boolean wiperBladeHeater; // Entry could disappear from JSON
 
-    private int defrost_mode;
+    private int defrostMode;
 
     public ClimateState(
-      boolean battery_heater,
-      boolean battery_heater_no_power,
-      String climate_keeper_mode,
-      double driver_temp_setting,
-      int fan_status,
-      @Nullable Double inside_temp,
-      @Nullable Boolean is_auto_conditioning_on,
-      boolean is_climate_on,
-      boolean is_front_defroster_on,
-      boolean is_preconditioning,
-      boolean is_rear_defroster_on,
-      int left_temp_direction,
-      double max_avail_temp,
-      double min_avail_temp,
-      @Nullable Double outside_temp,
-      double passenger_temp_setting,
-      boolean remote_heater_control_enabled,
-      int right_temp_direction,
-      @Nullable Integer seat_heater_left,
-      @Nullable Integer seat_heater_rear_center,
-      @Nullable Integer seat_heater_rear_left,
-      @Nullable Integer seat_heater_left_back,
-      @Nullable Integer seat_heater_rear_right,
-      @Nullable Integer seat_heater_right_back,
-      @Nullable Integer seat_heater_right,
-      @Nullable Boolean side_mirror_heaters,
-      @Nullable Boolean smart_preconditioning,
-      @Nullable Boolean steering_wheel_heater,
+      boolean batteryHeater,
+      boolean batteryHeaterNoPower,
+      String climateKeeperMode,
+      double driverTempSetting,
+      int fanStatus,
+      double insideTemp,
+      @Nullable Boolean isAutoConditioningOn,
+      boolean isClimateOn,
+      boolean isFrontDefrosterOn,
+      boolean isPreconditioning,
+      boolean isRearDefrosterOn,
+      int leftTempDirection,
+      double maxAvailTemp,
+      double minAvailTemp,
+      double outsideTemp,
+      double passengerTempSetting,
+      boolean remoteHeaterControlEnabled,
+      int rightTempDirection,
+      @Nullable Integer seatHeaterLeft,
+      @Nullable Integer seatHeaterRearCenter,
+      @Nullable Integer seatHeaterRearLeft,
+      @Nullable Integer seatHeaterLeftBack,
+      @Nullable Integer seatHeaterRearRight,
+      @Nullable Integer seatHeaterRightBack,
+      @Nullable Integer seatHeaterRight,
+      @Nullable Boolean sideMirrorHeaters,
+      @Nullable Boolean smartPreconditioning,
+      @Nullable Boolean steeringWheelHeater,
       long timestamp,
-      @Nullable Boolean wiper_blade_heater,
-      int defrost_mode
+      @Nullable Boolean wiperBladeHeater,
+      int defrostMode
     ){
-      this.battery_heater = battery_heater;
-      this.battery_heater_no_power = battery_heater_no_power;
-      this.climate_keeper_mode = climate_keeper_mode;
-      this.driver_temp_setting = driver_temp_setting;
-      this.fan_status = fan_status;
-      this.inside_temp = inside_temp;
-      this.is_auto_conditioning_on = is_auto_conditioning_on;
-      this.is_climate_on = is_climate_on;
-      this.is_front_defroster_on = is_front_defroster_on;
-      this.is_preconditioning = is_preconditioning;
-      this.is_rear_defroster_on = is_rear_defroster_on;
-      this.left_temp_direction = left_temp_direction;
-      this.max_avail_temp = max_avail_temp;
-      this.min_avail_temp = min_avail_temp;
-      this.outside_temp = outside_temp;
-      this.passenger_temp_setting = passenger_temp_setting;
-      this.remote_heater_control_enabled = remote_heater_control_enabled;
-      this.right_temp_direction = right_temp_direction;
-      this.seat_heater_left = seat_heater_left;
-      this.seat_heater_rear_center = seat_heater_rear_center;
-      this.seat_heater_rear_left = seat_heater_rear_left;
-      this.seat_heater_left_back = seat_heater_left_back;
-      this.seat_heater_rear_right = seat_heater_rear_right;
-      this.seat_heater_right_back = seat_heater_right_back;
-      this.seat_heater_right = seat_heater_right;
-      this.side_mirror_heaters = side_mirror_heaters;
-      this.smart_preconditioning = smart_preconditioning;
-      this.steering_wheel_heater = steering_wheel_heater;
+      this.batteryHeater = batteryHeater;
+      this.batteryHeaterNoPower = batteryHeaterNoPower;
+      this.climateKeeperMode = climateKeeperMode;
+      this.driverTempSetting = driverTempSetting;
+      this.fanStatus = fanStatus;
+      this.insideTemp = insideTemp;
+      this.isAutoConditioningOn = isAutoConditioningOn;
+      this.isClimateOn = isClimateOn;
+      this.isFrontDefrosterOn = isFrontDefrosterOn;
+      this.isPreconditioning = isPreconditioning;
+      this.isRearDefrosterOn = isRearDefrosterOn;
+      this.leftTempDirection = leftTempDirection;
+      this.maxAvailTemp = maxAvailTemp;
+      this.minAvailTemp = minAvailTemp;
+      this.outsideTemp = outsideTemp;
+      this.passengerTempSetting = passengerTempSetting;
+      this.remoteHeaterControlEnabled = remoteHeaterControlEnabled;
+      this.rightTempDirection = rightTempDirection;
+      this.seatHeaterLeft = seatHeaterLeft;
+      this.seatHeaterRearCenter = seatHeaterRearCenter;
+      this.seatHeaterRearLeft = seatHeaterRearLeft;
+      this.seatHeaterLeftBack = seatHeaterLeftBack;
+      this.seatHeaterRearRight = seatHeaterRearRight;
+      this.seatHeaterRightBack = seatHeaterRightBack;
+      this.seatHeaterRight = seatHeaterRight;
+      this.sideMirrorHeaters = sideMirrorHeaters;
+      this.smartPreconditioning = smartPreconditioning;
+      this.steeringWheelHeater = steeringWheelHeater;
       this.timestamp = timestamp;
-      this.wiper_blade_heater = wiper_blade_heater;
-      this.defrost_mode = defrost_mode;
+      this.wiperBladeHeater = wiperBladeHeater;
+      this.defrostMode = defrostMode;
     }
 
     public static ClimateState generate(){
@@ -682,131 +741,120 @@ public class MockVehicle{
     }
 
     public int getDefrostMode(){
-      return defrost_mode;
+      return defrostMode;
+    }
+
+    public void setDefrostMode(int defrostMode){
+      this.defrostMode = defrostMode;
     }
 
     public boolean getBatteryHeater(){
-      return battery_heater;
+      return batteryHeater;
+    }
+
+    public void setBatteryHeater(boolean batteryHeater){
+      this.batteryHeater = batteryHeater;
     }
 
     public boolean getBatteryHeaterNoPower(){
-      return battery_heater_no_power;
+      return batteryHeaterNoPower;
+    }
+
+    public void setBatteryHeaterNoPower(boolean batteryHeaterNoPower){
+      this.batteryHeaterNoPower = batteryHeaterNoPower;
     }
 
     public String getClimateKeeperMode(){
-      return climate_keeper_mode;
+      return climateKeeperMode;
+    }
+
+    public void setClimateKeeperMode(String climateKeeperMode){
+      this.climateKeeperMode = climateKeeperMode;
     }
 
     public double getDriverTempSetting(){
-      return driver_temp_setting;
+      return driverTempSetting;
+    }
+
+    public void setDriverTempSetting(double driverTempSetting){
+      this.driverTempSetting = driverTempSetting;
     }
 
     public int getFanStatus(){
-      return fan_status;
+      return fanStatus;
+    }
+
+    public void setFanStatus(int fanStatus){
+      this.fanStatus = fanStatus;
     }
 
     @Nonnull
     public Optional<Double> getInsideTemp(){
-      return Optional.ofNullable(inside_temp);
+      return Optional.ofNullable(insideTemp);
+    }
+
+    public void setInsideTemp(double insideTemp){
+      this.insideTemp = insideTemp;
     }
 
     public Optional<Boolean> getIsAutoConditioningOn(){
-      return Optional.ofNullable(is_auto_conditioning_on);
+      return Optional.ofNullable(isAutoConditioningOn);
+    }
+
+    public void setIsAutoConditioningOn(@Nullable Boolean isAutoConditioningOn){
+      this.isAutoConditioningOn = isAutoConditioningOn;
     }
 
     public boolean getIsClimateOn(){
-      return is_climate_on;
+      return isClimateOn;
+    }
+
+    public void setIsClimateOn(boolean isClimateOn){
+      this.isClimateOn = isClimateOn;
     }
 
     public boolean getIsFrontDefrosterOn(){
-      return is_front_defroster_on;
+      return isFrontDefrosterOn;
+    }
+
+    public void setIsFrontDefrosterOn(boolean isFrontDefrosterOn){
+      this.isFrontDefrosterOn = isFrontDefrosterOn;
     }
 
     public boolean getIsPreconditioning(){
-      return is_preconditioning;
+      return isPreconditioning;
+    }
+
+    public void setIsPreconditioning(boolean isPreconditioning){
+      this.isPreconditioning = isPreconditioning;
     }
 
     public boolean getIsRearDefrosterOn(){
-      return is_rear_defroster_on;
+      return isRearDefrosterOn;
+    }
+
+    public void setIsRearDefrosterOn(boolean isRearDefrosterOn){
+      this.isRearDefrosterOn = isRearDefrosterOn;
     }
 
     public int getLeftTempDirection(){
-      return left_temp_direction;
+      return leftTempDirection;
+    }
+
+    public void setLeftTempDirection(int leftTempDirection){
+      this.leftTempDirection = leftTempDirection;
     }
 
     public double getMaxAvailTemp(){
-      return max_avail_temp;
+      return maxAvailTemp;
+    }
+
+    public void setMaxAvailTemp(double maxAvailTemp){
+      this.maxAvailTemp = maxAvailTemp;
     }
 
     public double getMinAvailTemp(){
-      return min_avail_temp;
-    }
-
-    @Nonnull
-    public Optional<Double> getOutsideTemp(){
-      return Optional.ofNullable(outside_temp);
-    }
-
-    public double getPassengerTempSetting(){
-      return passenger_temp_setting;
-    }
-
-    public boolean getRemoteHeaterControlEnabled(){
-      return remote_heater_control_enabled;
-    }
-
-    public int getRightTempDirection(){
-      return right_temp_direction;
-    }
-
-    @Nonnull
-    public Optional<Integer> getSeatHeaterLeft(){
-      return Optional.ofNullable(seat_heater_left);
-    }
-
-    @Nonnull
-    public Optional<Integer> getSeatHeaterRearCenter(){
-      return Optional.ofNullable(seat_heater_rear_center);
-    }
-
-    @Nonnull
-    public Optional<Integer> getSeatHeaterRearLeft(){
-      return Optional.ofNullable(seat_heater_rear_left);
-    }
-
-    @Nonnull
-    public Optional<Integer> getSeatHeaterLeftBack(){
-      return Optional.ofNullable(seat_heater_left_back);
-    }
-
-    @Nonnull
-    public Optional<Integer> getSeatHeaterRearRight(){
-      return Optional.ofNullable(seat_heater_rear_right);
-    }
-
-    @Nonnull
-    public Optional<Integer> getSeatHeaterRightBack(){
-      return Optional.ofNullable(seat_heater_right_back);
-    }
-
-    @Nonnull
-    public Optional<Integer> getSeatHeaterRight(){
-      return Optional.ofNullable(seat_heater_right);
-    }
-
-    @Nonnull
-    public Optional<Boolean> getSideMirrorHeaters(){
-      return Optional.ofNullable(side_mirror_heaters);
-    }
-
-    @Nonnull
-    public Optional<Boolean> getSmartPreconditioning(){
-      return Optional.ofNullable(smart_preconditioning);
-    }
-
-    @Nonnull
-    public Optional<Boolean> getSteeringWheelHeater(){
-      return Optional.ofNullable(steering_wheel_heater);
+      return minAvailTemp;
     }
 
     public long getTimestamp(){
@@ -817,9 +865,8 @@ public class MockVehicle{
       this.timestamp = timestamp;
     }
 
-    @Nonnull
-    public Optional<Boolean> getWiperBladeHeater(){
-      return Optional.ofNullable(wiper_blade_heater);
+    public void setMinAvailTemp(double minAvailTemp){
+      this.minAvailTemp = minAvailTemp;
     }
 
     @Override
@@ -827,302 +874,348 @@ public class MockVehicle{
       return simpleToString(this);
     }
 
-    public void setBattery_heater(boolean battery_heater){
-      this.battery_heater = battery_heater;
+    @Nonnull
+    public Optional<Double> getOutsideTemp(){
+      return Optional.ofNullable(outsideTemp);
     }
 
-    public void setBattery_heater_no_power(boolean battery_heater_no_power){
-      this.battery_heater_no_power = battery_heater_no_power;
+    public void setOutsideTemp(@Nullable Double outsideTemp){
+      this.outsideTemp = outsideTemp;
     }
 
-    public void setClimate_keeper_mode(String climate_keeper_mode){
-      this.climate_keeper_mode = climate_keeper_mode;
+    public double getPassengerTempSetting(){
+      return passengerTempSetting;
     }
 
-    public void setDriver_temp_setting(double driver_temp_setting){
-      this.driver_temp_setting = driver_temp_setting;
+    public void setPassengerTempSetting(double passengerTempSetting){
+      this.passengerTempSetting = passengerTempSetting;
     }
 
-    public void setFan_status(int fan_status){
-      this.fan_status = fan_status;
+    public boolean getRemoteHeaterControlEnabled(){
+      return remoteHeaterControlEnabled;
     }
 
-    public void setInside_temp(@Nullable Double inside_temp){
-      this.inside_temp = inside_temp;
+    public void setRemoteHeaterControlEnabled(boolean remoteHeaterControlEnabled){
+      this.remoteHeaterControlEnabled = remoteHeaterControlEnabled;
     }
 
-    public void setIs_auto_conditioning_on(@Nullable Boolean is_auto_conditioning_on){
-      this.is_auto_conditioning_on = is_auto_conditioning_on;
+    public int getRightTempDirection(){
+      return rightTempDirection;
     }
 
-    public void setIs_climate_on(boolean is_climate_on){
-      this.is_climate_on = is_climate_on;
+    public void setRightTempDirection(int rightTempDirection){
+      this.rightTempDirection = rightTempDirection;
     }
 
-    public void setIs_front_defroster_on(boolean is_front_defroster_on){
-      this.is_front_defroster_on = is_front_defroster_on;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterLeft(){
+      return Optional.ofNullable(seatHeaterLeft);
     }
 
-    public void setIs_preconditioning(boolean is_preconditioning){
-      this.is_preconditioning = is_preconditioning;
+    public void setSeatHeaterLeft(@Nullable Integer seatHeaterLeft){
+      this.seatHeaterLeft = seatHeaterLeft;
     }
 
-    public void setIs_rear_defroster_on(boolean is_rear_defroster_on){
-      this.is_rear_defroster_on = is_rear_defroster_on;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRearCenter(){
+      return Optional.ofNullable(seatHeaterRearCenter);
     }
 
-    public void setLeft_temp_direction(int left_temp_direction){
-      this.left_temp_direction = left_temp_direction;
+    public void setSeatHeaterRearCenter(@Nullable Integer seatHeaterRearCenter){
+      this.seatHeaterRearCenter = seatHeaterRearCenter;
     }
 
-    public void setMax_avail_temp(double max_avail_temp){
-      this.max_avail_temp = max_avail_temp;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRearLeft(){
+      return Optional.ofNullable(seatHeaterRearLeft);
     }
 
-    public void setMin_avail_temp(double min_avail_temp){
-      this.min_avail_temp = min_avail_temp;
+    public void setSeatHeaterRearLeft(@Nullable Integer seatHeaterRearLeft){
+      this.seatHeaterRearLeft = seatHeaterRearLeft;
     }
 
-    public void setOutside_temp(@Nullable Double outside_temp){
-      this.outside_temp = outside_temp;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterLeftBack(){
+      return Optional.ofNullable(seatHeaterLeftBack);
     }
 
-    public void setPassenger_temp_setting(double passenger_temp_setting){
-      this.passenger_temp_setting = passenger_temp_setting;
+    public void setSeatHeaterLeftBack(@Nullable Integer seatHeaterLeftBack){
+      this.seatHeaterLeftBack = seatHeaterLeftBack;
     }
 
-    public void setRemote_heater_controlEnabled(boolean remote_heater_control_enabled){
-      this.remote_heater_control_enabled = remote_heater_control_enabled;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRearRight(){
+      return Optional.ofNullable(seatHeaterRearRight);
     }
 
-    public void setRight_temp_direction(int right_temp_direction){
-      this.right_temp_direction = right_temp_direction;
+    public void setSeatHeaterRearRight(@Nullable Integer seatHeaterRearRight){
+      this.seatHeaterRearRight = seatHeaterRearRight;
     }
 
-    public void setSeat_heater_left(@Nullable Integer seat_heater_left){
-      this.seat_heater_left = seat_heater_left;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRightBack(){
+      return Optional.ofNullable(seatHeaterRightBack);
     }
 
-    public void setSeat_heater_rear_center(@Nullable Integer seat_heater_rear_center){
-      this.seat_heater_rear_center = seat_heater_rear_center;
+    public void setSeatHeaterRightBack(@Nullable Integer seatHeaterRightBack){
+      this.seatHeaterRightBack = seatHeaterRightBack;
     }
 
-    public void setSeat_heater_rear_left(@Nullable Integer seat_heater_rear_left){
-      this.seat_heater_rear_left = seat_heater_rear_left;
+    @Nonnull
+    public Optional<Integer> getSeatHeaterRight(){
+      return Optional.ofNullable(seatHeaterRight);
     }
 
-    public void setSeat_heater_left_back(@Nullable Integer seat_heater_left_back){
-      this.seat_heater_left_back = seat_heater_left_back;
+    public void setSeatHeaterRight(@Nullable Integer seatHeaterRight){
+      this.seatHeaterRight = seatHeaterRight;
     }
 
-    public void setSeat_heater_rear_right(@Nullable Integer seat_heater_rear_right){
-      this.seat_heater_rear_right = seat_heater_rear_right;
+    @Nonnull
+    public Optional<Boolean> getSideMirrorHeaters(){
+      return Optional.ofNullable(sideMirrorHeaters);
     }
 
-    public void setSeat_heater_right_back(@Nullable Integer seat_heater_right_back){
-      this.seat_heater_right_back = seat_heater_right_back;
+    public void setSideMirrorHeaters(@Nullable Boolean sideMirrorHeaters){
+      this.sideMirrorHeaters = sideMirrorHeaters;
     }
 
-    public void setSeat_heater_right(@Nullable Integer seat_heater_right){
-      this.seat_heater_right = seat_heater_right;
+    @Nonnull
+    public Optional<Boolean> getSmartPreconditioning(){
+      return Optional.ofNullable(smartPreconditioning);
     }
 
-    public void setSide_mirror_heaters(@Nullable Boolean side_mirror_heaters){
-      this.side_mirror_heaters = side_mirror_heaters;
+    public void setSmartPreconditioning(@Nullable Boolean smartPreconditioning){
+      this.smartPreconditioning = smartPreconditioning;
     }
 
-    public void setSmart_preconditioning(@Nullable Boolean smart_preconditioning){
-      this.smart_preconditioning = smart_preconditioning;
+    @Nonnull
+    public Optional<Boolean> getSteeringWheelHeater(){
+      return Optional.ofNullable(steeringWheelHeater);
     }
 
-    public void setSteering_wheel_heater(@Nullable Boolean steering_wheel_heater){
-      this.steering_wheel_heater = steering_wheel_heater;
+    public void setSteeringWheelHeater(@Nullable Boolean steeringWheelHeater){
+      this.steeringWheelHeater = steeringWheelHeater;
     }
 
-    public void setWiper_blade_heater(@Nullable Boolean wiper_blade_heater){
-      this.wiper_blade_heater = wiper_blade_heater;
+    @Nonnull
+    public Optional<Boolean> getWiperBladeHeater(){
+      return Optional.ofNullable(wiperBladeHeater);
     }
 
-    public void setDefrost_mode(int defrost_mode){
-      this.defrost_mode = defrost_mode;
+    public void setWiperBladeHeater(@Nullable Boolean wiperBladeHeater){
+      this.wiperBladeHeater = wiperBladeHeater;
+    }
+
+    public com.ansill.tesla.api.data.model.ClimateState convert(){
+      return new com.ansill.tesla.api.data.model.ClimateState(
+        batteryHeater,
+        batteryHeaterNoPower,
+        climateKeeperMode,
+        defrostMode,
+        driverTempSetting,
+        fanStatus,
+        insideTemp,
+        isAutoConditioningOn,
+        isClimateOn,
+        isFrontDefrosterOn,
+        isPreconditioning,
+        isRearDefrosterOn,
+        leftTempDirection,
+        maxAvailTemp,
+        minAvailTemp,
+        outsideTemp,
+        passengerTempSetting,
+        remoteHeaterControlEnabled,
+        rightTempDirection,
+        seatHeaterLeft,
+        seatHeaterRearCenter,
+        seatHeaterRearLeft,
+        seatHeaterRearRight,
+        seatHeaterRight,
+        seatHeaterLeftBack,
+        seatHeaterRightBack,
+        sideMirrorHeaters,
+        timestamp,
+        wiperBladeHeater
+      );
     }
   }
 
   public static class ChargeState{
-    private boolean battery_heater_on;
+    private boolean batteryHeaterOn;
 
-    private int battery_level;
+    private int batteryLevel;
 
-    private double battery_range;
+    private double batteryRange;
 
-    private int charge_current_request;
+    private int chargeCurrentRequest;
 
-    private int charge_current_request_max;
+    private int chargeCurrentRequestMax;
 
-    private boolean charge_enable_request;
+    private boolean chargeEnableRequest;
 
-    private double charge_energy_added;
+    private double chargeEnergyAdded;
 
-    private int charge_limit_soc;
+    private int chargeLimitSoc;
 
-    private int charge_limit_soc_max;
+    private int chargeLimitSocMax;
 
-    private int charge_limit_soc_min;
+    private int chargeLimitSocMin;
 
-    private int charge_limit_soc_std;
+    private int chargeLimitSocStd;
 
-    private double charge_miles_added_ideal;
+    private double chargeMilesAddedIdeal;
 
-    private double charge_miles_added_rated;
+    private double chargeMilesAddedRated;
 
-    private boolean charge_port_cold_weather_mode;
+    private boolean chargePortColdWeatherMode;
 
-    private boolean charge_port_door_open;
+    private boolean chargePortDoorOpen;
 
-    private String charge_port_latch;
+    private String chargePortLatch;
 
-    private double charge_rate;
+    private double chargeRate;
 
-    private boolean charge_to_max_range;
+    private boolean chargeToMaxRange;
 
-    private int charger_actual_current;
+    private int chargerActualCurrent;
 
-    private String charger_phases;
+    private String chargerPhases;
 
-    private int charger_pilot_current;
+    private int chargerPilotCurrent;
 
-    private int charger_power;
+    private int chargerPower;
 
-    private int charger_voltage;
+    private int chargerVoltage;
 
-    private String charging_state;
+    private String chargingState;
 
-    private String conn_charge_cable;
+    private String connChargeCable;
 
-    private double est_battery_range;
+    private double estBatteryRange;
 
-    private String fast_charger_brand;
+    private String fastChargerBrand;
 
-    private boolean fast_charger_present;
+    private boolean fastChargerPresent;
 
-    private long minutes_to_full_charge;
+    private long minutesToFullCharge;
 
-    private String fast_charger_type;
+    private String fastChargerType;
 
-    private double ideal_battery_range;
+    private double idealBatteryRange;
 
-    private boolean managed_charging_active;
+    private boolean managedChargingActive;
 
-    private String managed_charging_start_time;
+    private String managedChargingStartTime;
 
-    private boolean managed_charging_user_canceled;
+    private boolean managedChargingUserCanceled;
 
-    private int max_range_charge_counter;
+    private int maxRangeChargeCounter;
 
-    private Boolean not_enough_power_to_heat;
+    private Boolean notEnoughPowerToHeat;
 
-    private boolean scheduled_charging_pending;
+    private boolean scheduledChargingPending;
 
     @Nullable
-    private String scheduled_charging_start_time;
+    private String scheduledChargingStartTime;
 
-    private double time_to_full_charge;
+    private double timeToFullCharge;
 
     private long timestamp;
 
-    private int usable_battery_level;
+    private int usableBatteryLevel;
 
-    private String user_charge_enable_request;
+    private String userChargeEnableRequest;
 
-    private boolean trip_charging;
+    private boolean tripCharging;
 
     public ChargeState(
-      boolean battery_heater_on,
-      int battery_level,
-      double battery_range,
-      int charge_current_request,
-      int charge_current_request_max,
-      boolean charge_enable_request,
-      double charge_energy_added,
-      int charge_limit_soc,
-      int charge_limit_soc_max,
-      int charge_limit_soc_min,
-      int charge_limit_soc_std,
-      double charge_miles_added_ideal,
-      double charge_miles_added_rated,
-      boolean charge_port_cold_weather_mode,
-      boolean charge_port_door_open,
-      String charge_port_latch,
-      double charge_rate,
-      boolean charge_to_max_range,
-      int charger_actual_current,
-      String charger_phases,
-      int charger_pilot_current,
-      int charger_power,
-      int charger_voltage,
-      String charging_state,
-      String conn_charge_cable,
-      double est_battery_range,
-      String fast_charger_brand,
-      boolean fast_charger_present,
-      long minutes_to_full_charge, String fast_charger_type,
-      double ideal_battery_range,
-      boolean managed_charging_active,
-      String managed_charging_start_time,
-      boolean managed_charging_user_canceled,
-      int max_range_charge_counter,
-      Boolean not_enough_power_to_heat,
-      boolean scheduled_charging_pending,
-      @Nullable String scheduled_charging_start_time,
-      double time_to_full_charge,
+      boolean batteryHeaterOn,
+      int batteryLevel,
+      double batteryRange,
+      int chargeCurrentRequest,
+      int chargeCurrentRequestMax,
+      boolean chargeEnableRequest,
+      double chargeEnergyAdded,
+      int chargeLimitSoc,
+      int chargeLimitSocMax,
+      int chargeLimitSocMin,
+      int chargeLimitSocStd,
+      double chargeMilesAddedIdeal,
+      double chargeMilesAddedRated,
+      boolean chargePortColdWeatherMode,
+      boolean chargePortDoorOpen,
+      String chargePortLatch,
+      double chargeRate,
+      boolean chargeToMaxRange,
+      int chargerActualCurrent,
+      String chargerPhases,
+      int chargerPilotCurrent,
+      int chargerPower,
+      int chargerVoltage,
+      String chargingState,
+      String connChargeCable,
+      double estBatteryRange,
+      String fastChargerBrand,
+      boolean fastChargerPresent,
+      long minutesToFullCharge, String fastChargerType,
+      double idealBatteryRange,
+      boolean managedChargingActive,
+      String managedChargingStartTime,
+      boolean managedChargingUserCanceled,
+      int maxRangeChargeCounter,
+      Boolean notEnoughPowerToHeat,
+      boolean scheduledChargingPending,
+      @Nullable String scheduledChargingStartTime,
+      double timeToFullCharge,
       long timestamp,
-      int usable_battery_level,
-      String user_charge_enable_request,
-      boolean trip_charging
+      int usableBatteryLevel,
+      String userChargeEnableRequest,
+      boolean tripCharging
     ){
-      this.battery_heater_on = battery_heater_on;
-      this.battery_level = battery_level;
-      this.battery_range = battery_range;
-      this.charge_current_request = charge_current_request;
-      this.charge_current_request_max = charge_current_request_max;
-      this.charge_enable_request = charge_enable_request;
-      this.charge_energy_added = charge_energy_added;
-      this.charge_limit_soc = charge_limit_soc;
-      this.charge_limit_soc_max = charge_limit_soc_max;
-      this.charge_limit_soc_min = charge_limit_soc_min;
-      this.charge_limit_soc_std = charge_limit_soc_std;
-      this.charge_miles_added_ideal = charge_miles_added_ideal;
-      this.charge_miles_added_rated = charge_miles_added_rated;
-      this.charge_port_cold_weather_mode = charge_port_cold_weather_mode;
-      this.charge_port_door_open = charge_port_door_open;
-      this.charge_port_latch = charge_port_latch;
-      this.charge_rate = charge_rate;
-      this.charge_to_max_range = charge_to_max_range;
-      this.charger_actual_current = charger_actual_current;
-      this.charger_phases = charger_phases;
-      this.charger_pilot_current = charger_pilot_current;
-      this.charger_power = charger_power;
-      this.charger_voltage = charger_voltage;
-      this.charging_state = charging_state;
-      this.conn_charge_cable = conn_charge_cable;
-      this.est_battery_range = est_battery_range;
-      this.fast_charger_brand = fast_charger_brand;
-      this.fast_charger_present = fast_charger_present;
-      this.minutes_to_full_charge = minutes_to_full_charge;
-      this.fast_charger_type = fast_charger_type;
-      this.ideal_battery_range = ideal_battery_range;
-      this.managed_charging_active = managed_charging_active;
-      this.managed_charging_start_time = managed_charging_start_time;
-      this.managed_charging_user_canceled = managed_charging_user_canceled;
-      this.max_range_charge_counter = max_range_charge_counter;
-      this.not_enough_power_to_heat = not_enough_power_to_heat;
-      this.scheduled_charging_pending = scheduled_charging_pending;
-      this.scheduled_charging_start_time = scheduled_charging_start_time;
-      this.time_to_full_charge = time_to_full_charge;
+      this.batteryHeaterOn = batteryHeaterOn;
+      this.batteryLevel = batteryLevel;
+      this.batteryRange = batteryRange;
+      this.chargeCurrentRequest = chargeCurrentRequest;
+      this.chargeCurrentRequestMax = chargeCurrentRequestMax;
+      this.chargeEnableRequest = chargeEnableRequest;
+      this.chargeEnergyAdded = chargeEnergyAdded;
+      this.chargeLimitSoc = chargeLimitSoc;
+      this.chargeLimitSocMax = chargeLimitSocMax;
+      this.chargeLimitSocMin = chargeLimitSocMin;
+      this.chargeLimitSocStd = chargeLimitSocStd;
+      this.chargeMilesAddedIdeal = chargeMilesAddedIdeal;
+      this.chargeMilesAddedRated = chargeMilesAddedRated;
+      this.chargePortColdWeatherMode = chargePortColdWeatherMode;
+      this.chargePortDoorOpen = chargePortDoorOpen;
+      this.chargePortLatch = chargePortLatch;
+      this.chargeRate = chargeRate;
+      this.chargeToMaxRange = chargeToMaxRange;
+      this.chargerActualCurrent = chargerActualCurrent;
+      this.chargerPhases = chargerPhases;
+      this.chargerPilotCurrent = chargerPilotCurrent;
+      this.chargerPower = chargerPower;
+      this.chargerVoltage = chargerVoltage;
+      this.chargingState = chargingState;
+      this.connChargeCable = connChargeCable;
+      this.estBatteryRange = estBatteryRange;
+      this.fastChargerBrand = fastChargerBrand;
+      this.fastChargerPresent = fastChargerPresent;
+      this.minutesToFullCharge = minutesToFullCharge;
+      this.fastChargerType = fastChargerType;
+      this.idealBatteryRange = idealBatteryRange;
+      this.managedChargingActive = managedChargingActive;
+      this.managedChargingStartTime = managedChargingStartTime;
+      this.managedChargingUserCanceled = managedChargingUserCanceled;
+      this.maxRangeChargeCounter = maxRangeChargeCounter;
+      this.notEnoughPowerToHeat = notEnoughPowerToHeat;
+      this.scheduledChargingPending = scheduledChargingPending;
+      this.scheduledChargingStartTime = scheduledChargingStartTime;
+      this.timeToFullCharge = timeToFullCharge;
       this.timestamp = timestamp;
-      this.usable_battery_level = usable_battery_level;
-      this.user_charge_enable_request = user_charge_enable_request;
-      this.trip_charging = trip_charging;
+      this.usableBatteryLevel = usableBatteryLevel;
+      this.userChargeEnableRequest = userChargeEnableRequest;
+      this.tripCharging = tripCharging;
     }
 
     public static ChargeState generateUnplugged(){
@@ -1175,158 +1268,155 @@ public class MockVehicle{
     }
 
     public boolean isTripCharging(){
-      return trip_charging;
+      return tripCharging;
     }
 
+    public void setTripCharging(boolean tripCharging){
+      this.tripCharging = tripCharging;
+    }
 
     public long getMinutesToFullCharge(){
-      return minutes_to_full_charge;
+      return minutesToFullCharge;
+    }
+
+    public void setMinutesToFullCharge(long minutesToFullCharge){
+      this.minutesToFullCharge = minutesToFullCharge;
     }
 
     public double getBatteryRange(){
-      return battery_range;
+      return batteryRange;
+    }
+
+    public void setBatteryRange(double batteryRange){
+      this.batteryRange = batteryRange;
     }
 
     public int getChargeCurrentRequest(){
-      return charge_current_request;
+      return chargeCurrentRequest;
+    }
+
+    public void setChargeCurrentRequest(int chargeCurrentRequest){
+      this.chargeCurrentRequest = chargeCurrentRequest;
     }
 
     public int getChargeCurrentRequestMax(){
-      return charge_current_request_max;
+      return chargeCurrentRequestMax;
+    }
+
+    public void setChargeCurrentRequestMax(int chargeCurrentRequestMax){
+      this.chargeCurrentRequestMax = chargeCurrentRequestMax;
     }
 
     public boolean isChargeEnableRequest(){
-      return charge_enable_request;
+      return chargeEnableRequest;
+    }
+
+    public void setChargeEnableRequest(boolean chargeEnableRequest){
+      this.chargeEnableRequest = chargeEnableRequest;
     }
 
     public double getChargeEnergyAdded(){
-      return charge_energy_added;
+      return chargeEnergyAdded;
+    }
+
+    public void setChargeEnergyAdded(double chargeEnergyAdded){
+      this.chargeEnergyAdded = chargeEnergyAdded;
     }
 
     public int getChargeLimitSoc(){
-      return charge_limit_soc;
+      return chargeLimitSoc;
+    }
+
+    public void setChargeLimitSoc(int chargeLimitSoc){
+      this.chargeLimitSoc = chargeLimitSoc;
     }
 
     public int getChargeLimitSocMax(){
-      return charge_limit_soc_max;
+      return chargeLimitSocMax;
+    }
+
+    public void setChargeLimitSocMax(int chargeLimitSocMax){
+      this.chargeLimitSocMax = chargeLimitSocMax;
     }
 
     public int getChargeLimitSocMin(){
-      return charge_limit_soc_min;
+      return chargeLimitSocMin;
+    }
+
+    public void setChargeLimitSocMin(int chargeLimitSocMin){
+      this.chargeLimitSocMin = chargeLimitSocMin;
     }
 
     public int getChargeLimitSocStd(){
-      return charge_limit_soc_std;
+      return chargeLimitSocStd;
+    }
+
+    public void setChargeLimitSocStd(int chargeLimitSocStd){
+      this.chargeLimitSocStd = chargeLimitSocStd;
     }
 
     public double getChargeMilesAddedIdeal(){
-      return charge_miles_added_ideal;
+      return chargeMilesAddedIdeal;
+    }
+
+    public void setChargeMilesAddedIdeal(double chargeMilesAddedIdeal){
+      this.chargeMilesAddedIdeal = chargeMilesAddedIdeal;
     }
 
     public double getChargeMilesAddedRated(){
-      return charge_miles_added_rated;
+      return chargeMilesAddedRated;
+    }
+
+    public void setChargeMilesAddedRated(double chargeMilesAddedRated){
+      this.chargeMilesAddedRated = chargeMilesAddedRated;
     }
 
     public boolean getChargePortColdWeatherMode(){
-      return charge_port_cold_weather_mode;
+      return chargePortColdWeatherMode;
+    }
+
+    public void setChargePortColdWeatherMode(boolean chargePortColdWeatherMode){
+      this.chargePortColdWeatherMode = chargePortColdWeatherMode;
     }
 
     public boolean getChargePortDoorOpen(){
-      return charge_port_door_open;
+      return chargePortDoorOpen;
+    }
+
+    public void setChargePortDoorOpen(boolean chargePortDoorOpen){
+      this.chargePortDoorOpen = chargePortDoorOpen;
     }
 
     public String getChargePortLatch(){
-      return charge_port_latch;
+      return chargePortLatch;
+    }
+
+    public void setChargePortLatch(String chargePortLatch){
+      this.chargePortLatch = chargePortLatch;
     }
 
     public double getChargeRate(){
-      return charge_rate;
+      return chargeRate;
+    }
+
+    public void setChargeRate(double chargeRate){
+      this.chargeRate = chargeRate;
     }
 
     public boolean getChargeToMaxRange(){
-      return charge_to_max_range;
+      return chargeToMaxRange;
+    }
+
+    public void setChargeToMaxRange(boolean chargeToMaxRange){
+      this.chargeToMaxRange = chargeToMaxRange;
     }
 
     public int getChargerActualCurrent(){
-      return charger_actual_current;
+      return chargerActualCurrent;
     }
 
-    public String getChargerPhases(){
-      return charger_phases;
-    }
-
-    public int getChargePilotCurrent(){
-      return charger_pilot_current;
-    }
-
-    public int getChargerPower(){
-      return charger_power;
-    }
-
-    public int getChargerVoltage(){
-      return charger_voltage;
-    }
-
-    public String getChargingState(){
-      return charging_state;
-    }
-
-    public String getConnChargeCable(){
-      return conn_charge_cable;
-    }
-
-    public double getEstBatteryRange(){
-      return est_battery_range;
-    }
-
-    public String getFastChargerBrand(){
-      return fast_charger_brand;
-    }
-
-    public boolean getFastChargerPresent(){
-      return fast_charger_present;
-    }
-
-    public String getFastChargerType(){
-      return fast_charger_type;
-    }
-
-    public double getIdealBatteryRange(){
-      return ideal_battery_range;
-    }
-
-    public boolean getManagedChargingActive(){
-      return managed_charging_active;
-    }
-
-    public String getManagedChargingStartTime(){
-      return managed_charging_start_time;
-    }
-
-    public boolean getManagedChargingUserCanceled(){
-      return managed_charging_user_canceled;
-    }
-
-    public int getMaxRangeChargerCounter(){
-      return max_range_charge_counter;
-    }
-
-    @Nonnull
-    public Optional<Boolean> getNotEnoughPowerToHeat(){
-      return Optional.ofNullable(not_enough_power_to_heat);
-    }
-
-    public boolean getScheduledChargingPending(){
-      return scheduled_charging_pending;
-    }
-
-    @Nonnull
-    public Optional<String> getScheduledChargingStartTime(){
-      return Optional.ofNullable(scheduled_charging_start_time);
-    }
-
-    public double getTimeToFullCharge(){
-      return time_to_full_charge;
+    public void setChargerActualCurrent(int chargerActualCurrent){
+      this.chargerActualCurrent = chargerActualCurrent;
     }
 
     public long getTimestamp(){
@@ -1337,20 +1427,20 @@ public class MockVehicle{
       this.timestamp = timestamp;
     }
 
-    public int getUsableBatteryLevel(){
-      return usable_battery_level;
+    public String getChargerPhases(){
+      return chargerPhases;
     }
 
-    public String getUserChargeEnableRequest(){
-      return user_charge_enable_request;
+    public void setChargerPhases(String chargerPhases){
+      this.chargerPhases = chargerPhases;
     }
 
-    public int getBatteryLevel(){
-      return battery_level;
+    public int getChargePilotCurrent(){
+      return chargerPilotCurrent;
     }
 
-    public boolean getBatteryHeaterOn(){
-      return battery_heater_on;
+    public int getChargerPower(){
+      return chargerPower;
     }
 
     @Override
@@ -1358,207 +1448,257 @@ public class MockVehicle{
       return simpleToString(this);
     }
 
-    public void setBattery_heater_on(boolean battery_heater_on){
-      this.battery_heater_on = battery_heater_on;
+    public void setChargerPower(int chargerPower){
+      this.chargerPower = chargerPower;
     }
 
-    public void setBattery_level(int battery_level){
-      this.battery_level = battery_level;
+    public int getChargerVoltage(){
+      return chargerVoltage;
     }
 
-    public void setBattery_range(double battery_range){
-      this.battery_range = battery_range;
+    public void setChargerVoltage(int chargerVoltage){
+      this.chargerVoltage = chargerVoltage;
     }
 
-    public void setCharge_current_request(int charge_current_request){
-      this.charge_current_request = charge_current_request;
+    public String getChargingState(){
+      return chargingState;
     }
 
-    public void setCharge_current_request_max(int charge_current_request_max){
-      this.charge_current_request_max = charge_current_request_max;
+    public void setChargingState(String chargingState){
+      this.chargingState = chargingState;
     }
 
-    public void setCharge_enable_request(boolean charge_enable_request){
-      this.charge_enable_request = charge_enable_request;
+    public String getConnChargeCable(){
+      return connChargeCable;
     }
 
-    public void setCharge_energy_added(double charge_energy_added){
-      this.charge_energy_added = charge_energy_added;
+    public void setConnChargeCable(String connChargeCable){
+      this.connChargeCable = connChargeCable;
     }
 
-    public void setCharge_limit_soc(int charge_limit_soc){
-      this.charge_limit_soc = charge_limit_soc;
+    public double getEstBatteryRange(){
+      return estBatteryRange;
     }
 
-    public void setCharge_limit_soc_max(int charge_limit_soc_max){
-      this.charge_limit_soc_max = charge_limit_soc_max;
+    public void setEstBatteryRange(double estBatteryRange){
+      this.estBatteryRange = estBatteryRange;
     }
 
-    public void setCharge_limit_soc_min(int charge_limit_soc_min){
-      this.charge_limit_soc_min = charge_limit_soc_min;
+    public String getFastChargerBrand(){
+      return fastChargerBrand;
     }
 
-    public void setCharge_limit_soc_std(int charge_limit_soc_std){
-      this.charge_limit_soc_std = charge_limit_soc_std;
+    public void setFastChargerBrand(String fastChargerBrand){
+      this.fastChargerBrand = fastChargerBrand;
     }
 
-    public void setCharge_miles_added_ideal(double charge_miles_added_ideal){
-      this.charge_miles_added_ideal = charge_miles_added_ideal;
+    public boolean getFastChargerPresent(){
+      return fastChargerPresent;
     }
 
-    public void setCharge_miles_added_rated(double charge_miles_added_rated){
-      this.charge_miles_added_rated = charge_miles_added_rated;
+    public void setFastChargerPresent(boolean fastChargerPresent){
+      this.fastChargerPresent = fastChargerPresent;
     }
 
-    public void setCharge_port_cold_weather_mode(boolean charge_port_cold_weather_mode){
-      this.charge_port_cold_weather_mode = charge_port_cold_weather_mode;
+    public String getFastChargerType(){
+      return fastChargerType;
     }
 
-    public void setCharge_port_door_open(boolean charge_port_door_open){
-      this.charge_port_door_open = charge_port_door_open;
+    public void setFastChargerType(String fastChargerType){
+      this.fastChargerType = fastChargerType;
     }
 
-    public void setCharge_port_latch(String charge_port_latch){
-      this.charge_port_latch = charge_port_latch;
+    public double getIdealBatteryRange(){
+      return idealBatteryRange;
     }
 
-    public void setCharge_rate(double charge_rate){
-      this.charge_rate = charge_rate;
+    public void setIdealBatteryRange(double idealBatteryRange){
+      this.idealBatteryRange = idealBatteryRange;
     }
 
-    public void setCharge_to_max_range(boolean charge_to_max_range){
-      this.charge_to_max_range = charge_to_max_range;
+    public boolean getManagedChargingActive(){
+      return managedChargingActive;
     }
 
-    public void setCharger_actual_current(int charger_actual_current){
-      this.charger_actual_current = charger_actual_current;
+    public void setManagedChargingActive(boolean managedChargingActive){
+      this.managedChargingActive = managedChargingActive;
     }
 
-    public void setCharger_phases(String charger_phases){
-      this.charger_phases = charger_phases;
+    public String getManagedChargingStartTime(){
+      return managedChargingStartTime;
     }
 
-    public void setCharger_pilot_current(int charger_pilot_current){
-      this.charger_pilot_current = charger_pilot_current;
+    public void setManagedChargingStartTime(String managedChargingStartTime){
+      this.managedChargingStartTime = managedChargingStartTime;
     }
 
-    public void setCharger_power(int charger_power){
-      this.charger_power = charger_power;
+    public boolean getManagedChargingUserCanceled(){
+      return managedChargingUserCanceled;
     }
 
-    public void setCharger_voltage(int charger_voltage){
-      this.charger_voltage = charger_voltage;
+    public void setManagedChargingUserCanceled(boolean managedChargingUserCanceled){
+      this.managedChargingUserCanceled = managedChargingUserCanceled;
     }
 
-    public void setCharging_state(String charging_state){
-      this.charging_state = charging_state;
+    public int getMaxRangeChargerCounter(){
+      return maxRangeChargeCounter;
     }
 
-    public void setConn_charge_cable(String conn_charge_cable){
-      this.conn_charge_cable = conn_charge_cable;
+    @Nonnull
+    public Optional<Boolean> getNotEnoughPowerToHeat(){
+      return Optional.ofNullable(notEnoughPowerToHeat);
     }
 
-    public void setEst_battery_range(double est_battery_range){
-      this.est_battery_range = est_battery_range;
+    public void setNotEnoughPowerToHeat(Boolean notEnoughPowerToHeat){
+      this.notEnoughPowerToHeat = notEnoughPowerToHeat;
     }
 
-    public void setFast_charger_brand(String fast_charger_brand){
-      this.fast_charger_brand = fast_charger_brand;
+    public boolean getScheduledChargingPending(){
+      return scheduledChargingPending;
     }
 
-    public void setFast_charger_present(boolean fast_charger_present){
-      this.fast_charger_present = fast_charger_present;
+    public void setScheduledChargingPending(boolean scheduledChargingPending){
+      this.scheduledChargingPending = scheduledChargingPending;
     }
 
-    public void setMinutes_to_full_charge(long minutes_to_full_charge){
-      this.minutes_to_full_charge = minutes_to_full_charge;
+    @Nonnull
+    public Optional<String> getScheduledChargingStartTime(){
+      return Optional.ofNullable(scheduledChargingStartTime);
     }
 
-    public void setFast_charger_type(String fast_charger_type){
-      this.fast_charger_type = fast_charger_type;
+    public void setScheduledChargingStartTime(@Nullable String scheduledChargingStartTime){
+      this.scheduledChargingStartTime = scheduledChargingStartTime;
     }
 
-    public void setIdeal_battery_range(double ideal_battery_range){
-      this.ideal_battery_range = ideal_battery_range;
+    public double getTimeToFullCharge(){
+      return timeToFullCharge;
     }
 
-    public void setManaged_charging_active(boolean managed_charging_active){
-      this.managed_charging_active = managed_charging_active;
+    public void setTimeToFullCharge(double timeToFullCharge){
+      this.timeToFullCharge = timeToFullCharge;
     }
 
-    public void setManaged_charging_start_time(String managed_charging_start_time){
-      this.managed_charging_start_time = managed_charging_start_time;
+    public int getUsableBatteryLevel(){
+      return usableBatteryLevel;
     }
 
-    public void setManaged_charging_user_canceled(boolean managed_charging_user_canceled){
-      this.managed_charging_user_canceled = managed_charging_user_canceled;
+    public void setUsableBatteryLevel(int usableBatteryLevel){
+      this.usableBatteryLevel = usableBatteryLevel;
     }
 
-    public void setMax_range_charge_counter(int max_range_charge_counter){
-      this.max_range_charge_counter = max_range_charge_counter;
+    public String getUserChargeEnableRequest(){
+      return userChargeEnableRequest;
     }
 
-    public void setNot_enough_power_to_heat(Boolean not_enough_power_to_heat){
-      this.not_enough_power_to_heat = not_enough_power_to_heat;
+    public void setUserChargeEnableRequest(String userChargeEnableRequest){
+      this.userChargeEnableRequest = userChargeEnableRequest;
     }
 
-    public void setScheduled_charging_pending(boolean scheduled_charging_pending){
-      this.scheduled_charging_pending = scheduled_charging_pending;
+    public int getBatteryLevel(){
+      return batteryLevel;
     }
 
-    public void setScheduled_charging_start_time(@Nullable String scheduled_charging_start_time){
-      this.scheduled_charging_start_time = scheduled_charging_start_time;
+    public void setBatteryLevel(int batteryLevel){
+      this.batteryLevel = batteryLevel;
     }
 
-    public void setTime_to_full_charge(double time_to_full_charge){
-      this.time_to_full_charge = time_to_full_charge;
+    public boolean getBatteryHeaterOn(){
+      return batteryHeaterOn;
     }
 
-    public void setUsable_battery_level(int usable_battery_level){
-      this.usable_battery_level = usable_battery_level;
+    public void setBatteryHeaterOn(boolean batteryHeaterOn){
+      this.batteryHeaterOn = batteryHeaterOn;
     }
 
-    public void setUser_charge_enable_request(String user_charge_enable_request){
-      this.user_charge_enable_request = user_charge_enable_request;
+    public void setChargerPilotCurrent(int chargerPilotCurrent){
+      this.chargerPilotCurrent = chargerPilotCurrent;
     }
 
-    public void setTrip_charging(boolean trip_charging){
-      this.trip_charging = trip_charging;
+    public void setMaxRangeChargeCounter(int maxRangeChargeCounter){
+      this.maxRangeChargeCounter = maxRangeChargeCounter;
+    }
+
+    public com.ansill.tesla.api.data.model.ChargeState convert(){
+      return new com.ansill.tesla.api.data.model.ChargeState(
+        batteryHeaterOn,
+        batteryLevel,
+        batteryRange,
+        chargeCurrentRequest,
+        chargeCurrentRequestMax,
+        chargeEnableRequest,
+        chargeEnergyAdded,
+        chargeLimitSoc,
+        chargeLimitSocMax,
+        chargeLimitSocMin,
+        chargeLimitSocStd,
+        chargeMilesAddedIdeal,
+        chargeMilesAddedRated,
+        chargePortColdWeatherMode,
+        chargePortDoorOpen,
+        chargePortLatch,
+        chargeRate,
+        chargeToMaxRange,
+        chargerActualCurrent,
+        chargerActualCurrent,
+        chargerPilotCurrent,
+        chargerPower,
+        chargerVoltage,
+        chargingState,
+        connChargeCable,
+        estBatteryRange,
+        fastChargerBrand,
+        fastChargerPresent,
+        fastChargerType,
+        idealBatteryRange,
+        managedChargingActive,
+        managedChargingStartTime,
+        managedChargingUserCanceled,
+        maxRangeChargeCounter,
+        minutesToFullCharge,
+        notEnoughPowerToHeat,
+        scheduledChargingPending,
+        scheduledChargingStartTime,
+        timeToFullCharge,
+        timestamp,
+        true,
+        usableBatteryLevel,
+        userChargeEnableRequest
+      );
     }
   }
 
   public static class GUISettings{
 
-    private boolean gui_24_hour_time;
+    private boolean gui24HourTime;
 
-    private String gui_charge_rate_units;
+    private String guiChargeRateUnits;
 
-    private String gui_distance_units;
+    private String guiDistanceUnits;
 
-    private String gui_range_display;
+    private String guiRangeDisplay;
 
-    private String gui_temperature_units;
+    private String guiTemperatureUnits;
 
     private long timestamp;
 
-    private boolean show_range_units;
+    private boolean showRangeUnits;
 
     public GUISettings(
-      boolean gui_24_hour_time,
-      String gui_charge_rate_units,
-      String gui_distance_units,
-      String gui_range_display,
-      String gui_temperature_units,
+      boolean gui24HourTime,
+      String guiChargeRateUnits,
+      String guiDistanceUnits,
+      String guiRangeDisplay,
+      String guiTemperatureUnits,
       long timestamp,
-      boolean show_range_units
+      boolean showRangeUnits
     ){
-      this.gui_24_hour_time = gui_24_hour_time;
-      this.gui_charge_rate_units = gui_charge_rate_units;
-      this.gui_distance_units = gui_distance_units;
-      this.gui_range_display = gui_range_display;
-      this.gui_temperature_units = gui_temperature_units;
+      this.gui24HourTime = gui24HourTime;
+      this.guiChargeRateUnits = guiChargeRateUnits;
+      this.guiDistanceUnits = guiDistanceUnits;
+      this.guiRangeDisplay = guiRangeDisplay;
+      this.guiTemperatureUnits = guiTemperatureUnits;
       this.timestamp = timestamp;
-      this.show_range_units = show_range_units;
+      this.showRangeUnits = showRangeUnits;
     }
 
     public static GUISettings generate(){
@@ -1574,27 +1714,27 @@ public class MockVehicle{
     }
 
     public boolean isShowRangeUnits(){
-      return show_range_units;
+      return showRangeUnits;
+    }
+
+    public void setShowRangeUnits(boolean showRangeUnits){
+      this.showRangeUnits = showRangeUnits;
     }
 
     public boolean getGui24HourTime(){
-      return gui_24_hour_time;
+      return gui24HourTime;
+    }
+
+    public void setGui24HourTime(boolean gui24HourTime){
+      this.gui24HourTime = gui24HourTime;
     }
 
     public String getGuiChargeRateUnits(){
-      return gui_charge_rate_units;
+      return guiChargeRateUnits;
     }
 
-    public String getGuiDistanceUnits(){
-      return gui_distance_units;
-    }
-
-    public String getGuiRangeDisplay(){
-      return gui_range_display;
-    }
-
-    public String getGuiTemperatureUnits(){
-      return gui_temperature_units;
+    public void setGuiChargeRateUnits(String guiChargeRateUnits){
+      this.guiChargeRateUnits = guiChargeRateUnits;
     }
 
     public long getTimestamp(){
@@ -1610,44 +1750,56 @@ public class MockVehicle{
       return simpleToString(this);
     }
 
-    public void setGui_24_hour_time(boolean gui_24_hour_time){
-      this.gui_24_hour_time = gui_24_hour_time;
+    public String getGuiDistanceUnits(){
+      return guiDistanceUnits;
     }
 
-    public void setGui_charge_rate_units(String gui_charge_rate_units){
-      this.gui_charge_rate_units = gui_charge_rate_units;
+    public void setGuiDistanceUnits(String guiDistanceUnits){
+      this.guiDistanceUnits = guiDistanceUnits;
     }
 
-    public void setGui_distance_units(String gui_distance_units){
-      this.gui_distance_units = gui_distance_units;
+    public String getGuiRangeDisplay(){
+      return guiRangeDisplay;
     }
 
-    public void setGui_range_display(String gui_range_display){
-      this.gui_range_display = gui_range_display;
+    public void setGuiRangeDisplay(String guiRangeDisplay){
+      this.guiRangeDisplay = guiRangeDisplay;
     }
 
-    public void setGui_temperature_units(String gui_temperature_units){
-      this.gui_temperature_units = gui_temperature_units;
+    public String getGuiTemperatureUnits(){
+      return guiTemperatureUnits;
     }
 
-    public void setShow_range_units(boolean show_range_units){
-      this.show_range_units = show_range_units;
+    public void setGuiTemperatureUnits(String guiTemperatureUnits){
+      this.guiTemperatureUnits = guiTemperatureUnits;
+    }
+
+    public GuiSettings convert(){
+      return new GuiSettings(
+        gui24HourTime,
+        guiChargeRateUnits,
+        guiDistanceUnits,
+        guiRangeDisplay,
+        guiTemperatureUnits,
+        showRangeUnits,
+        timestamp
+      );
     }
   }
 
   public static class VehicleState{
 
-    private int api_version;
+    private int apiVersion;
 
-    private String autopark_state_v2;
+    private String autoparkStateV2;
 
-    private String autopark_style;
+    private String autoparkStyle;
 
-    private boolean calendar_supported;
+    private boolean calendarSupported;
 
-    private String car_version;
+    private String carVersion;
 
-    private int center_display_state;
+    private int centerDisplayState;
 
     private int df;
 
@@ -1656,148 +1808,148 @@ public class MockVehicle{
     private int ft;
 
     @Nullable
-    private Boolean homelink_nearby; // Could disappear from json
+    private Boolean homelinkNearby; // Could disappear from json
 
     @Nullable
-    private Integer homelink_device_count; // Could disappear from json
+    private Integer homelinkDeviceCount; // Could disappear from json
 
     @Nullable
-    private Integer sun_roof_percent_open;  // Could disappear from json
+    private Integer sunRoofPercentOpen;  // Could disappear from json
 
-    private boolean is_user_present;
+    private boolean isUserPresent;
 
-    private String last_autopark_error;
+    private String lastAutoparkError;
 
     private boolean locked;
 
-    private MediaState media_state;
+    private MediaState mediaState;
 
-    private boolean notifications_supported;
+    private boolean notificationsSupported;
 
     private double odometer;
 
-    private boolean parsed_calendar_supported;
+    private boolean parsedCalendarSupported;
 
     private int pf;
 
     private int pr;
 
-    private boolean remote_start;
+    private boolean remoteStart;
 
-    private boolean remote_start_enabled;
+    private boolean remoteStartEnabled;
 
-    private boolean remote_start_supported;
+    private boolean remoteStartSupported;
 
     private int rt;
 
-    private boolean sentry_mode;
+    private boolean sentryMode;
 
-    private SoftwareUpdate software_update;
+    private SoftwareUpdate softwareUpdate;
 
-    private SpeedLimitMode speed_limit_mode;
+    private SpeedLimitMode speedLimitMode;
 
-    private String autopark_state_v3;
+    private String autoparkStateV3;
 
-    private int fd_window;
+    private int fdWindow;
 
-    private int fp_window;
+    private int fpWindow;
 
-    private int rd_window;
+    private int rdWindow;
 
-    private int rp_window;
+    private int rpWindow;
 
-    private boolean sentry_mode_available;
+    private boolean sentryModeAvailable;
 
-    private String sun_roof_state;
+    private String sunRoofState;
 
     private long timestamp;
 
-    private boolean valet_mode;
+    private boolean valetMode;
 
-    private boolean valet_pin_needed;
+    private boolean valetPinNeeded;
 
-    private String vehicle_name;
+    private String vehicleName;
 
     public VehicleState(
-      int api_version,
-      String autopark_state_v2,
-      String autopark_style,
-      boolean calendar_supported,
-      String car_version,
-      int center_display_state,
+      int apiVersion,
+      String autoparkStateV2,
+      String autoparkStyle,
+      boolean calendarSupported,
+      String carVersion,
+      int centerDisplayState,
       int df,
       int dr,
       int ft,
-      @Nullable Boolean homelink_nearby,
-      @Nullable Integer homelink_device_count,
-      boolean is_user_present,
-      String last_autopark_error,
+      @Nullable Boolean homelinkNearby,
+      @Nullable Integer homelinkDeviceCount,
+      boolean isUserPresent,
+      String lastAutoparkError,
       boolean locked,
-      MediaState media_state,
-      boolean notifications_supported,
+      MediaState mediaState,
+      boolean notificationsSupported,
       double odometer,
-      boolean parsed_calendar_supported,
+      boolean parsedCalendarSupported,
       int pf,
       int pr,
-      boolean remote_start,
-      boolean remote_start_enabled,
-      boolean remote_start_supported,
+      boolean remoteStart,
+      boolean remoteStartEnabled,
+      boolean remoteStartSupported,
       int rt,
-      boolean sentry_mode,
-      SoftwareUpdate software_update,
-      SpeedLimitMode speed_limit_mode,
-      @Nullable Integer sun_roof_percent_open,
-      String autopark_state_v3,
-      int fd_window,
-      int fp_window,
-      int rd_window,
-      int rp_window,
-      boolean sentry_mode_available,
-      String sun_roof_state,
+      boolean sentryMode,
+      SoftwareUpdate softwareUpdate,
+      SpeedLimitMode speedLimitMode,
+      @Nullable Integer sunRoofPercentOpen,
+      String autoparkStateV3,
+      int fdWindow,
+      int fpWindow,
+      int rdWindow,
+      int rpWindow,
+      boolean sentryModeAvailable,
+      String sunRoofState,
       long timestamp,
-      boolean valet_mode,
-      boolean valet_pin_needed,
-      String vehicle_name
+      boolean valetMode,
+      boolean valetPinNeeded,
+      String vehicleName
     ){
-      this.api_version = api_version;
-      this.autopark_state_v2 = autopark_state_v2;
-      this.autopark_style = autopark_style;
-      this.calendar_supported = calendar_supported;
-      this.car_version = car_version;
-      this.center_display_state = center_display_state;
+      this.apiVersion = apiVersion;
+      this.autoparkStateV2 = autoparkStateV2;
+      this.autoparkStyle = autoparkStyle;
+      this.calendarSupported = calendarSupported;
+      this.carVersion = carVersion;
+      this.centerDisplayState = centerDisplayState;
       this.df = df;
       this.dr = dr;
       this.ft = ft;
-      this.homelink_nearby = homelink_nearby;
-      this.homelink_device_count = homelink_device_count;
-      this.is_user_present = is_user_present;
-      this.last_autopark_error = last_autopark_error;
+      this.homelinkNearby = homelinkNearby;
+      this.homelinkDeviceCount = homelinkDeviceCount;
+      this.isUserPresent = isUserPresent;
+      this.lastAutoparkError = lastAutoparkError;
       this.locked = locked;
-      this.media_state = media_state;
-      this.notifications_supported = notifications_supported;
+      this.mediaState = mediaState;
+      this.notificationsSupported = notificationsSupported;
       this.odometer = odometer;
-      this.parsed_calendar_supported = parsed_calendar_supported;
+      this.parsedCalendarSupported = parsedCalendarSupported;
       this.pf = pf;
       this.pr = pr;
-      this.remote_start = remote_start;
-      this.remote_start_enabled = remote_start_enabled;
-      this.remote_start_supported = remote_start_supported;
+      this.remoteStart = remoteStart;
+      this.remoteStartEnabled = remoteStartEnabled;
+      this.remoteStartSupported = remoteStartSupported;
       this.rt = rt;
-      this.sentry_mode = sentry_mode;
-      this.software_update = software_update;
-      this.speed_limit_mode = speed_limit_mode;
-      this.sun_roof_percent_open = sun_roof_percent_open;
-      this.autopark_state_v3 = autopark_state_v3;
-      this.fd_window = fd_window;
-      this.fp_window = fp_window;
-      this.rd_window = rd_window;
-      this.rp_window = rp_window;
-      this.sentry_mode_available = sentry_mode_available;
-      this.sun_roof_state = sun_roof_state;
+      this.sentryMode = sentryMode;
+      this.softwareUpdate = softwareUpdate;
+      this.speedLimitMode = speedLimitMode;
+      this.sunRoofPercentOpen = sunRoofPercentOpen;
+      this.autoparkStateV3 = autoparkStateV3;
+      this.fdWindow = fdWindow;
+      this.fpWindow = fpWindow;
+      this.rdWindow = rdWindow;
+      this.rpWindow = rpWindow;
+      this.sentryModeAvailable = sentryModeAvailable;
+      this.sunRoofState = sunRoofState;
       this.timestamp = timestamp;
-      this.valet_mode = valet_mode;
-      this.valet_pin_needed = valet_pin_needed;
-      this.vehicle_name = vehicle_name;
+      this.valetMode = valetMode;
+      this.valetPinNeeded = valetPinNeeded;
+      this.vehicleName = vehicleName;
     }
 
     public static VehicleState generate(){
@@ -1846,64 +1998,64 @@ public class MockVehicle{
     }
 
     public String getAutoparkStateV3(){
-      return autopark_state_v3;
+      return autoparkStateV3;
+    }
+
+    public void setAutoparkStateV3(String autoparkStateV3){
+      this.autoparkStateV3 = autoparkStateV3;
     }
 
     public int getFdWindow(){
-      return fd_window;
+      return fdWindow;
+    }
+
+    public void setFdWindow(int fdWindow){
+      this.fdWindow = fdWindow;
     }
 
     public int getFpWindow(){
-      return fp_window;
+      return fpWindow;
+    }
+
+    public void setFpWindow(int fpWindow){
+      this.fpWindow = fpWindow;
     }
 
     public int getRdWindow(){
-      return rd_window;
+      return rdWindow;
+    }
+
+    public void setRdWindow(int rdWindow){
+      this.rdWindow = rdWindow;
     }
 
     public int getRpWindow(){
-      return rp_window;
+      return rpWindow;
+    }
+
+    public void setRpWindow(int rpWindow){
+      this.rpWindow = rpWindow;
     }
 
     public boolean isSentryModeAvailable(){
-      return sentry_mode_available;
+      return sentryModeAvailable;
+    }
+
+    public void setSentryModeAvailable(boolean sentryModeAvailable){
+      this.sentryModeAvailable = sentryModeAvailable;
     }
 
     @Nonnull
     public Optional<Integer> getHomelinkDeviceCount(){
-      return Optional.ofNullable(homelink_device_count);
+      return Optional.ofNullable(homelinkDeviceCount);
+    }
+
+    public void setHomelinkDeviceCount(@Nullable Integer homelinkDeviceCount){
+      this.homelinkDeviceCount = homelinkDeviceCount;
     }
 
     public int getApiVersion(){
-      return api_version;
-    }
-
-    public void setApiVersion(int api_version){
-      this.api_version = api_version;
-    }
-
-    public String getAutoparkStateV2(){
-      return autopark_state_v2;
-    }
-
-    public String getAutoparkStyle(){
-      return autopark_style;
-    }
-
-    public boolean getCalendarSupported(){
-      return calendar_supported;
-    }
-
-    public String getCarVersion(){
-      return car_version;
-    }
-
-    public void setCarVersion(String car_version){
-      this.car_version = car_version;
-    }
-
-    public int getCenterDisplayState(){
-      return center_display_state;
+      return apiVersion;
     }
 
     public int getDf(){
@@ -1930,17 +2082,16 @@ public class MockVehicle{
       this.ft = ft;
     }
 
-    @Nonnull
-    public Optional<Boolean> getHomelinkNearby(){
-      return Optional.ofNullable(homelink_nearby);
+    public void setApiVersion(int apiVersion){
+      this.apiVersion = apiVersion;
     }
 
-    public boolean getIsUserPresent(){
-      return is_user_present;
+    public String getAutoparkStateV2(){
+      return autoparkStateV2;
     }
 
-    public String getLastAutoparkError(){
-      return last_autopark_error;
+    public void setAutoparkStateV2(String autoparkStateV2){
+      this.autoparkStateV2 = autoparkStateV2;
     }
 
     public boolean getLocked(){
@@ -1951,12 +2102,12 @@ public class MockVehicle{
       this.locked = locked;
     }
 
-    public MediaState getMediaState(){
-      return media_state;
+    public String getAutoparkStyle(){
+      return autoparkStyle;
     }
 
-    public boolean getNotificationsSupported(){
-      return notifications_supported;
+    public void setAutoparkStyle(String autoparkStyle){
+      this.autoparkStyle = autoparkStyle;
     }
 
     public double getOdometer(){
@@ -1967,8 +2118,8 @@ public class MockVehicle{
       this.odometer = odometer;
     }
 
-    public boolean getParsed_calendarSupported(){
-      return parsed_calendar_supported;
+    public boolean getCalendarSupported(){
+      return calendarSupported;
     }
 
     public int getPf(){
@@ -1987,16 +2138,16 @@ public class MockVehicle{
       this.pr = pr;
     }
 
-    public boolean getRemoteStart(){
-      return remote_start;
+    public void setCalendarSupported(boolean calendarSupported){
+      this.calendarSupported = calendarSupported;
     }
 
-    public boolean getRemoteStartEnabled(){
-      return remote_start_enabled;
+    public String getCarVersion(){
+      return carVersion;
     }
 
-    public boolean getRemoteStartSupported(){
-      return remote_start_supported;
+    public void setCarVersion(String carVersion){
+      this.carVersion = carVersion;
     }
 
     public int getRt(){
@@ -2007,25 +2158,25 @@ public class MockVehicle{
       this.rt = rt;
     }
 
-    public boolean getSentryMode(){
-      return sentry_mode;
+    public int getCenterDisplayState(){
+      return centerDisplayState;
     }
 
-    public SoftwareUpdate getSoftwareUpdate(){
-      return software_update;
-    }
-
-    public SpeedLimitMode getSpeedLimitMode(){
-      return speed_limit_mode;
+    public void setCenterDisplayState(int centerDisplayState){
+      this.centerDisplayState = centerDisplayState;
     }
 
     @Nonnull
-    public Optional<Integer> getSunRoofPercentOpen(){
-      return Optional.ofNullable(sun_roof_percent_open);
+    public Optional<Boolean> getHomelinkNearby(){
+      return Optional.ofNullable(homelinkNearby);
     }
 
-    public String getSunRoofState(){
-      return sun_roof_state;
+    public void setHomelinkNearby(@Nullable Boolean homelinkNearby){
+      this.homelinkNearby = homelinkNearby;
+    }
+
+    public boolean getIsUserPresent(){
+      return isUserPresent;
     }
 
     public long getTimestamp(){
@@ -2036,20 +2187,20 @@ public class MockVehicle{
       this.timestamp = timestamp;
     }
 
-    public boolean getValetMode(){
-      return valet_mode;
+    public void setIsUserPresent(boolean isUserPresent){
+      this.isUserPresent = isUserPresent;
     }
 
-    public boolean getValetPinNeeded(){
-      return valet_pin_needed;
+    public String getLastAutoparkError(){
+      return lastAutoparkError;
     }
 
-    public String getVehicleName(){
-      return vehicle_name;
+    public void setLastAutoparkError(String lastAutoparkError){
+      this.lastAutoparkError = lastAutoparkError;
     }
 
-    public void setVehicleName(String vehicle_name){
-      this.vehicle_name = vehicle_name;
+    public MediaState getMediaState(){
+      return mediaState;
     }
 
     @Override
@@ -2057,120 +2208,158 @@ public class MockVehicle{
       return simpleToString(this);
     }
 
-    public void setAutopark_state_v2(String autopark_state_v2){
-      this.autopark_state_v2 = autopark_state_v2;
+    public void setMediaState(MediaState mediaState){
+      this.mediaState = mediaState;
     }
 
-    public void setAutopark_style(String autopark_style){
-      this.autopark_style = autopark_style;
+    public boolean getNotificationsSupported(){
+      return notificationsSupported;
     }
 
-    public void setCalendar_supported(boolean calendar_supported){
-      this.calendar_supported = calendar_supported;
+    public void setNotificationsSupported(boolean notificationsSupported){
+      this.notificationsSupported = notificationsSupported;
     }
 
-    public void setCenter_display_state(int center_display_state){
-      this.center_display_state = center_display_state;
+    public boolean getParsedCalendarSupported(){
+      return parsedCalendarSupported;
     }
 
-    public void setHomelink_nearby(@Nullable Boolean homelink_nearby){
-      this.homelink_nearby = homelink_nearby;
+    public void setParsedCalendarSupported(boolean parsedCalendarSupported){
+      this.parsedCalendarSupported = parsedCalendarSupported;
     }
 
-    public void setHomelink_device_count(@Nullable Integer homelink_device_count){
-      this.homelink_device_count = homelink_device_count;
+    public boolean getRemoteStart(){
+      return remoteStart;
     }
 
-    public void setSun_roof_percent_open(@Nullable Integer sun_roof_percent_open){
-      this.sun_roof_percent_open = sun_roof_percent_open;
+    public void setRemoteStart(boolean remoteStart){
+      this.remoteStart = remoteStart;
     }
 
-    public void setIs_user_present(boolean is_user_present){
-      this.is_user_present = is_user_present;
+    public boolean getRemoteStartEnabled(){
+      return remoteStartEnabled;
     }
 
-    public void setLast_autopark_error(String last_autopark_error){
-      this.last_autopark_error = last_autopark_error;
+    public void setRemoteStartEnabled(boolean remoteStartEnabled){
+      this.remoteStartEnabled = remoteStartEnabled;
     }
 
-    public void setMedia_state(MediaState media_state){
-      this.media_state = media_state;
+    public boolean getRemoteStartSupported(){
+      return remoteStartSupported;
     }
 
-    public void setNotifications_supported(boolean notifications_supported){
-      this.notifications_supported = notifications_supported;
+    public void setRemoteStartSupported(boolean remoteStartSupported){
+      this.remoteStartSupported = remoteStartSupported;
     }
 
-    public void setParsed_calendar_supported(boolean parsed_calendar_supported){
-      this.parsed_calendar_supported = parsed_calendar_supported;
+    public boolean getSentryMode(){
+      return sentryMode;
     }
 
-    public void setRemote_start(boolean remote_start){
-      this.remote_start = remote_start;
+    public void setSentryMode(boolean sentryMode){
+      this.sentryMode = sentryMode;
     }
 
-    public void setRemote_startEnabled(boolean remote_start_enabled){
-      this.remote_start_enabled = remote_start_enabled;
+    public SoftwareUpdate getSoftwareUpdate(){
+      return softwareUpdate;
     }
 
-    public void setRemote_start_supported(boolean remote_start_supported){
-      this.remote_start_supported = remote_start_supported;
+    public void setSoftwareUpdate(SoftwareUpdate softwareUpdate){
+      this.softwareUpdate = softwareUpdate;
     }
 
-    public void setSentry_mode(boolean sentry_mode){
-      this.sentry_mode = sentry_mode;
+    public SpeedLimitMode getSpeedLimitMode(){
+      return speedLimitMode;
     }
 
-    public void setSoftware_update(SoftwareUpdate software_update){
-      this.software_update = software_update;
+    public void setSpeedLimitMode(SpeedLimitMode speedLimitMode){
+      this.speedLimitMode = speedLimitMode;
     }
 
-    public void setSpeed_limit_mode(SpeedLimitMode speed_limit_mode){
-      this.speed_limit_mode = speed_limit_mode;
+    @Nonnull
+    public Optional<Integer> getSunRoofPercentOpen(){
+      return Optional.ofNullable(sunRoofPercentOpen);
     }
 
-    public void setAutopark_state_v3(String autopark_state_v3){
-      this.autopark_state_v3 = autopark_state_v3;
+    public void setSunRoofPercentOpen(@Nullable Integer sunRoofPercentOpen){
+      this.sunRoofPercentOpen = sunRoofPercentOpen;
     }
 
-    public void setFd_window(int fd_window){
-      this.fd_window = fd_window;
+    public String getSunRoofState(){
+      return sunRoofState;
     }
 
-    public void setFp_window(int fp_window){
-      this.fp_window = fp_window;
+    public void setSunRoofState(String sunRoofState){
+      this.sunRoofState = sunRoofState;
     }
 
-    public void setRd_window(int rd_window){
-      this.rd_window = rd_window;
+    public boolean getValetMode(){
+      return valetMode;
     }
 
-    public void setRp_window(int rp_window){
-      this.rp_window = rp_window;
+    public void setValetMode(boolean valetMode){
+      this.valetMode = valetMode;
     }
 
-    public void setSentry_mode_available(boolean sentry_mode_available){
-      this.sentry_mode_available = sentry_mode_available;
+    public boolean getValetPinNeeded(){
+      return valetPinNeeded;
     }
 
-    public void setSun_roof_state(String sun_roof_state){
-      this.sun_roof_state = sun_roof_state;
+    public void setValetPinNeeded(boolean valetPinNeeded){
+      this.valetPinNeeded = valetPinNeeded;
     }
 
-    public void setValet_mode(boolean valet_mode){
-      this.valet_mode = valet_mode;
+    public String getVehicleName(){
+      return vehicleName;
     }
 
-    public void setValet_pin_needed(boolean valet_pin_needed){
-      this.valet_pin_needed = valet_pin_needed;
+    public void setVehicleName(String vehicleName){
+      this.vehicleName = vehicleName;
+    }
+
+    public com.ansill.tesla.api.data.model.VehicleState convert(){
+      return new com.ansill.tesla.api.data.model.VehicleState(
+        apiVersion,
+        autoparkStateV3,
+        calendarSupported,
+        carVersion,
+        centerDisplayState,
+        df,
+        dr,
+        fdWindow,
+        fpWindow,
+        ft,
+        isUserPresent,
+        locked,
+        mediaState.convert(),
+        notificationsSupported,
+        odometer,
+        parsedCalendarSupported,
+        pf,
+        pr,
+        rdWindow,
+        remoteStart,
+        remoteStartEnabled,
+        remoteStartSupported,
+        rpWindow,
+        rt,
+        sentryMode,
+        sentryModeAvailable,
+        softwareUpdate.convert(),
+        speedLimitMode.convert(),
+        timestamp,
+        valetMode,
+        valetPinNeeded,
+        vehicleName
+      );
     }
 
     public static class MediaState{
 
-      private boolean remote_control_enabled;
+      private boolean remoteControlEnabled;
 
-      public MediaState(boolean remote_control_enabled){
-        this.remote_control_enabled = remote_control_enabled;
+      public MediaState(boolean remoteControlEnabled){
+        this.remoteControlEnabled = remoteControlEnabled;
       }
 
       public static MediaState generate(){
@@ -2178,37 +2367,41 @@ public class MockVehicle{
       }
 
       public boolean isRemoteControlEnabled(){
-        return remote_control_enabled;
+        return remoteControlEnabled;
       }
 
-      public void setRemote_control_enabled(boolean remote_control_enabled){
-        this.remote_control_enabled = remote_control_enabled;
+      public void setRemoteControlEnabled(boolean remoteControlEnabled){
+        this.remoteControlEnabled = remoteControlEnabled;
+      }
+
+      public com.ansill.tesla.api.data.model.MediaState convert(){
+        return new com.ansill.tesla.api.data.model.MediaState(remoteControlEnabled);
       }
     }
 
     public static class SoftwareUpdate{
 
-      private int download_perc;
+      private int downloadPerc;
 
-      private int install_perc;
+      private int installPerc;
 
       private String version;
 
-      private long expected_duration_sec;
+      private long expectedDurationSec;
 
       private String status;
 
       private SoftwareUpdate(
-        int download_perc,
-        int install_perc,
+        int downloadPerc,
+        int installPerc,
         String version,
-        long expected_duration_sec,
+        long expectedDurationSec,
         String status
       ){
-        this.download_perc = download_perc;
-        this.install_perc = install_perc;
+        this.downloadPerc = downloadPerc;
+        this.installPerc = installPerc;
         this.version = version;
-        this.expected_duration_sec = expected_duration_sec;
+        this.expectedDurationSec = expectedDurationSec;
         this.status = status;
       }
 
@@ -2224,11 +2417,11 @@ public class MockVehicle{
       }
 
       public int getDownloadPercent(){
-        return download_perc;
+        return downloadPerc;
       }
 
       public int getInstallPercent(){
-        return install_perc;
+        return installPerc;
       }
 
       public String getVersion(){
@@ -2240,7 +2433,7 @@ public class MockVehicle{
       }
 
       public long getExpectedDurationSec(){
-        return expected_duration_sec;
+        return expectedDurationSec;
       }
 
       public String getStatus(){
@@ -2251,16 +2444,26 @@ public class MockVehicle{
         this.status = status;
       }
 
-      public void setDownload_perc(int download_perc){
-        this.download_perc = download_perc;
+      public void setExpectedDurationSec(long expectedDurationSec){
+        this.expectedDurationSec = expectedDurationSec;
       }
 
-      public void setInstall_perc(int install_perc){
-        this.install_perc = install_perc;
+      public void setDownloadPerc(int downloadPerc){
+        this.downloadPerc = downloadPerc;
       }
 
-      public void setExpected_duration_sec(long expected_duration_sec){
-        this.expected_duration_sec = expected_duration_sec;
+      public void setInstallPerc(int installPerc){
+        this.installPerc = installPerc;
+      }
+
+      public com.ansill.tesla.api.data.model.SoftwareUpdate convert(){
+        return new com.ansill.tesla.api.data.model.SoftwareUpdate(
+          downloadPerc,
+          expectedDurationSec,
+          installPerc,
+          status,
+          version
+        );
       }
     }
 
@@ -2268,26 +2471,26 @@ public class MockVehicle{
 
       private boolean active;
 
-      private double current_limit_mph;
+      private double currentLimitMph;
 
-      private int max_limit_mph;
+      private int maxLimitMph;
 
-      private int min_limit_mph;
+      private int minLimitMph;
 
-      private boolean pin_code_set;
+      private boolean pinCodeSet;
 
       public SpeedLimitMode(
         boolean active,
-        double current_limit_mph,
-        int max_limit_mph,
-        int min_limit_mph,
-        boolean pin_code_set
+        double currentLimitMph,
+        int maxLimitMph,
+        int minLimitMph,
+        boolean pinCodeSet
       ){
         this.active = active;
-        this.current_limit_mph = current_limit_mph;
-        this.max_limit_mph = max_limit_mph;
-        this.min_limit_mph = min_limit_mph;
-        this.pin_code_set = pin_code_set;
+        this.currentLimitMph = currentLimitMph;
+        this.maxLimitMph = maxLimitMph;
+        this.minLimitMph = minLimitMph;
+        this.pinCodeSet = pinCodeSet;
       }
 
       public static SpeedLimitMode generate(){
@@ -2310,143 +2513,155 @@ public class MockVehicle{
       }
 
       public double getCurrentLimitMph(){
-        return current_limit_mph;
+        return currentLimitMph;
+      }
+
+      public void setCurrentLimitMph(double currentLimitMph){
+        this.currentLimitMph = currentLimitMph;
       }
 
       public int getMaxLimitMph(){
-        return max_limit_mph;
+        return maxLimitMph;
+      }
+
+      public void setMaxLimitMph(int maxLimitMph){
+        this.maxLimitMph = maxLimitMph;
       }
 
       public int getMinLimitMph(){
-        return min_limit_mph;
+        return minLimitMph;
+      }
+
+      public void setMinLimitMph(int minLimitMph){
+        this.minLimitMph = minLimitMph;
       }
 
       public boolean getPinCodeSet(){
-        return pin_code_set;
+        return pinCodeSet;
       }
 
-      public void setCurrent_limit_mph(double current_limit_mph){
-        this.current_limit_mph = current_limit_mph;
+      public void setPinCodeSet(boolean pinCodeSet){
+        this.pinCodeSet = pinCodeSet;
       }
 
-      public void setMax_limit_mph(int max_limit_mph){
-        this.max_limit_mph = max_limit_mph;
-      }
-
-      public void setMin_limit_mph(int min_limit_mph){
-        this.min_limit_mph = min_limit_mph;
-      }
-
-      public void setPin_code_set(boolean pin_code_set){
-        this.pin_code_set = pin_code_set;
+      public com.ansill.tesla.api.data.model.SpeedLimitMode convert(){
+        return new com.ansill.tesla.api.data.model.SpeedLimitMode(
+          active,
+          currentLimitMph,
+          maxLimitMph,
+          minLimitMph,
+          pinCodeSet
+        );
       }
     }
   }
 
   public static class VehicleConfig{
 
-    private boolean can_accept_navigation_requests;
+    private boolean canAcceptNavigationRequests;
 
-    private boolean can_actuate_trunks;
+    private boolean canActuateTrunks;
 
-    private String car_special_type;
+    private String carSpecialType;
 
-    private String car_type;
+    private String carType;
 
-    private String charge_port_type;
+    private String chargePortType;
 
-    private boolean eu_vehicle;
+    private boolean euVehicle;
 
-    private String exterior_color;
+    private String exteriorColor;
 
-    private boolean has_air_suspension;
+    private boolean hasAirSuspension;
 
-    private boolean has_ludicrous_mode;
+    private boolean hasLudicrousMode;
 
-    private int key_version;
+    private int keyVersion;
 
-    private boolean motorized_charge_port;
+    private boolean motorizedChargePort;
 
-    private String perf_config;
+    private String perfConfig;
 
     private boolean plg;
 
-    private int rear_seat_heaters;
+    private int rearSeatHeaters;
 
-    private int rear_seat_type;
+    private String rearSeatType;
 
     private boolean rhd;
 
-    private String roof_color;
+    private String roofColor;
 
-    private int seat_type;
+    private String seatType;
 
-    private String spoiler_type;
+    private String spoilerType;
 
-    private int sun_roof_installed;
+    private String sunRoofInstalled;
 
-    private String third_row_seats;
+    private String thirdRowSeats;
 
     private long timestamp;
 
-    private String trim_badging;
+    private String trimBadging;
 
-    private String wheel_type;
+    private String wheelType;
 
-    private boolean use_range_badging;
+    private boolean useRangeBadging;
+
+    private boolean eceRestrictions;
 
     public VehicleConfig(
-      boolean can_accept_navigation_requests,
-      boolean can_actuate_trunks,
-      String car_special_type,
-      String car_type,
-      String charge_port_type,
-      boolean eu_vehicle,
-      String exterior_color,
-      boolean has_air_suspension,
-      boolean has_ludicrous_mode,
-      int key_version,
-      boolean motorized_charge_port,
-      String perf_config,
+      boolean canAcceptNavigationRequests,
+      boolean canActuateTrunks,
+      String carSpecialType,
+      String carType,
+      String chargePortType,
+      boolean euVehicle,
+      String exteriorColor,
+      boolean hasAirSuspension,
+      boolean hasLudicrousMode,
+      int keyVersion,
+      boolean motorizedChargePort,
+      String perfConfig,
       boolean plg,
-      int rear_seat_heaters,
-      int rear_seat_type,
+      int rearSeatHeaters,
+      String rearSeatType,
       boolean rhd,
-      String roof_color,
-      int seat_type,
-      String spoiler_type,
-      int sun_roof_installed,
-      String third_row_seats,
+      String roofColor,
+      String seatType,
+      String spoilerType,
+      String sunRoofInstalled,
+      String thirdRowSeats,
       long timestamp,
-      String trim_badging,
-      String wheel_type,
-      boolean use_range_badging
+      String trimBadging,
+      String wheelType,
+      boolean useRangeBadging
     ){
-      this.can_accept_navigation_requests = can_accept_navigation_requests;
-      this.can_actuate_trunks = can_actuate_trunks;
-      this.car_special_type = car_special_type;
-      this.car_type = car_type;
-      this.charge_port_type = charge_port_type;
-      this.eu_vehicle = eu_vehicle;
-      this.exterior_color = exterior_color;
-      this.has_air_suspension = has_air_suspension;
-      this.has_ludicrous_mode = has_ludicrous_mode;
-      this.key_version = key_version;
-      this.motorized_charge_port = motorized_charge_port;
-      this.perf_config = perf_config;
+      this.canAcceptNavigationRequests = canAcceptNavigationRequests;
+      this.canActuateTrunks = canActuateTrunks;
+      this.carSpecialType = carSpecialType;
+      this.carType = carType;
+      this.chargePortType = chargePortType;
+      this.euVehicle = euVehicle;
+      this.exteriorColor = exteriorColor;
+      this.hasAirSuspension = hasAirSuspension;
+      this.hasLudicrousMode = hasLudicrousMode;
+      this.keyVersion = keyVersion;
+      this.motorizedChargePort = motorizedChargePort;
+      this.perfConfig = perfConfig;
       this.plg = plg;
-      this.rear_seat_heaters = rear_seat_heaters;
-      this.rear_seat_type = rear_seat_type;
+      this.rearSeatHeaters = rearSeatHeaters;
+      this.rearSeatType = rearSeatType;
       this.rhd = rhd;
-      this.roof_color = roof_color;
-      this.seat_type = seat_type;
-      this.spoiler_type = spoiler_type;
-      this.sun_roof_installed = sun_roof_installed;
-      this.third_row_seats = third_row_seats;
+      this.roofColor = roofColor;
+      this.seatType = seatType;
+      this.spoilerType = spoilerType;
+      this.sunRoofInstalled = sunRoofInstalled;
+      this.thirdRowSeats = thirdRowSeats;
       this.timestamp = timestamp;
-      this.trim_badging = trim_badging;
-      this.wheel_type = wheel_type;
-      this.use_range_badging = use_range_badging;
+      this.trimBadging = trimBadging;
+      this.wheelType = wheelType;
+      this.useRangeBadging = useRangeBadging;
     }
 
     public static VehicleConfig generate(){
@@ -2466,12 +2681,12 @@ public class MockVehicle{
         null,
         false,
         random.nextInt(),
-        random.nextInt(),
+        null,
         false,
         "Glass",
-        random.nextInt(),
+        null,
         "None",
-        random.nextInt(),
+        null,
         "<invalid>",
         Instant.now().toEpochMilli(),
         "Long Range",
@@ -2481,59 +2696,59 @@ public class MockVehicle{
     }
 
     public boolean isUseRangeBadging(){
-      return use_range_badging;
+      return useRangeBadging;
+    }
+
+    public void setUseRangeBadging(boolean useRangeBadging){
+      this.useRangeBadging = useRangeBadging;
     }
 
     public boolean isCanAcceptNavigationRequests(){
-      return can_accept_navigation_requests;
+      return canAcceptNavigationRequests;
+    }
+
+    public void setCanAcceptNavigationRequests(boolean canAcceptNavigationRequests){
+      this.canAcceptNavigationRequests = canAcceptNavigationRequests;
     }
 
     public boolean isCanActuateTrunks(){
-      return can_actuate_trunks;
+      return canActuateTrunks;
+    }
+
+    public void setCanActuateTrunks(boolean canActuateTrunks){
+      this.canActuateTrunks = canActuateTrunks;
     }
 
     public String getCarSpecialType(){
-      return car_special_type;
+      return carSpecialType;
+    }
+
+    public void setCarSpecialType(String carSpecialType){
+      this.carSpecialType = carSpecialType;
     }
 
     public String getCarType(){
-      return car_type;
+      return carType;
+    }
+
+    public void setCarType(String carType){
+      this.carType = carType;
     }
 
     public String getChargePortType(){
-      return charge_port_type;
+      return chargePortType;
+    }
+
+    public void setChargePortType(String chargePortType){
+      this.chargePortType = chargePortType;
     }
 
     public boolean getEuVehicle(){
-      return eu_vehicle;
+      return euVehicle;
     }
 
-    public String getExteriorColor(){
-      return exterior_color;
-    }
-
-    public boolean getHasAirSuspension(){
-      return has_air_suspension;
-    }
-
-    public boolean getHasLudicrousMode(){
-      return has_ludicrous_mode;
-    }
-
-    public int getKeyVersion(){
-      return key_version;
-    }
-
-    public void setKeyVersion(int key_version){
-      this.key_version = key_version;
-    }
-
-    public boolean getMotorizedChargePort(){
-      return motorized_charge_port;
-    }
-
-    public String getPerfConfig(){
-      return perf_config;
+    public void setEuVehicle(boolean euVehicle){
+      this.euVehicle = euVehicle;
     }
 
     public boolean isPlg(){
@@ -2544,12 +2759,12 @@ public class MockVehicle{
       this.plg = plg;
     }
 
-    public int getRearSeatHeaters(){
-      return rear_seat_heaters;
+    public String getExteriorColor(){
+      return exteriorColor;
     }
 
-    public int getRearSeatType(){
-      return rear_seat_type;
+    public void setExteriorColor(String exteriorColor){
+      this.exteriorColor = exteriorColor;
     }
 
     public boolean getRhd(){
@@ -2560,24 +2775,24 @@ public class MockVehicle{
       this.rhd = rhd;
     }
 
-    public String getRoofColor(){
-      return roof_color;
+    public boolean getHasAirSuspension(){
+      return hasAirSuspension;
     }
 
-    public int getSeatType(){
-      return seat_type;
+    public void setHasAirSuspension(boolean hasAirSuspension){
+      this.hasAirSuspension = hasAirSuspension;
     }
 
-    public String getSpoilerType(){
-      return spoiler_type;
+    public boolean getHasLudicrousMode(){
+      return hasLudicrousMode;
     }
 
-    public int getSunRoofInstalled(){
-      return sun_roof_installed;
+    public void setHasLudicrousMode(boolean hasLudicrousMode){
+      this.hasLudicrousMode = hasLudicrousMode;
     }
 
-    public String getThirdRowSeats(){
-      return third_row_seats;
+    public int getKeyVersion(){
+      return keyVersion;
     }
 
     public long getTimestamp(){
@@ -2588,12 +2803,12 @@ public class MockVehicle{
       this.timestamp = timestamp;
     }
 
-    public String getTrimBadging(){
-      return trim_badging;
+    public void setKeyVersion(int keyVersion){
+      this.keyVersion = keyVersion;
     }
 
-    public String getWheelType(){
-      return wheel_type;
+    public boolean getMotorizedChargePort(){
+      return motorizedChargePort;
     }
 
     @Override
@@ -2601,88 +2816,117 @@ public class MockVehicle{
       return simpleToString(this);
     }
 
-    public void setCan_accept_navigation_requests(boolean can_accept_navigation_requests){
-      this.can_accept_navigation_requests = can_accept_navigation_requests;
+    public void setMotorizedChargePort(boolean motorizedChargePort){
+      this.motorizedChargePort = motorizedChargePort;
     }
 
-    public void setCan_actuate_trunks(boolean can_actuate_trunks){
-      this.can_actuate_trunks = can_actuate_trunks;
+    public String getPerfConfig(){
+      return perfConfig;
     }
 
-    public void setCar_special_type(String car_special_type){
-      this.car_special_type = car_special_type;
+    public void setPerfConfig(String perfConfig){
+      this.perfConfig = perfConfig;
     }
 
-    public void setCar_type(String car_type){
-      this.car_type = car_type;
+    public int getRearSeatHeaters(){
+      return rearSeatHeaters;
     }
 
-    public void setCharge_port_type(String charge_port_type){
-      this.charge_port_type = charge_port_type;
+    public void setRearSeatHeaters(int rearSeatHeaters){
+      this.rearSeatHeaters = rearSeatHeaters;
     }
 
-    public void setEu_vehicle(boolean eu_vehicle){
-      this.eu_vehicle = eu_vehicle;
+    public String getRearSeatType(){
+      return rearSeatType;
     }
 
-    public void setExterior_color(String exterior_color){
-      this.exterior_color = exterior_color;
+    public void setRearSeatType(String rearSeatType){
+      this.rearSeatType = rearSeatType;
     }
 
-    public void setHas_air_suspension(boolean has_air_suspension){
-      this.has_air_suspension = has_air_suspension;
+    public String getRoofColor(){
+      return roofColor;
     }
 
-    public void setHas_ludicrous_mode(boolean has_ludicrous_mode){
-      this.has_ludicrous_mode = has_ludicrous_mode;
+    public void setRoofColor(String roofColor){
+      this.roofColor = roofColor;
     }
 
-    public void setMotorized_charge_port(boolean motorized_charge_port){
-      this.motorized_charge_port = motorized_charge_port;
+    public String getSeatType(){
+      return seatType;
     }
 
-    public void setPerf_config(String perf_config){
-      this.perf_config = perf_config;
+    public void setSeatType(String seatType){
+      this.seatType = seatType;
     }
 
-    public void setRear_seat_heaters(int rear_seat_heaters){
-      this.rear_seat_heaters = rear_seat_heaters;
+    public String getSpoilerType(){
+      return spoilerType;
     }
 
-    public void setRear_seat_type(int rear_seat_type){
-      this.rear_seat_type = rear_seat_type;
+    public void setSpoilerType(String spoilerType){
+      this.spoilerType = spoilerType;
     }
 
-    public void setRoof_color(String roof_color){
-      this.roof_color = roof_color;
+    public String getSunRoofInstalled(){
+      return sunRoofInstalled;
     }
 
-    public void setSeat_type(int seat_type){
-      this.seat_type = seat_type;
+    public void setSunRoofInstalled(String sunRoofInstalled){
+      this.sunRoofInstalled = sunRoofInstalled;
     }
 
-    public void setSpoiler_type(String spoiler_type){
-      this.spoiler_type = spoiler_type;
+    public String getThirdRowSeats(){
+      return thirdRowSeats;
     }
 
-    public void setSun_roof_installed(int sun_roof_installed){
-      this.sun_roof_installed = sun_roof_installed;
+    public void setThirdRowSeats(String thirdRowSeats){
+      this.thirdRowSeats = thirdRowSeats;
     }
 
-    public void setThird_row_seats(String third_row_seats){
-      this.third_row_seats = third_row_seats;
+    public String getTrimBadging(){
+      return trimBadging;
     }
 
-    public void setTrim_badging(String trim_badging){
-      this.trim_badging = trim_badging;
+    public void setTrimBadging(String trimBadging){
+      this.trimBadging = trimBadging;
     }
 
-    public void setWheel_type(String wheel_type){
-      this.wheel_type = wheel_type;
+    public String getWheelType(){
+      return wheelType;
     }
 
-    public void setUse_range_badging(boolean use_range_badging){
-      this.use_range_badging = use_range_badging;
+    public void setWheelType(String wheelType){
+      this.wheelType = wheelType;
+    }
+
+    public com.ansill.tesla.api.data.model.VehicleConfig convert(){
+      return new com.ansill.tesla.api.data.model.VehicleConfig(
+        canAcceptNavigationRequests,
+        canActuateTrunks,
+        carSpecialType,
+        carType,
+        chargePortType,
+        eceRestrictions,
+        euVehicle,
+        exteriorColor,
+        hasAirSuspension,
+        hasLudicrousMode,
+        keyVersion,
+        motorizedChargePort,
+        plg,
+        rearSeatHeaters,
+        rearSeatType,
+        rhd,
+        roofColor,
+        seatType,
+        spoilerType,
+        sunRoofInstalled,
+        thirdRowSeats,
+        timestamp,
+        useRangeBadging,
+        wheelType
+      );
     }
   }
 }

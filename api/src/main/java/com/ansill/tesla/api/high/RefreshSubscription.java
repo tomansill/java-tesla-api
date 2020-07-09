@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.high;
 
-import com.ansill.tesla.api.low.model.AccountCredentials;
+import com.ansill.tesla.api.high.model.AccountCredentials;
 import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
 
 import javax.annotation.Nonnull;

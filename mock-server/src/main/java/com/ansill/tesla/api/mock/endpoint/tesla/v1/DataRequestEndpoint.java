@@ -1,11 +1,11 @@
 package com.ansill.tesla.api.mock.endpoint.tesla.v1;
 
+import com.ansill.tesla.api.data.model.response.GenericErrorResponse;
+import com.ansill.tesla.api.data.model.response.SimpleResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.ChargeStateResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.ClimateStateResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.DriveStateResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.GenericErrorResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.GuiSettingsResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.Response;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.VehicleConfigResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.VehicleStateResponse;
 import com.ansill.tesla.api.mock.model.MockModel;
@@ -83,6 +83,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -100,7 +101,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new Response<>(vehicle.get().getClimateState()));
+    context.json(new SimpleResponse<>(vehicle.get().getClimateState()));
     context.status(200);
   }
 
@@ -139,6 +140,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -156,7 +158,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new Response<>(vehicle.get().getChargeState()));
+    context.json(new SimpleResponse<>(vehicle.get().getChargeState()));
     context.status(200);
   }
 
@@ -195,6 +197,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -212,7 +215,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new Response<>(vehicle.get().getDriveState()));
+    context.json(new SimpleResponse<>(vehicle.get().getDriveState()));
     context.status(200);
   }
 
@@ -252,6 +255,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -269,7 +273,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new Response<>(vehicle.get().getGuiSettings()));
+    context.json(new SimpleResponse<>(vehicle.get().getGuiSettings()));
     context.status(200);
   }
 
@@ -308,6 +312,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -325,7 +330,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new Response<>(vehicle.get().getVehicleState()));
+    context.json(new SimpleResponse<>(vehicle.get().getVehicleState()));
     context.status(200);
   }
 
@@ -364,6 +369,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -381,7 +387,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new Response<>(vehicle.get().getVehicleConfig()));
+    context.json(new SimpleResponse<>(vehicle.get().getVehicleConfig()));
     context.status(200);
   }
 }

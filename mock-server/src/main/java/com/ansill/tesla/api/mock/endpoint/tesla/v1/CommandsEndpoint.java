@@ -1,8 +1,8 @@
 package com.ansill.tesla.api.mock.endpoint.tesla.v1;
 
+import com.ansill.tesla.api.data.model.response.GenericErrorResponse;
+import com.ansill.tesla.api.data.model.response.VehiclesResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.CommandResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.GenericErrorResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.SimpleVehicleResponse;
 import com.ansill.tesla.api.mock.model.MockModel;
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
@@ -135,7 +135,7 @@ public class CommandsEndpoint implements EndpointGroup{
       )
     },
     responses = {
-      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = SimpleVehicleResponse.class)}),
+      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = VehiclesResponse.class)}),
       @OpenApiResponse(status = "401"),
       @OpenApiResponse(status = "404", content = {@OpenApiContent(from = GenericErrorResponse.class)})
     }

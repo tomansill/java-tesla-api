@@ -1,9 +1,9 @@
 package com.ansill.tesla.api.test;
 
+import com.ansill.tesla.api.data.model.response.SuccessfulAuthenticationResponse;
 import com.ansill.tesla.api.high.Client;
-import com.ansill.tesla.api.low.model.AccountCredentials;
-import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
-import com.google.gson.Gson;
+import com.ansill.tesla.api.high.model.AccountCredentials;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import org.junit.jupiter.api.AfterAll;
@@ -31,7 +31,7 @@ class HighClientTest{
 
   private static final Consumer<Context> DEFAULT_FAIL = context -> context.status(600);
 
-  private static final Gson GSON = new Gson();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private static final AtomicReference<Consumer<Context>> AUTHENTICATION_HANDLER = new AtomicReference<>();
 
@@ -131,7 +131,7 @@ class HighClientTest{
 
       // Send response
       ctx.status(200);
-      ctx.result(writeToJson(GSON, response));
+      ctx.result(writeToJson(OBJECT_MAPPER, response));
 
     }catch(Exception e){
       e.printStackTrace();
@@ -193,7 +193,7 @@ class HighClientTest{
 
       // Send response
       ctx.status(200);
-      ctx.result(writeToJson(GSON, response));
+      ctx.result(writeToJson(OBJECT_MAPPER, response));
 
     }catch(Exception e){
       e.printStackTrace();
@@ -292,7 +292,7 @@ class HighClientTest{
       var accessToken1 = generateString(32);
       var refreshToken1 = generateString(32);
       var createdAt1 = new AtomicLong();
-      var wait1 = Duration.ofSeconds(8);
+      var wait1 = Duration.ofSeconds(15);
       var expiresIn1 = new AtomicLong();
       cdl.set(new CountDownLatch(1));
       AUTHENTICATION_HANDLER.set(ctx -> {

@@ -3,6 +3,8 @@ package com.ansill.tesla.api.model;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 public abstract class ClientBuilder<T>{
@@ -17,7 +19,7 @@ public abstract class ClientBuilder<T>{
   protected String clientSecret;
 
   /** Debugging prints consumer */
-  protected Function<Object,Boolean> debug;
+  protected Function<Map<String,Optional<Object>>,Boolean> unknownFieldsFunction;
 
   /** Connection timeout duration */
   protected Duration connectTimeoutDuration;
@@ -68,12 +70,12 @@ public abstract class ClientBuilder<T>{
   /**
    * Sets debugging function - function that will be called when deserializer encounters strange property, returning true in the function will tell deserializer to do a hard-fail, returning false tells the deserializer to ignore the strange properties and continue
    *
-   * @param debug debugging function - null will yield a lenient function
+   * @param unknownFieldsFunction debugging function - null will yield a lenient function
    * @return updated builder
    */
   @Nonnull
-  public ClientBuilder<T> setDebugFunction(@Nullable Function<Object,Boolean> debug){
-    this.debug = debug;
+  public ClientBuilder<T> setUnknownFieldsFunction(@Nullable Function<Map<String,Optional<Object>>,Boolean> unknownFieldsFunction){
+    this.unknownFieldsFunction = unknownFieldsFunction;
     return this;
   }
 

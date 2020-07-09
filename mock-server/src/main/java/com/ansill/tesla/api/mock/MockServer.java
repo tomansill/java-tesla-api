@@ -6,6 +6,9 @@ import com.ansill.tesla.api.mock.endpoint.tesla.v1.APIEndpoint;
 import com.ansill.tesla.api.mock.model.MockModel;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.http.ForbiddenResponse;
+import io.javalin.http.NotFoundResponse;
+import io.javalin.http.UnauthorizedResponse;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.annotations.HttpMethod;
@@ -13,10 +16,13 @@ import io.javalin.plugin.openapi.annotations.OpenApi;
 import io.javalin.plugin.openapi.ui.ReDocOptions;
 import io.javalin.plugin.openapi.ui.SwaggerOptions;
 import io.swagger.v3.oas.models.info.Info;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -25,6 +31,8 @@ import static io.javalin.apibuilder.ApiBuilder.get;
 import static io.javalin.apibuilder.ApiBuilder.path;
 
 public class MockServer implements AutoCloseable{
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MockServer.class);
 
   public MockServer(int port, @Nonnull AtomicReference<MockModel> model){
     this.model = model;
@@ -60,6 +68,7 @@ public class MockServer implements AutoCloseable{
     var cdl = new CountDownLatch(1);
     try(var server = new MockServer(model)){
       System.out.println("Port: " + server.getPort());
+      LOGGER.info("Mock Server started");
       cdl.await();
     }
   }
@@ -113,6 +122,36 @@ public class MockServer implements AutoCloseable{
       ctx.status(500);
     });
 
+    // Set up exceptions
+    server.exception(UnauthorizedResponse.class, (exception, ctx) -> {
+      if(ctx.path().contains("api") || ctx.path().contains("oauth")){
+        ctx.contentType("application/json");
+        var map = new HashMap<>();
+        map.put("code", 401);
+        map.put("message", "unauthorized");
+        ctx.json(map);
+        System.out.println("Passed thru");
+      }
+    });
+    server.exception(ForbiddenResponse.class, (exception, ctx) -> {
+      if(ctx.path().contains("api") || ctx.path().contains("oauth")){
+        ctx.contentType("application/json");
+        var map = new HashMap<>();
+        map.put("code", 403);
+        map.put("message", "forbidden");
+        ctx.json(map);
+      }
+    });
+    server.exception(NotFoundResponse.class, (exception, ctx) -> {
+      if(ctx.path().contains("api") || ctx.path().contains("oauth")){
+        ctx.contentType("application/json");
+        var map = new HashMap<>();
+        map.put("code", 404);
+        map.put("message", "not found");
+        ctx.json(map);
+      }
+    });
+
     // Set up routes
     server.routes(() -> {
 
@@ -123,7 +162,7 @@ public class MockServer implements AutoCloseable{
       path("oauth", new OAuthEndpoint(model));
 
       // API v1 endpoint
-      path("api/v1", new APIEndpoint(model));
+      path("api/1", new APIEndpoint(model));
 
       // Model endpoint
       path("model", new MockController(model));

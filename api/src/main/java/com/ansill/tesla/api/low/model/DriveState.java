@@ -83,7 +83,7 @@ public final class DriveState{
   }
 
   @Nonnull
-  public static DriveState convert(com.ansill.tesla.api.raw.model.DriveState state){
+  public static DriveState convert(com.ansill.tesla.api.data.model.DriveState state){
     return new DriveState(
       state.getGpsAsOf(),
       Quantities.getQuantity(state.getHeading(), UnitUtility.ANGULAR_DEGREES),

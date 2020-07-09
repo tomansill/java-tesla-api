@@ -38,7 +38,7 @@ public final class ClimateState{
 
   private final boolean isRearDefrosterOn;
 
-  private final String leftTempDirection; // TODO ???
+  private final int leftTempDirection; // TODO ???
 
   @Nonnull
   private final Quantity<Temperature> maxAvailTemp;
@@ -54,7 +54,7 @@ public final class ClimateState{
 
   private final boolean remoteHeaterControlEnabled;
 
-  private final String rightTempDirection; // TODO ???
+  private final int rightTempDirection; // TODO ???
 
   @Nullable
   private final Integer seatHeaterLeft; // Entry could disappear from JSON
@@ -80,12 +80,6 @@ public final class ClimateState{
   @Nullable
   private final Boolean sideMirrorHeaters; // Entry could disappear from JSON
 
-  @Nullable
-  private final Boolean smartPreconditioning; // Entry could disappear from JSON
-
-  @Nullable
-  private final Boolean steeringWheelHeater; // Entry could disappear from JSON
-
   private final long timestamp;
 
   @Nullable
@@ -96,7 +90,7 @@ public final class ClimateState{
   public ClimateState(
     boolean batteryHeater,
     boolean batteryHeaterNoPower,
-    String climateKeeperMode,
+    @Nonnull String climateKeeperMode,
     @Nonnull Quantity<Temperature> driverTempSetting,
     int fanStatus,
     @Nonnull Quantity<Temperature> insideTemp,
@@ -105,23 +99,21 @@ public final class ClimateState{
     boolean isFrontDefrosterOn,
     boolean isPreconditioning,
     boolean isRearDefrosterOn,
-    String leftTempDirection,
+    int leftTempDirection,
     @Nonnull Quantity<Temperature> maxAvailTemp,
     @Nonnull Quantity<Temperature> minAvailTemp,
     @Nonnull Quantity<Temperature> outsideTemp,
     @Nonnull Quantity<Temperature> passengerTempSetting,
     boolean remoteHeaterControlEnabled,
-    String rightTempDirection,
+    int rightTempDirection,
     @Nullable Integer seatHeaterLeft,
-    @Nullable Integer seatHeaterRearCenter,
+    @Nullable Integer seatHeaterRight,
     @Nullable Integer seatHeaterRearLeft,
+    @Nullable Integer seatHeaterRearCenter,
     @Nullable Integer seatHeaterLeftBack,
     @Nullable Integer seatHeaterRearRight,
     @Nullable Integer seatHeaterRightBack,
-    @Nullable Integer seatHeaterRight,
     @Nullable Boolean sideMirrorHeaters,
-    @Nullable Boolean smartPreconditioning,
-    @Nullable Boolean steeringWheelHeater,
     long timestamp,
     @Nullable Boolean wiperBladeHeater,
     int defrostMode
@@ -152,46 +144,42 @@ public final class ClimateState{
     this.seatHeaterRightBack = seatHeaterRightBack;
     this.seatHeaterRight = seatHeaterRight;
     this.sideMirrorHeaters = sideMirrorHeaters;
-    this.smartPreconditioning = smartPreconditioning;
-    this.steeringWheelHeater = steeringWheelHeater;
     this.timestamp = timestamp;
     this.wiperBladeHeater = wiperBladeHeater;
     this.defrostMode = defrostMode;
   }
 
   @Nonnull
-  public static ClimateState convert(@Nonnull com.ansill.tesla.api.raw.model.ClimateState state){
+  public static ClimateState convert(@Nonnull com.ansill.tesla.api.data.model.ClimateState state){
     return new ClimateState(
-      state.getBatteryHeater(),
-      state.getBatteryHeaterNoPower(),
+      state.hasBatteryHeater(),
+      state.hasPowerInBatteryHeater().orElse(false), // TODO
       state.getClimateKeeperMode(),
       Quantities.getQuantity(state.getDriverTempSetting(), Units.CELSIUS),
       state.getFanStatus(),
-      Quantities.getQuantity(state.getInsideTemp().orElse(0.0), Units.CELSIUS),
-      state.getIsAutoConditioningOn().orElse(false),
-      state.getIsClimateOn(),
-      state.getIsFrontDefrosterOn(),
-      state.getIsPreconditioning(),
-      state.getIsRearDefrosterOn(),
+      Quantities.getQuantity(state.getInsideTemp(), Units.CELSIUS),
+      state.isAutoConditioningOn(),
+      state.isClimateOn(),
+      state.isFrontDefrosterOn(),
+      state.isPreconditioning(),
+      state.isRearDefrosterOn(),
       state.getLeftTempDirection(),
       Quantities.getQuantity(state.getMaxAvailTemp(), Units.CELSIUS),
       Quantities.getQuantity(state.getMinAvailTemp(), Units.CELSIUS),
-      Quantities.getQuantity(state.getOutsideTemp().orElse(0.0), Units.CELSIUS),
+      Quantities.getQuantity(state.getOutsideTemp(), Units.CELSIUS),
       Quantities.getQuantity(state.getPassengerTempSetting(), Units.CELSIUS),
-      state.getRemoteHeaterControlEnabled(),
+      state.isRemoteHeaterControlEnabled(),
       state.getRightTempDirection(),
       state.getSeatHeaterLeft().orElse(null),
-      state.getSeatHeaterRearCenter().orElse(null),
-      state.getSeatHeaterRearLeft().orElse(null),
-      state.getSeatHeaterLeftBack().orElse(null),
-      state.getSeatHeaterRearRight().orElse(null),
-      state.getSeatHeaterRightBack().orElse(null),
       state.getSeatHeaterRight().orElse(null),
-      state.getSideMirrorHeaters().orElse(null),
-      state.getSmartPreconditioning().orElse(null),
-      state.getSteeringWheelHeater().orElse(null),
+      state.getSeatHeaterRearLeft().orElse(null),
+      state.getSeatHeaterRearCenter().orElse(null),
+      state.getSeatHeaterRearRight().orElse(null),
+      state.getSeatHeaterBackLeft().orElse(null),
+      state.getSeatHeaterBackRight().orElse(null),
+      state.hasSideMirrorHeaters(),
       state.getTimestamp(),
-      state.getWiperBladeHeater().orElse(null),
+      state.hasWiperBladeHeater(),
       state.getDefrostMode()
     );
   }
@@ -243,7 +231,7 @@ public final class ClimateState{
     return isRearDefrosterOn;
   }
 
-  public String getLeftTempDirection(){
+  public int getLeftTempDirection(){
     return leftTempDirection;
   }
 
@@ -271,7 +259,7 @@ public final class ClimateState{
     return remoteHeaterControlEnabled;
   }
 
-  public String getRightTempDirection(){
+  public int getRightTempDirection(){
     return rightTempDirection;
   }
 
@@ -313,16 +301,6 @@ public final class ClimateState{
   @Nullable
   public Boolean getSideMirrorHeaters(){
     return sideMirrorHeaters;
-  }
-
-  @Nullable
-  public Boolean getSmartPreconditioning(){
-    return smartPreconditioning;
-  }
-
-  @Nullable
-  public Boolean getSteeringWheelHeater(){
-    return steeringWheelHeater;
   }
 
   public long getTimestamp(){

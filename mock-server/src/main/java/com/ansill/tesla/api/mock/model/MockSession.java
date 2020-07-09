@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.mock.model;
 
+import com.ansill.tesla.api.data.model.response.SuccessfulAuthenticationResponse;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
@@ -116,5 +117,16 @@ public class MockSession{
   @Nonnull
   public String getRefreshToken(){
     return refreshToken;
+  }
+
+  @Nonnull
+  public SuccessfulAuthenticationResponse convert(){
+    return new SuccessfulAuthenticationResponse(
+      accessToken,
+      "bearer",
+      expiresIn.toSeconds(),
+      refreshToken,
+      creationTime.getEpochSecond()
+    );
   }
 }

@@ -1,13 +1,12 @@
 package com.ansill.tesla.api.mock.endpoint.tesla.v1;
 
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.CompleteVehicleResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.GenericErrorResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.Response;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.SimpleVehicle;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.SimpleVehicleResponse;
-import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.VehiclesResponse;
+import com.ansill.tesla.api.data.model.response.CompleteVehicleDataResponse;
+import com.ansill.tesla.api.data.model.response.GenericErrorResponse;
+import com.ansill.tesla.api.data.model.response.VehicleResponse;
+import com.ansill.tesla.api.data.model.response.VehiclesResponse;
 import com.ansill.tesla.api.mock.model.MockAccount;
 import com.ansill.tesla.api.mock.model.MockModel;
+import com.ansill.tesla.api.mock.model.MockVehicle;
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
 import io.javalin.plugin.openapi.annotations.HttpMethod;
@@ -90,6 +89,7 @@ public class VehiclesEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -97,7 +97,7 @@ public class VehiclesEndpoint implements EndpointGroup{
     context.json(new VehiclesResponse(model.get()
                                            .getVehicles(account.get())
                                            .stream()
-                                           .map(SimpleVehicle::convert)
+                                           .map(MockVehicle::convert)
                                            .collect(Collectors.toList())));
     context.status(200);
   }
@@ -124,7 +124,7 @@ public class VehiclesEndpoint implements EndpointGroup{
       )
     },
     responses = {
-      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = SimpleVehicleResponse.class)}),
+      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = VehicleResponse.class)}),
       @OpenApiResponse(status = "401"),
       @OpenApiResponse(status = "404", content = {@OpenApiContent(from = GenericErrorResponse.class)})
     }
@@ -137,6 +137,7 @@ public class VehiclesEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -154,7 +155,7 @@ public class VehiclesEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new SimpleVehicleResponse(SimpleVehicle.convert(vehicle.get())));
+    context.json(new VehicleResponse(vehicle.get().convert()));
     context.status(200);
   }
 
@@ -181,7 +182,7 @@ public class VehiclesEndpoint implements EndpointGroup{
       )
     },
     responses = {
-      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = CompleteVehicleResponse.class)}),
+      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = CompleteVehicleDataResponse.class)}),
       @OpenApiResponse(status = "401"),
       @OpenApiResponse(status = "404", content = {@OpenApiContent(from = GenericErrorResponse.class)})
     }
@@ -212,7 +213,7 @@ public class VehiclesEndpoint implements EndpointGroup{
       )
     },
     responses = {
-      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = CompleteVehicleResponse.class)}),
+      @OpenApiResponse(status = "200", content = {@OpenApiContent(from = CompleteVehicleDataResponse.class)}),
       @OpenApiResponse(status = "401"),
       @OpenApiResponse(status = "404", content = {@OpenApiContent(from = GenericErrorResponse.class)})
     }
@@ -225,6 +226,7 @@ public class VehiclesEndpoint implements EndpointGroup{
     // Check if account exists
     if(account.isEmpty()){
       context.status(401);
+      context.contentType("application/json");
       return;
     }
 
@@ -242,7 +244,7 @@ public class VehiclesEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new Response<>(vehicle.get()));
+    context.json(new CompleteVehicleDataResponse(vehicle.get().convertComplete()));
     context.status(200);
   }
 }

@@ -53,10 +53,6 @@ public final class VehicleConfig{
   @Nonnull
   private final String spoilerType;
 
-  /** Trim badging */
-  @Nonnull
-  private final String trimBadging;
-
   /** Wheel type */
   @Nonnull
   private final String wheelType;
@@ -77,7 +73,6 @@ public final class VehicleConfig{
    * @param hasMotorizedChargePortDoor true if vehicle has motorized charge port door
    * @param roofColor                  Roof color
    * @param spoilerType                Spoiler type
-   * @param trimBadging                Trim badging
    * @param wheelType                  Wheel type
    */
   private VehicleConfig(
@@ -94,7 +89,6 @@ public final class VehicleConfig{
     boolean hasMotorizedChargePortDoor,
     @Nonnull String roofColor,
     @Nonnull String spoilerType,
-    @Nonnull String trimBadging,
     @Nonnull String wheelType
   ){
     this.canAcceptNavigationRequest = canAcceptNavigationRequest;
@@ -110,7 +104,6 @@ public final class VehicleConfig{
     this.hasMotorizedChargePortDoor = hasMotorizedChargePortDoor;
     this.roofColor = roofColor;
     this.spoilerType = spoilerType;
-    this.trimBadging = trimBadging;
     this.wheelType = wheelType;
   }
 
@@ -136,7 +129,6 @@ public final class VehicleConfig{
       config.isMotorizedChargePort(),
       config.getRoofColor(),
       config.getSpoilerType(),
-      config.getTrimBadging(),
       config.getWheelType()
     );
   }
@@ -262,16 +254,6 @@ public final class VehicleConfig{
   @Nonnull
   public String getSpoilerType(){
     return spoilerType;
-  }
-
-  /**
-   * Returns trim badging
-   *
-   * @return badge
-   */
-  @Nonnull
-  public String getTrimBadging(){
-    return trimBadging;
   }
 
   /**

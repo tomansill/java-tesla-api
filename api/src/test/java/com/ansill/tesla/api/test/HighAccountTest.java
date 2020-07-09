@@ -1,12 +1,12 @@
 package com.ansill.tesla.api.test;
 
+import com.ansill.tesla.api.data.model.Vehicle;
+import com.ansill.tesla.api.data.model.response.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.api.data.model.response.VehicleResponse;
+import com.ansill.tesla.api.data.model.response.VehiclesResponse;
 import com.ansill.tesla.api.high.Account;
 import com.ansill.tesla.api.high.Client;
-import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
-import com.ansill.tesla.api.raw.model.Vehicle;
-import com.ansill.tesla.api.raw.model.VehicleResponse;
-import com.ansill.tesla.api.raw.model.VehiclesResponse;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import org.junit.jupiter.api.AfterAll;
@@ -34,7 +34,7 @@ class HighAccountTest{
 
   private static final Consumer<Context> DEFAULT_FAIL = context -> context.status(600);
 
-  private static final Gson GSON = new Gson();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private static final AtomicReference<Consumer<Context>> AUTHENTICATION_HANDLER = new AtomicReference<>();
 
@@ -121,7 +121,7 @@ class HighAccountTest{
 
     // Send response
     ctx.status(200);
-    ctx.result(writeToJson(GSON, response));
+    ctx.result(writeToJson(OBJECT_MAPPER, response));
   }
 
   static void auth(
@@ -161,7 +161,7 @@ class HighAccountTest{
 
       // Send response
       ctx.status(200);
-      ctx.result(writeToJson(GSON, response));
+      ctx.result(writeToJson(OBJECT_MAPPER, response));
 
     }catch(Exception e){
       e.printStackTrace();
@@ -225,7 +225,7 @@ class HighAccountTest{
 
         // Send response
         ctx.status(200);
-        ctx.result(writeToJson(GSON, response));
+        ctx.result(writeToJson(OBJECT_MAPPER, response));
 
       }catch(Exception e){
         e.printStackTrace();
@@ -263,7 +263,7 @@ class HighAccountTest{
 
         // Send response
         ctx.status(200);
-        ctx.result(writeToJson(GSON, response));
+        ctx.result(writeToJson(OBJECT_MAPPER, response));
 
       }catch(Exception e){
         e.printStackTrace();
@@ -307,7 +307,7 @@ class HighAccountTest{
 
         // Send response
         ctx.status(200);
-        ctx.result(writeToJson(GSON, response));
+        ctx.result(writeToJson(OBJECT_MAPPER, response));
 
       }catch(Exception e){
         e.printStackTrace();
@@ -353,7 +353,7 @@ class HighAccountTest{
 
         // Send response
         ctx.status(200);
-        ctx.result(writeToJson(GSON, response));
+        ctx.result(writeToJson(OBJECT_MAPPER, response));
 
       }catch(Exception e){
         e.printStackTrace();

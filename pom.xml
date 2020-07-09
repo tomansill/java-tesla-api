@@ -13,6 +13,7 @@
     <modules>
         <module>mock-server</module>
         <module>api</module>
+        <module>data-model</module>
     </modules>
 
     <properties>

@@ -1,5 +1,23 @@
 package com.ansill.tesla.api.raw;
 
+import com.ansill.tesla.api.data.model.ChargeState;
+import com.ansill.tesla.api.data.model.ClimateState;
+import com.ansill.tesla.api.data.model.CompleteVehicle;
+import com.ansill.tesla.api.data.model.DriveState;
+import com.ansill.tesla.api.data.model.GuiSettings;
+import com.ansill.tesla.api.data.model.MediaState;
+import com.ansill.tesla.api.data.model.SoftwareUpdate;
+import com.ansill.tesla.api.data.model.SpeedLimitMode;
+import com.ansill.tesla.api.data.model.Vehicle;
+import com.ansill.tesla.api.data.model.VehicleConfig;
+import com.ansill.tesla.api.data.model.VehicleState;
+import com.ansill.tesla.api.data.model.response.CompleteVehicleDataResponse;
+import com.ansill.tesla.api.data.model.response.GenericErrorResponse;
+import com.ansill.tesla.api.data.model.response.SimpleReasonResponse;
+import com.ansill.tesla.api.data.model.response.SimpleResponse;
+import com.ansill.tesla.api.data.model.response.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.api.data.model.response.VehicleResponse;
+import com.ansill.tesla.api.data.model.response.VehiclesResponse;
 import com.ansill.tesla.api.exception.VehicleInServiceException;
 import com.ansill.tesla.api.exception.VehicleOfflineException;
 import com.ansill.tesla.api.exception.VehicleSleepingException;
@@ -10,26 +28,14 @@ import com.ansill.tesla.api.raw.exception.ClientException;
 import com.ansill.tesla.api.raw.exception.InvalidAccessTokenException;
 import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
 import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
-import com.ansill.tesla.api.raw.model.ChargeState;
-import com.ansill.tesla.api.raw.model.ClimateState;
-import com.ansill.tesla.api.raw.model.CompleteVehicleDataResponse;
-import com.ansill.tesla.api.raw.model.DriveState;
-import com.ansill.tesla.api.raw.model.GenericErrorResponse;
-import com.ansill.tesla.api.raw.model.GuiSettings;
-import com.ansill.tesla.api.raw.model.SimpleReasonResponse;
-import com.ansill.tesla.api.raw.model.SimpleResponse;
-import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
-import com.ansill.tesla.api.raw.model.VehicleConfig;
-import com.ansill.tesla.api.raw.model.VehicleResponse;
-import com.ansill.tesla.api.raw.model.VehicleState;
-import com.ansill.tesla.api.raw.model.VehiclesResponse;
+import com.ansill.tesla.api.utility.Constants;
 import com.ansill.tesla.api.utility.HTTPUtility;
 import com.ansill.tesla.api.utility.ReusableResponse;
 import com.ansill.validation.Validation;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -43,45 +49,25 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import static com.ansill.tesla.api.utility.Constants.*;
 import static com.ansill.utility.Utility.f;
 
 /** Raw (Very Low Level) Tesla API client */
 public final class Client{
-
-  /** Gson instance */
-  private final static Gson GSON;
 
   /** Logger */
   private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
 
   /** Number of connection attempts */
   private static final int MAX_ATTEMPTS = 5;
-
-  static{
-    // builder
-    var gson = new GsonBuilder();
-
-    // Add strict GSON that will error out if any field is missing
-    // TODO
-
-    // Create it
-    GSON = gson.create();
-  }
 
   /** Client ID to use */
   @Nonnull
@@ -107,22 +93,25 @@ public final class Client{
 
   /** Debugging function to fire on unexpected json properties */
   @Nonnull
-  private final AtomicReference<Function<Object,Boolean>> debug = new AtomicReference<>();
+  private final AtomicReference<Function<Map<String,Optional<Object>>,Boolean>> unknownFieldsFunction = new AtomicReference<>();
+
+  @Nonnull
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   private Client(
     @Nullable String url,
     @Nullable String clientId,
     @Nullable String clientSecret,
-    @Nullable Function<Object,Boolean> debug,
     @Nullable Duration connectTimeoutDuration,
-    @Nullable Duration readTimeoutDuration
+    @Nullable Duration readTimeoutDuration,
+    @Nullable Function<Map<String,Optional<Object>>,Boolean> unknownFieldsFunction
   ){
 
     // Use default if null
-    if(url == null) url = URL;
+    if(url == null) url = Constants.URL;
     if(clientId == null && clientSecret == null){
-      clientId = CLIENT_ID;
-      clientSecret = CLIENT_SECRET;
+      clientId = Constants.CLIENT_ID;
+      clientSecret = Constants.CLIENT_SECRET;
     }
 
     // Ensure that URL is valid
@@ -137,9 +126,48 @@ public final class Client{
     this.url = url;
     this.clientId = Validation.assertNonnull(clientId, "client_id");
     this.clientSecret = Validation.assertNonnull(clientSecret, "client_secret");
-    this.debug.set(debug);
     this.connectTimeoutDuration.set(connectTimeoutDuration);
     this.readTimeoutDuration.set(readTimeoutDuration);
+
+    // Set object mapper
+    var simpleModule = new SimpleModule();
+    simpleModule.addDeserializer(Vehicle.class, new Vehicle.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(CompleteVehicle.class, new CompleteVehicle.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(ClimateState.class, new ClimateState.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(ChargeState.class, new ChargeState.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(DriveState.class, new DriveState.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(GuiSettings.class, new GuiSettings.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(MediaState.class, new MediaState.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(SoftwareUpdate.class, new SoftwareUpdate.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(SpeedLimitMode.class, new SpeedLimitMode.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(VehicleConfig.class, new VehicleConfig.Deserializer(this.unknownFieldsFunction));
+    simpleModule.addDeserializer(VehicleState.class, new VehicleState.Deserializer(this.unknownFieldsFunction));
+    objectMapper.registerModule(simpleModule);
+
+    // Set function
+    setUnknownFieldsFunction(unknownFieldsFunction);
+  }
+
+  @Nonnull
+  private static <T> T fromJson(
+    @Nonnull ObjectMapper objectMapper,
+    @Nonnull ReusableResponse response,
+    @Nonnull Class<T> type
+  )
+  throws APIProtocolException, ClientException{
+
+    try{
+
+      // Get body
+      String body = response.getBodyAsString()
+                            .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
+
+      // Forward it
+      return fromJson(objectMapper, body, type);
+
+    }catch(IOException e){
+      throw new ClientException("Failed to parse content of response body", e);
+    }
   }
 
   /**
@@ -154,9 +182,9 @@ public final class Client{
 
   @Nonnull
   private static <T> T fromJson(
+    @Nonnull ObjectMapper objectMapper,
     @Nonnull ReusableResponse response,
-    Class<T> type,
-    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+    @Nonnull TypeReference<T> typeToken
   )
   throws APIProtocolException, ClientException{
 
@@ -167,7 +195,7 @@ public final class Client{
                             .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
 
       // Forward it
-      return fromJson(body, type, debug);
+      return fromJson(objectMapper, body, typeToken);
 
     }catch(IOException e){
       throw new ClientException("Failed to parse content of response body", e);
@@ -176,31 +204,9 @@ public final class Client{
 
   @Nonnull
   private static <T> T fromJson(
-    @Nonnull ReusableResponse response,
-    TypeToken<T> typeToken,
-    @Nonnull AtomicReference<Function<Object,Boolean>> debug
-  )
-  throws APIProtocolException, ClientException{
-
-    try{
-
-      // Get body
-      String body = response.getBodyAsString()
-                            .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
-
-      // Forward it
-      return fromJson(body, typeToken, debug);
-
-    }catch(IOException e){
-      throw new ClientException("Failed to parse content of response body", e);
-    }
-  }
-
-  @Nonnull
-  private static <T> T fromJson(
+    @Nonnull ObjectMapper objectMapper,
     @Nonnull Response response,
-    Class<T> type,
-    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+    @Nonnull Class<T> type
   )
   throws APIProtocolException, ClientException{
 
@@ -211,7 +217,7 @@ public final class Client{
                                .orElseThrow(() -> new APIProtocolException("The request body is empty!"));
 
       // Forward it
-      return fromJson(body, type, debug);
+      return fromJson(objectMapper, body, type);
 
     }catch(IOException e){
       throw new ClientException("Failed to parse content of response body", e);
@@ -220,144 +226,56 @@ public final class Client{
 
   @Nonnull
   private static <T> T fromJson(
+    @Nonnull ObjectMapper objectMapper,
     @Nonnull String string,
-    Class<T> type,
-    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+    @Nonnull Class<T> type
   ) throws APIProtocolException{
     T item;
     try{
-      item = GSON.fromJson(string, type);
-    }catch(JsonSyntaxException e){
+      item = objectMapper.readValue(string, type);
+    }catch(JsonProcessingException e){
       // Log what was in the string and push it up
-      throw new JsonSyntaxException("Original: \n" + string, e);
+      throw new APIProtocolException(f(
+        "The JSON string is not in format of {} class. JSON message \n\"{}\"",
+        type.getName(),
+        string
+      ), e);
     }
     if(item == null) throw new APIProtocolException(f(
       "The JSON string is not in format of {} class. JSON message \n\"{}\"",
       type.getName(),
       string
     ));
-    checkJSONForMissingFields(string, item, debug);
     return item;
   }
 
-  @SuppressWarnings("unchecked") // Shouldn't have problem with casting
   @Nonnull
   private static <T> T fromJson(
+    @Nonnull ObjectMapper objectMapper,
     @Nonnull String string,
-    TypeToken<T> typeToken,
-    @Nonnull AtomicReference<Function<Object,Boolean>> debug
+    @Nonnull TypeReference<T> typeToken
   ) throws APIProtocolException{
-    var item = (T) GSON.fromJson(string, typeToken.getType());
+    T item;
+    try{
+      item = objectMapper.readValue(string, typeToken);
+    }catch(JsonProcessingException e){
+      // Log what was in the string and push it up
+      throw new APIProtocolException(f(
+        "The JSON string is not in format of {} class. JSON message \n\"{}\"",
+        typeToken.getType().getTypeName(),
+        string
+      ), e);
+    }
     if(item == null) throw new APIProtocolException(f(
       "The JSON string is not in format of {} class. JSON message \n\"{}\"",
       typeToken.getType().getTypeName(),
       string
     ));
-    checkJSONForMissingFields(string, item, debug);
     return item;
   }
 
-  private static void checkJSONForMissingFields(
-    @Nonnull String string,
-    Object result,
-    AtomicReference<Function<Object,Boolean>> debug
-  ) throws APIProtocolException{
-
-    // Deserialize JSON but to plain old map
-    Map<String,Object> map = GSON.fromJson(string, new TypeToken<Map<String,Object>>(){
-    }.getType());
-
-    // Run it
-    recursiveCheckJSONForMissingFields(map, result, debug);
-  }
-
-  @SuppressWarnings("unchecked")
-  private static void recursiveCheckJSONForMissingFields(
-    @Nonnull Map<String,Object> map,
-    @Nonnull Object result,
-    AtomicReference<Function<Object,Boolean>> debug
-  ) throws APIProtocolException{
-
-    // Turn fields to set
-    Map<String,Field> fields = getFields(result.getClass()).stream()
-                                                           .collect(
-                                                             Collectors.toMap(
-                                                               Field::getName,
-                                                               item -> item
-                                                             )
-                                                           );
-
-    // Go every entry in the map - check if it exists in object
-    for(var entry : map.entrySet()){
-
-      if(!fields.containsKey(entry.getKey())){
-
-        // Log to logger if debugger is undefined
-        if(debug.get() == null){
-          LOGGER.warn(
-            "Class '{}' is missing a field called '{}' ({}), Stacktrace: {}",
-            result.getClass().getName(),
-            entry.getKey(),
-            entry.getValue().getClass().getName(),
-            Arrays.stream(Thread.currentThread().getStackTrace())
-                  .map(StackTraceElement::toString)
-                  .collect(Collectors.joining("\n"))
-          );
-        }else{
-
-          // Otherwise pass it into debugger
-          if(debug.get().apply(null)) throw new APIProtocolException(null); // TODO define message
-
-        }
-      }
-
-      // If map, then get equivalent object and follow that in
-      if(entry.getValue() instanceof Map){
-
-        // Get inner map
-        var inner = (Map<String,Object>) entry.getValue();
-
-        // Get equivalent object
-        var field = fields.get(entry.getKey());
-        try{
-          var value = field.get(result);
-
-          // Now analyze that
-          recursiveCheckJSONForMissingFields(inner, value, debug);
-
-        }catch(IllegalAccessException e){
-
-          // Try temporarily reduce access
-          try{
-            field.setAccessible(true);
-
-            var value = field.get(result);
-
-            // Now analyze that
-            recursiveCheckJSONForMissingFields(inner, value, debug);
-
-          }catch(IllegalAccessException ex){
-            ex.printStackTrace();
-          }finally{
-            field.setAccessible(false);
-          }
-        }
-      }
-
-    }
-
-  }
-
-  private static Set<Field> getFields(@Nonnull Class<?> item){
-
-    Set<Field> fields = new HashSet<>(Arrays.asList(item.getDeclaredFields()));
-
-    // Check if there's a parent class that is not Object
-    if(item.getSuperclass() != null){
-      fields.addAll(getFields(item.getSuperclass()));
-    }
-
-    return fields;
+  public void setUnknownFieldsFunction(@Nullable Function<Map<String,Optional<Object>>,Boolean> function){
+    unknownFieldsFunction.set(function == null ? item -> false : function);
   }
 
   public void resetConnectTimeoutDuration(){
@@ -438,13 +356,13 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, SuccessfulAuthenticationResponse.class, debug);
+        case 200 -> fromJson(objectMapper, response, SuccessfulAuthenticationResponse.class);
 
         // Unauthorized
         case 401 -> {
 
           // Parse error
-          var error = fromJson(response, GenericErrorResponse.class, debug);
+          var error = fromJson(objectMapper, response, GenericErrorResponse.class);
 
           // If we get an response, ignore other error
           if(error.getResponse().isPresent()){
@@ -546,13 +464,13 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, SuccessfulAuthenticationResponse.class, debug);
+        case 200 -> fromJson(objectMapper, response, SuccessfulAuthenticationResponse.class);
 
         // Unauthorized
         case 401 -> {
 
           // Parse error
-          var error = fromJson(response, GenericErrorResponse.class, debug);
+          var error = fromJson(objectMapper, response, GenericErrorResponse.class);
 
           // If we get an response, ignore other error
           if(error.getResponse().isPresent()){
@@ -563,7 +481,7 @@ public final class Client{
               error
             )));
 
-            // Check if it's invalid password
+            // Check if it's invalid password TODO correct place?
             if(!item.startsWith("authorization_required_for_txid_")) throw new APIProtocolException(f(
               "Unexpected string in 401 error response: {}",
               error
@@ -577,6 +495,18 @@ public final class Client{
             // Check if it's invalid_client
             if("invalid_client".equals(error.getError().orElse(""))){
               throw new ClientException(error.getErrorDescription().orElseThrow());
+            }
+
+            // Check if it's invalid_grant
+            if("invalid_grant".equals(error.getError().orElse(""))){
+
+              // Check if error description matches
+              if("The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client."
+                .equals(error.getErrorDescription().orElse(""))){
+
+                // It's invalid token error
+                throw new ReAuthenticationException();
+              }
             }
 
             // Otherwise report protocol error
@@ -618,7 +548,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, VehiclesResponse.class, debug);
+        case 200 -> fromJson(objectMapper, response, VehiclesResponse.class);
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -656,7 +586,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> Optional.of(fromJson(response, VehicleResponse.class, debug));
+        case 200 -> Optional.of(fromJson(objectMapper, response, VehicleResponse.class));
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -707,7 +637,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, VehicleResponse.class, debug);
+        case 200 -> fromJson(objectMapper, response, VehicleResponse.class);
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -737,8 +667,7 @@ public final class Client{
     @Nonnull String accessToken,
     @Nonnull String idString,
     @Nonnull String command
-  )
-  throws VehicleIDNotFoundException{
+  ) throws VehicleIDNotFoundException{
 
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
@@ -759,7 +688,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, SimpleReasonResponse.class, debug);
+        case 200 -> fromJson(objectMapper, response, SimpleReasonResponse.class);
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -788,7 +717,7 @@ public final class Client{
   private <T> T getVehicleDataForm(
     @Nonnull String accessToken,
     @Nonnull String idString,
-    @Nonnull TypeToken<T> typeToken,
+    @Nonnull TypeReference<T> typeToken,
     @Nonnull String path,
     @Nonnegative int attemptsRemaining
   ) throws VehicleIDNotFoundException{
@@ -806,7 +735,7 @@ public final class Client{
       return switch(response.code()){
 
         // Success
-        case 200 -> fromJson(response, typeToken, debug);
+        case 200 -> fromJson(objectMapper, response, typeToken);
 
         // Unauthenticated
         case 401 -> throw new InvalidAccessTokenException();
@@ -993,7 +922,7 @@ public final class Client{
   private <T> T getVehicleDataForm(
     @Nonnull String accessToken,
     @Nonnull String idString,
-    @Nonnull TypeToken<T> typeToken,
+    @Nonnull TypeReference<T> typeToken,
     @Nonnull String path
   )
   throws VehicleIDNotFoundException{
@@ -1011,7 +940,7 @@ public final class Client{
     Validation.assertNonnull(idString, "idString");
 
     // Type
-    var type = new TypeToken<CompleteVehicleDataResponse>(){
+    var type = new TypeReference<CompleteVehicleDataResponse>(){
     };
 
     // Get the data
@@ -1029,7 +958,7 @@ public final class Client{
     Validation.assertNonnull(idString, "idString");
 
     // Type
-    var typeToken = new TypeToken<SimpleResponse<ChargeState>>(){
+    var typeToken = new TypeReference<SimpleResponse<ChargeState>>(){
     };
 
     var result = getVehicleDataForm(accessToken, idString, typeToken, "data_request/charge_state");
@@ -1049,7 +978,7 @@ public final class Client{
     Validation.assertNonnull(idString, "idString");
 
     // Type
-    var typeToken = new TypeToken<SimpleResponse<ClimateState>>(){
+    var typeToken = new TypeReference<SimpleResponse<ClimateState>>(){
     };
 
     // Get the data
@@ -1067,7 +996,7 @@ public final class Client{
     Validation.assertNonnull(idString, "idString");
 
     // Type
-    var typeToken = new TypeToken<SimpleResponse<DriveState>>(){
+    var typeToken = new TypeReference<SimpleResponse<DriveState>>(){
     };
 
     // Get the data
@@ -1085,7 +1014,7 @@ public final class Client{
     Validation.assertNonnull(idString, "idString");
 
     // Type
-    var typeToken = new TypeToken<SimpleResponse<GuiSettings>>(){
+    var typeToken = new TypeReference<SimpleResponse<GuiSettings>>(){
     };
 
     // Get the data
@@ -1103,7 +1032,7 @@ public final class Client{
     Validation.assertNonnull(idString, "idString");
 
     // Type
-    var typeToken = new TypeToken<SimpleResponse<VehicleState>>(){
+    var typeToken = new TypeReference<SimpleResponse<VehicleState>>(){
     };
 
     // Get the data
@@ -1121,7 +1050,7 @@ public final class Client{
     Validation.assertNonnull(idString, "idString");
 
     // Type
-    var typeToken = new TypeToken<SimpleResponse<VehicleConfig>>(){
+    var typeToken = new TypeReference<SimpleResponse<VehicleConfig>>(){
     };
 
     // Get the data
@@ -1134,7 +1063,14 @@ public final class Client{
     @Nonnull
     @Override
     public Client build(){
-      return new Client(url, clientId, clientSecret, debug, connectTimeoutDuration, readTimeoutDuration);
+      return new Client(
+        url,
+        clientId,
+        clientSecret,
+        connectTimeoutDuration,
+        readTimeoutDuration,
+        unknownFieldsFunction
+      );
     }
   }
 }

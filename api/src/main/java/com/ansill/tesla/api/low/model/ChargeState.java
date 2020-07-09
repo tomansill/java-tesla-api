@@ -76,7 +76,7 @@ public final class ChargeState{
   private final Quantity<ElectricCurrent> chargerActualCurrent;
 
   @Nullable
-  private final String chargerPhases; // TODO find all possible enums
+  private final Integer chargerPhases; // TODO find all possible enums
 
   @Nonnull
   private final Quantity<ElectricCurrent> chargerPilotCurrent;
@@ -96,12 +96,12 @@ public final class ChargeState{
   @Nonnull
   private final Quantity<Length> estimatedBatteryRange; // Originally "est_battery_range"
 
-  @Nonnull
+  @Nullable
   private final String fastChargerBrand;
 
   private final boolean fastChargerPresent;
 
-  @Nonnull
+  @Nullable
   private final String fastChargerType;
 
   @Nonnull
@@ -109,8 +109,8 @@ public final class ChargeState{
 
   private final boolean managedChargingActive;
 
-  @Nonnull
-  private final String managedChargingStartTime; // TODO what is this
+  @Nullable
+  private final String managedChargingStartTime;
 
   private final boolean managedChargingUserCanceled;
 
@@ -138,7 +138,7 @@ public final class ChargeState{
   @Nonnull
   private final Quantity<Dimensionless> usableBatteryLevel;
 
-  @Nonnull
+  @Nullable
   private final String userChargeEnableRequest; // TODO what is this
 
   private ChargeState(
@@ -161,19 +161,19 @@ public final class ChargeState{
     @Nonnull Quantity<ElectricCurrent> chargeRate,
     boolean chargeToMaxRange,
     @Nonnull Quantity<ElectricCurrent> chargerActualCurrent,
-    @Nullable String chargerPhases,
+    int chargerPhases,
     @Nonnull Quantity<ElectricCurrent> chargerPilotCurrent,
     @Nonnull Quantity<Power> chargerPower,
     @Nonnull Quantity<ElectricPotential> chargerVoltage,
     @Nonnull ChargingState chargingState,
     @Nonnull String connChargeCable,
     @Nonnull Quantity<Length> estimatedBatteryRange,
-    @Nonnull String fastChargerBrand,
+    @Nullable String fastChargerBrand,
     boolean fastChargerPresent,
-    @Nonnull String fastChargerType,
+    @Nullable String fastChargerType,
     @Nonnull Quantity<Length> idealBatteryRange,
     boolean managedChargingActive,
-    @Nonnull String managedChargingStartTime,
+    @Nullable String managedChargingStartTime,
     boolean managedChargingUserCanceled,
     int maxRangeChargeCounter,
     @Nonnull Duration durationToFullCharge,
@@ -184,7 +184,7 @@ public final class ChargeState{
     @Nonnull Instant timestamp,
     boolean tripCharging,
     @Nonnull Quantity<Dimensionless> usableBatteryLevel,
-    @Nonnull String userChargeEnableRequest
+    @Nullable String userChargeEnableRequest
   ){
     this.batteryHeaterOn = batteryHeaterOn;
     this.batteryLevel = batteryLevel;
@@ -232,9 +232,9 @@ public final class ChargeState{
   }
 
   @Nonnull
-  public static ChargeState convert(@Nonnull com.ansill.tesla.api.raw.model.ChargeState chargeState){
+  public static ChargeState convert(@Nonnull com.ansill.tesla.api.data.model.ChargeState chargeState){
     return new ChargeState(
-      chargeState.getBatteryHeaterOn(),
+      chargeState.isBatteryHeaterOn(),
       Quantities.getQuantity(chargeState.getBatteryLevel(), Units.PERCENT),
       Quantities.getQuantity(chargeState.getBatteryRange(), ImperialUnits.MILE),
       Quantities.getQuantity(chargeState.getChargeCurrentRequest(), Units.AMPERE),
@@ -250,36 +250,36 @@ public final class ChargeState{
       Quantities.getQuantity(chargeState.getChargeLimitSocStd(), Units.PERCENT),
       Quantities.getQuantity(chargeState.getChargeMilesAddedIdeal(), ImperialUnits.MILE),
       Quantities.getQuantity(chargeState.getChargeMilesAddedRated(), ImperialUnits.MILE),
-      chargeState.getChargePortColdWeatherMode(),
-      chargeState.getChargePortDoorOpen(),
+      chargeState.hasChargePortColdWeatherMode(),
+      chargeState.isChargePortDoorOpen(),
       LatchState.valueOf(chargeState.getChargePortLatch().toUpperCase()),
       Quantities.getQuantity(chargeState.getChargeRate(), Units.AMPERE),
-      chargeState.getChargeToMaxRange(),
+      chargeState.isChargingToMaxRange(),
       Quantities.getQuantity(chargeState.getChargerActualCurrent(), Units.AMPERE),
       chargeState.getChargerPhases(),
-      Quantities.getQuantity(chargeState.getChargePilotCurrent(), Units.AMPERE),
+      Quantities.getQuantity(chargeState.getChargerPilotCurrent(), Units.AMPERE),
       Quantities.getQuantity(chargeState.getChargerPower(), Units.WATT),
       Quantities.getQuantity(chargeState.getChargerVoltage(), Units.VOLT),
       ChargingState.valueOf(chargeState.getChargingState().toUpperCase()),
       chargeState.getConnChargeCable(),
       Quantities.getQuantity(chargeState.getEstBatteryRange(), ImperialUnits.MILE),
-      chargeState.getFastChargerBrand(),
-      chargeState.getFastChargerPresent(),
+      chargeState.getFastChargerBrand().orElse(null),
+      chargeState.isFastChargerPresent(),
       chargeState.getFastChargerType(),
       Quantities.getQuantity(chargeState.getIdealBatteryRange(), ImperialUnits.MILE),
-      chargeState.getManagedChargingActive(),
-      chargeState.getManagedChargingStartTime(),
-      chargeState.getManagedChargingUserCanceled(),
-      chargeState.getMaxRangeChargerCounter(),
+      chargeState.isManagedChargingActive(),
+      chargeState.getManagedChargingStartTime().orElse(null),
+      chargeState.isManagedChargingUserCanceled(),
+      chargeState.getMaxRangeChargeCounter(),
       Duration.ofMinutes(chargeState.getMinutesToFullCharge()),
       chargeState.getNotEnoughPowerToHeat().orElse(null),
-      chargeState.getScheduledChargingPending(),
+      chargeState.isScheduledChargingPending(),
       chargeState.getScheduledChargingStartTime().map(Instant::parse).orElse(null),
       Duration.ofMinutes((int) (chargeState.getTimeToFullCharge() * 60)),
       Instant.ofEpochSecond(chargeState.getTimestamp()),
       chargeState.isTripCharging(),
       Quantities.getQuantity(chargeState.getUsableBatteryLevel(), Units.PERCENT),
-      chargeState.getUserChargeEnableRequest()
+      chargeState.getUserChargeEnableRequest().orElse(null)
     );
   }
 
@@ -374,7 +374,7 @@ public final class ChargeState{
   }
 
   @Nonnull
-  public Optional<String> getChargerPhases(){
+  public Optional<Integer> getChargerPhases(){
     return Optional.ofNullable(chargerPhases);
   }
 
@@ -409,8 +409,8 @@ public final class ChargeState{
   }
 
   @Nonnull
-  public String getFastChargerBrand(){
-    return fastChargerBrand;
+  public Optional<String> getFastChargerBrand(){
+    return Optional.ofNullable(fastChargerBrand);
   }
 
   public boolean isFastChargerPresent(){
@@ -418,8 +418,8 @@ public final class ChargeState{
   }
 
   @Nonnull
-  public String getFastChargerType(){
-    return fastChargerType;
+  public Optional<String> getFastChargerType(){
+    return Optional.ofNullable(fastChargerType);
   }
 
   @Nonnull
@@ -432,8 +432,8 @@ public final class ChargeState{
   }
 
   @Nonnull
-  public String getManagedChargingStartTime(){
-    return managedChargingStartTime;
+  public Optional<String> getManagedChargingStartTime(){
+    return Optional.ofNullable(managedChargingStartTime);
   }
 
   public boolean isManagedChargingUserCanceled(){
@@ -484,7 +484,7 @@ public final class ChargeState{
   }
 
   @Nonnull
-  public String getUserChargeEnableRequest(){
-    return userChargeEnableRequest;
+  public Optional<String> getUserChargeEnableRequest(){
+    return Optional.ofNullable(userChargeEnableRequest);
   }
 }

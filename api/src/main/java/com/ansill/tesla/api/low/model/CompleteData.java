@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.low.model;
 
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
@@ -65,15 +66,15 @@ public final class CompleteData{
   }
 
   @Nonnull
-  public static CompleteData convert(@Nonnull com.ansill.tesla.api.raw.model.CompleteVehicleData settings){
+  public static CompleteData convert(@Nonnull com.ansill.tesla.api.data.model.CompleteVehicle vehicle){
     return new CompleteData(
-      Vehicle.convert(settings),
-      VehicleState.convert(settings.getVehicleState()),
-      ClimateState.convert(settings.getClimateState()),
-      ChargeState.convert(settings.getChargeState()),
-      VehicleConfig.convert(settings.getVehicleConfig()),
-      GuiSettings.convert(settings.getGuiSettings()),
-      DriveState.convert(settings.getDriveState())
+      Vehicle.convert(vehicle),
+      VehicleState.convert(vehicle.getVehicleState()),
+      ClimateState.convert(vehicle.getClimateState()),
+      ChargeState.convert(vehicle.getChargeState()),
+      VehicleConfig.convert(vehicle.getVehicleConfig()),
+      GuiSettings.convert(vehicle.getGuiSettings()),
+      DriveState.convert(vehicle.getDriveState())
     );
   }
 

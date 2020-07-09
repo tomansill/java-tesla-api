@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.low;
 
+import com.ansill.tesla.api.data.model.response.CompleteVehicleDataResponse;
 import com.ansill.tesla.api.low.model.AccountCredentials;
 import com.ansill.tesla.api.low.model.ChargeState;
 import com.ansill.tesla.api.low.model.ClimateState;
@@ -15,7 +16,6 @@ import com.ansill.tesla.api.raw.exception.ClientException;
 import com.ansill.tesla.api.raw.exception.InvalidAccessTokenException;
 import com.ansill.tesla.api.raw.exception.ReAuthenticationException;
 import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
-import com.ansill.tesla.api.raw.model.CompleteVehicleDataResponse;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
@@ -507,7 +507,7 @@ public class Client{
                                                        .setUrl(this.url)
                                                        .setClientId(clientId)
                                                        .setClientSecret(clientSecret)
-                                                       .setDebugFunction(debug)
+                                                       .setUnknownFieldsFunction(unknownFieldsFunction)
                                                        .build());
     }
   }

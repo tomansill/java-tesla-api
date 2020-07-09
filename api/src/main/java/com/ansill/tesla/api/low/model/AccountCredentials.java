@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.low.model;
 
-import com.ansill.tesla.api.raw.model.SuccessfulAuthenticationResponse;
+import com.ansill.tesla.api.data.model.response.SuccessfulAuthenticationResponse;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
@@ -20,28 +20,23 @@ public final class AccountCredentials{
   private final String refreshToken;
 
   @Nonnull
-  private final Instant creationTime;
+  private final Instant createdAt;
 
   @Nonnull
-  private final Instant expirationTime;
+  private final Duration expireAt;
 
   public AccountCredentials(
     @Nonnull String accessToken,
     @Nonnull String refreshToken,
-    @Nonnull Instant creationTime,
-    @Nonnull Instant expirationTime
+    @Nonnull Instant createdAt,
+    @Nonnull Duration expireAt
   ){
 
     // Save values
     this.accessToken = Validation.assertNonnull(accessToken, "accessToken");
     this.refreshToken = Validation.assertNonnull(refreshToken, "refreshToken");
-    this.creationTime = Validation.assertNonnull(creationTime, "creationTime");
-    this.expirationTime = Validation.assertNonnull(expirationTime, "expirationTime");
-
-    // Ensure that creation and expiration times are valid
-    if(expirationTime.isBefore(creationTime) || expirationTime.equals(creationTime)){
-      throw new IllegalArgumentException("The expiration time is on or before creation time");
-    }
+    this.createdAt = Validation.assertNonnull(createdAt, "createdAt");
+    this.expireAt = Validation.assertNonnull(expireAt, "expireAt");
   }
 
   @Nonnull
@@ -53,15 +48,12 @@ public final class AccountCredentials{
     // Convert seconds to duration
     Duration lifetime = Duration.ofSeconds(response.getExpiresIn());
 
-    // Create expiry date
-    Instant expirationTime = creationTime.plus(lifetime);
-
     // Create object
     return new AccountCredentials(
       response.getAccessToken(),
       response.getRefreshToken(),
       creationTime,
-      expirationTime
+      lifetime
     );
   }
 
@@ -76,13 +68,13 @@ public final class AccountCredentials{
   }
 
   @Nonnull
-  public Instant getCreationTime(){
-    return creationTime;
+  public Instant getCreatedAt(){
+    return createdAt;
   }
 
   @Nonnull
-  public Instant getExpirationTime(){
-    return expirationTime;
+  public Duration getExpireAt(){
+    return expireAt;
   }
 
   @Override
@@ -92,16 +84,16 @@ public final class AccountCredentials{
 
     if(!accessToken.equals(that.accessToken)) return false;
     if(!refreshToken.equals(that.refreshToken)) return false;
-    if(!creationTime.equals(that.creationTime)) return false;
-    return expirationTime.equals(that.expirationTime);
+    if(!createdAt.equals(that.createdAt)) return false;
+    return expireAt.equals(that.expireAt);
   }
 
   @Override
   public int hashCode(){
     int result = accessToken.hashCode();
     result = 31 * result + refreshToken.hashCode();
-    result = 31 * result + creationTime.hashCode();
-    result = 31 * result + expirationTime.hashCode();
+    result = 31 * result + createdAt.hashCode();
+    result = 31 * result + expireAt.hashCode();
     return result;
   }
 
