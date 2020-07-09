@@ -168,6 +168,8 @@ public class MockServer implements AutoCloseable{
       path("model", new MockController(model));
     });
 
+    server.after(ctx -> System.out.println(ctx.resultString()));
+
     // Start it
     server.start(port);
   }

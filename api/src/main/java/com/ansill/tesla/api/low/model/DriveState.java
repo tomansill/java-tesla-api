@@ -1,7 +1,7 @@
 package com.ansill.tesla.api.low.model;
 
+import com.ansill.tesla.api.data.model.ShiftState;
 import com.ansill.tesla.api.model.ImperialUnits;
-import com.ansill.tesla.api.model.ShiftState;
 import com.ansill.tesla.api.raw.exception.APIProtocolException;
 import com.ansill.tesla.api.utility.UnitUtility;
 import tech.units.indriya.quantity.Quantities;

@@ -1,8 +1,8 @@
 package com.ansill.tesla.api.low.model;
 
-import com.ansill.tesla.api.model.ChargingState;
+import com.ansill.tesla.api.data.model.ChargingState;
+import com.ansill.tesla.api.data.model.LatchState;
 import com.ansill.tesla.api.model.ImperialUnits;
-import com.ansill.tesla.api.model.LatchState;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -261,11 +261,11 @@ public final class ChargeState{
       Quantities.getQuantity(chargeState.getChargerPower(), Units.WATT),
       Quantities.getQuantity(chargeState.getChargerVoltage(), Units.VOLT),
       ChargingState.valueOf(chargeState.getChargingState().toUpperCase()),
-      chargeState.getConnChargeCable(),
-      Quantities.getQuantity(chargeState.getEstBatteryRange(), ImperialUnits.MILE),
+      chargeState.getConnectedChargeCable().orElse(null),
+      Quantities.getQuantity(chargeState.getEstimatedBatteryRange(), ImperialUnits.MILE),
       chargeState.getFastChargerBrand().orElse(null),
       chargeState.isFastChargerPresent(),
-      chargeState.getFastChargerType(),
+      chargeState.getFastChargerType().orElse("<invalid>"),
       Quantities.getQuantity(chargeState.getIdealBatteryRange(), ImperialUnits.MILE),
       chargeState.isManagedChargingActive(),
       chargeState.getManagedChargingStartTime().orElse(null),

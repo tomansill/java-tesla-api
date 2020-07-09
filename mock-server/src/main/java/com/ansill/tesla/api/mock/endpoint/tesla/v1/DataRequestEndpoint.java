@@ -1,7 +1,6 @@
 package com.ansill.tesla.api.mock.endpoint.tesla.v1;
 
 import com.ansill.tesla.api.data.model.response.GenericErrorResponse;
-import com.ansill.tesla.api.data.model.response.SimpleResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.ChargeStateResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.ClimateStateResponse;
 import com.ansill.tesla.api.mock.endpoint.tesla.v1.response.DriveStateResponse;
@@ -30,7 +29,7 @@ public class DataRequestEndpoint implements EndpointGroup{
   @Nonnull
   private final VehiclesEndpoint vehiclesEndpoint;
 
-  public DataRequestEndpoint(
+  DataRequestEndpoint(
     @Nonnull AtomicReference<MockModel> model,
     @Nonnull VehiclesEndpoint vehiclesEndpoint
   ){
@@ -101,7 +100,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new SimpleResponse<>(vehicle.get().getClimateState()));
+    context.json(new ClimateStateResponse(vehicle.get().getClimateState().convert()));
     context.status(200);
   }
 
@@ -158,7 +157,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new SimpleResponse<>(vehicle.get().getChargeState()));
+    context.json(new ChargeStateResponse(vehicle.get().getChargeState().convert()));
     context.status(200);
   }
 
@@ -215,7 +214,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new SimpleResponse<>(vehicle.get().getDriveState()));
+    context.json(new DriveStateResponse(vehicle.get().getDriveState().convert()));
     context.status(200);
   }
 
@@ -273,7 +272,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new SimpleResponse<>(vehicle.get().getGuiSettings()));
+    context.json(new GuiSettingsResponse(vehicle.get().getGuiSettings().convert()));
     context.status(200);
   }
 
@@ -330,7 +329,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new SimpleResponse<>(vehicle.get().getVehicleState()));
+    context.json(new VehicleStateResponse(vehicle.get().getVehicleState().convert()));
     context.status(200);
   }
 
@@ -387,7 +386,7 @@ public class DataRequestEndpoint implements EndpointGroup{
     }
 
     // Get vehicles
-    context.json(new SimpleResponse<>(vehicle.get().getVehicleConfig()));
+    context.json(new VehicleConfigResponse(vehicle.get().getVehicleConfig().convert()));
     context.status(200);
   }
 }

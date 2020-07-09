@@ -1,4 +1,4 @@
-package com.ansill.tesla.api.model;
+package com.ansill.tesla.api.data.model;
 
 public enum ChargingState{
   DISCONNECTED,

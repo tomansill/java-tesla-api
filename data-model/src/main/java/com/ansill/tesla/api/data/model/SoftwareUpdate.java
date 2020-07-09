@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.HashSet;
@@ -20,8 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-import static com.ansill.tesla.api.data.utility.JacksonUtility.getInteger;
-import static com.ansill.tesla.api.data.utility.JacksonUtility.getString;
+import static com.ansill.tesla.api.data.utility.JacksonUtility.*;
 
 @JsonSerialize(using = SoftwareUpdate.Serializer.class)
 @JsonDeserialize(using = SoftwareUpdate.Deserializer.class)
@@ -29,7 +29,8 @@ import static com.ansill.tesla.api.data.utility.JacksonUtility.getString;
 public final class SoftwareUpdate{
   private final int downloadPercent;
 
-  private final long expectedDurationSeconds;
+  @Nullable
+  private final Long expectedDurationSeconds;
 
   private final int installPercent;
 
@@ -41,7 +42,7 @@ public final class SoftwareUpdate{
 
   public SoftwareUpdate(
     int downloadPercent,
-    long expectedDurationSeconds,
+    @Nullable Long expectedDurationSeconds,
     int installPercent,
     @Nonnull String status,
     @Nonnull String version
@@ -127,7 +128,7 @@ public final class SoftwareUpdate{
 
       // Get values
       var downloadPercent = getInteger(node, "download_perc", usedKeysSet);
-      var expectedDurationSeconds = getInteger(node, "expected_duration_sec", usedKeysSet);
+      var expectedDurationSeconds = getLongNullable(node, "expected_duration_sec", usedKeysSet);
       var installPercent = getInteger(node, "install_perc", usedKeysSet);
       var status = getString(node, "status", usedKeysSet);
       var version = getString(node, "version", usedKeysSet);

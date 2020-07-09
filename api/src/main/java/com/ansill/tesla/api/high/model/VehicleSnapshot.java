@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.high.model;
 
-import com.ansill.tesla.api.model.ShiftState;
+import com.ansill.tesla.api.data.model.ShiftState;
 import com.ansill.utility.Utility;
 
 import javax.annotation.Nonnull;

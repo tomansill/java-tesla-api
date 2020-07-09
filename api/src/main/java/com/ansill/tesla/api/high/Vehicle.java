@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.high;
 
+import com.ansill.tesla.api.data.model.ShiftState;
 import com.ansill.tesla.api.exception.VehicleSleepingException;
 import com.ansill.tesla.api.high.exception.VehicleNotFoundException;
 import com.ansill.tesla.api.high.model.BatteryState;
@@ -14,7 +15,6 @@ import com.ansill.tesla.api.high.model.SentryModeState;
 import com.ansill.tesla.api.high.model.VehicleConfig;
 import com.ansill.tesla.api.high.model.VehicleSnapshot;
 import com.ansill.tesla.api.model.CachedValue;
-import com.ansill.tesla.api.model.ShiftState;
 import com.ansill.tesla.api.raw.exception.VehicleIDNotFoundException;
 import com.ansill.validation.Validation;
 import org.slf4j.Logger;

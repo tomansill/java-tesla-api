@@ -53,7 +53,7 @@ public final class TestUtility{
       STATES.get(0),
       RANDOM.nextBoolean(),
       RANDOM.nextBoolean(),
-      RANDOM.nextInt(),
+      VehicleState.SUPPORTED_API_VERSION,
       RANDOM.nextBoolean() ? null : generateString(9),
       RANDOM.nextBoolean() ? null : generateString(9),
       Collections.emptyMap(),
@@ -97,7 +97,7 @@ public final class TestUtility{
 
   public static VehicleState generateVehicleState(){
     return new VehicleState(
-      RANDOM.nextInt(),
+      VehicleState.SUPPORTED_API_VERSION,
       generateString(32),
       RANDOM.nextBoolean(),
       generateString(32),
@@ -145,7 +145,7 @@ public final class TestUtility{
   private static SoftwareUpdate generateSoftwareUpdate(){
     return new SoftwareUpdate(
       RANDOM.nextInt(),
-      RANDOM.nextInt(),
+      RANDOM.nextLong(),
       RANDOM.nextInt(),
       generateString(32),
       generateString(21)

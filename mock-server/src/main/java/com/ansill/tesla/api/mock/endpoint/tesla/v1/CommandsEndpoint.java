@@ -21,10 +21,7 @@ public class CommandsEndpoint implements EndpointGroup{
   @Nonnull
   private final AtomicReference<MockModel> model;
 
-  public CommandsEndpoint(
-    @Nonnull AtomicReference<MockModel> model,
-    VehiclesEndpoint vehiclesEndpoint
-  ){
+  CommandsEndpoint(@Nonnull AtomicReference<MockModel> model){
     this.model = model;
   }
 

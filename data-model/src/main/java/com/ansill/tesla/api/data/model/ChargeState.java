@@ -54,6 +54,7 @@ public final class ChargeState{
 
   private final boolean chargePortDoorOpen;
 
+  @Nonnull
   private final String chargePortLatch;
 
   private final double chargeRate;
@@ -73,7 +74,7 @@ public final class ChargeState{
   @Nonnull
   private final String chargingState;
 
-  @Nonnull
+  @Nullable
   private final String connChargeCable;
 
   private final double estBatteryRange;
@@ -83,7 +84,7 @@ public final class ChargeState{
 
   private final boolean fastChargerPresent;
 
-  @Nonnull
+  @Nullable
   private final String fastChargerType;
 
   private final double idealBatteryRange;
@@ -134,7 +135,7 @@ public final class ChargeState{
     double chargeMilesAddedRated,
     boolean chargePortColdWeatherMode,
     boolean chargePortDoorOpen,
-    String chargePortLatch,
+    @Nonnull String chargePortLatch,
     double chargeRate,
     boolean chargeToMaxRange,
     int chargerActualCurrent,
@@ -143,11 +144,11 @@ public final class ChargeState{
     int chargerPower,
     int chargerVoltage,
     @Nonnull String chargingState,
-    @Nonnull String connChargeCable,
+    @Nullable String connChargeCable,
     double estBatteryRange,
     @Nullable String fastChargerBrand,
     boolean fastChargerPresent,
-    @Nonnull String fastChargerType,
+    @Nullable String fastChargerType,
     double idealBatteryRange,
     boolean managedChargingActive,
     @Nullable String managedChargingStartTime,
@@ -295,7 +296,7 @@ public final class ChargeState{
     if(getChargerPilotCurrent() != that.getChargerPilotCurrent()) return false;
     if(getChargerPower() != that.getChargerPower()) return false;
     if(getChargerVoltage() != that.getChargerVoltage()) return false;
-    if(Double.compare(that.getEstBatteryRange(), getEstBatteryRange()) != 0) return false;
+    if(Double.compare(that.getEstimatedBatteryRange(), getEstimatedBatteryRange()) != 0) return false;
     if(isFastChargerPresent() != that.isFastChargerPresent()) return false;
     if(Double.compare(that.getIdealBatteryRange(), getIdealBatteryRange()) != 0) return false;
     if(isManagedChargingActive() != that.isManagedChargingActive()) return false;
@@ -309,7 +310,7 @@ public final class ChargeState{
     if(getUsableBatteryLevel() != that.getUsableBatteryLevel()) return false;
     if(!getChargePortLatch().equals(that.getChargePortLatch())) return false;
     if(!getChargingState().equals(that.getChargingState())) return false;
-    if(!getConnChargeCable().equals(that.getConnChargeCable())) return false;
+    if(!getConnectedChargeCable().equals(that.getConnectedChargeCable())) return false;
     if(!getFastChargerBrand().equals(that.getFastChargerBrand())) return false;
     if(!getFastChargerType().equals(that.getFastChargerType())) return false;
     if(!getManagedChargingStartTime().equals(that.getManagedChargingStartTime())) return false;
@@ -351,8 +352,8 @@ public final class ChargeState{
     result = 31 * result + getChargerPower();
     result = 31 * result + getChargerVoltage();
     result = 31 * result + getChargingState().hashCode();
-    result = 31 * result + getConnChargeCable().hashCode();
-    temp = Double.doubleToLongBits(getEstBatteryRange());
+    result = 31 * result + getConnectedChargeCable().hashCode();
+    temp = Double.doubleToLongBits(getEstimatedBatteryRange());
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     result = 31 * result + getFastChargerBrand().hashCode();
     result = 31 * result + (isFastChargerPresent() ? 1 : 0);
@@ -415,11 +416,11 @@ public final class ChargeState{
   }
 
   @Nonnull
-  public String getConnChargeCable(){
-    return connChargeCable;
+  public Optional<String> getConnectedChargeCable(){
+    return Optional.ofNullable(connChargeCable);
   }
 
-  public double getEstBatteryRange(){
+  public double getEstimatedBatteryRange(){
     return estBatteryRange;
   }
 
@@ -433,8 +434,8 @@ public final class ChargeState{
   }
 
   @Nonnull
-  public String getFastChargerType(){
-    return fastChargerType;
+  public Optional<String> getFastChargerType(){
+    return Optional.ofNullable(fastChargerType);
   }
 
   public double getIdealBatteryRange(){
@@ -549,11 +550,11 @@ public final class ChargeState{
       var chargerPower = JacksonUtility.getInteger(node, "charger_power", usedKeysSet);
       var chargerVoltage = JacksonUtility.getInteger(node, "charger_voltage", usedKeysSet);
       var chargingState = JacksonUtility.getString(node, "charging_state", usedKeysSet);
-      var connChargeCable = JacksonUtility.getString(node, "conn_charge_cable", usedKeysSet);
+      var connChargeCable = JacksonUtility.getStringNullable(node, "conn_charge_cable", usedKeysSet);
       var estBatteryRange = JacksonUtility.getDouble(node, "est_battery_range", usedKeysSet);
       var fastChargerBrand = JacksonUtility.getStringNullable(node, "fast_charger_brand", usedKeysSet);
       var fastChargerPresent = JacksonUtility.getBoolean(node, "fast_charger_present", usedKeysSet);
-      var fastChargerType = JacksonUtility.getString(node, "fast_charger_type", usedKeysSet);
+      var fastChargerType = JacksonUtility.getStringNullable(node, "fast_charger_type", usedKeysSet);
       var idealBatteryRange = JacksonUtility.getDouble(node, "ideal_battery_range", usedKeysSet);
       var managedChargingActive = JacksonUtility.getBoolean(node, "managed_charging_active", usedKeysSet);
       var managedChargingStartTime = JacksonUtility.getStringNullable(node, "managed_charging_start_time", usedKeysSet);

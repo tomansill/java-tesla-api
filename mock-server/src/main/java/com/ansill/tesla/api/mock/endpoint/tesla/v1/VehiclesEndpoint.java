@@ -29,7 +29,7 @@ public class VehiclesEndpoint implements EndpointGroup{
   @Nonnull
   private final AtomicReference<MockModel> model;
 
-  public VehiclesEndpoint(@Nonnull AtomicReference<MockModel> model){
+  VehiclesEndpoint(@Nonnull AtomicReference<MockModel> model){
     this.model = model;
   }
 
@@ -41,7 +41,7 @@ public class VehiclesEndpoint implements EndpointGroup{
       get("vehicle_data", this::vehicleData);
       get("data", this::vehicleDataAlias);
       path("data_request", new DataRequestEndpoint(model, this));
-      path("commands", new CommandsEndpoint(model, this));
+      path("commands", new CommandsEndpoint(model));
     });
   }
 
@@ -60,7 +60,6 @@ public class VehiclesEndpoint implements EndpointGroup{
     return model.get().getAccountByAccessToken(token);
 
   }
-
 
   @OpenApi(
     path = "/api/v1/vehicles",            // only necessary to include when using static method references

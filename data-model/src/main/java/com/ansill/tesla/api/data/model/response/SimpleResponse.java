@@ -13,9 +13,10 @@ import static com.ansill.utility.Utility.simpleToString;
 public class SimpleResponse<T>{
 
   /** Response */
-  private T response;
+  private final T response;
 
   public SimpleResponse(){
+    response = null;
   }
 
   /**

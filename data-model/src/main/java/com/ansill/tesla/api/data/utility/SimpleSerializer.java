@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 import static com.ansill.utility.Utility.f;
@@ -59,7 +60,8 @@ public class SimpleSerializer extends StdSerializer<Object>{
     gen.writeStartObject();
 
     // Build fields
-    var fields = new HashSet<Field>();
+    var fields = new LinkedList<Field>();
+    var claimedFields = new HashSet<Field>();
     Class<?> clazz = value.getClass();
     while(clazz != Object.class){
 
@@ -67,11 +69,16 @@ public class SimpleSerializer extends StdSerializer<Object>{
       fields.addAll(Arrays.stream(clazz.getDeclaredFields())
                           .filter(item -> !Modifier.isStatic(item.getModifiers()))
                           .filter(item -> !item.getName().startsWith("$") && !item.getName().startsWith("_"))
+                          .filter(claimedFields::add)
                           .collect(Collectors.toList()));
 
       // Get superclass
       clazz = clazz.getSuperclass();
     }
+
+    // Sort it
+    //var sortedFields = new LinkedList<>(fields);
+    //sortedFields.sort(Comparator.comparing(Field::getName));
 
     // Get fields
     for(var field : fields){
