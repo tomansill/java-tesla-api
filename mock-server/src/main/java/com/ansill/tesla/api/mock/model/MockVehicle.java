@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import static com.ansill.tesla.api.mock.MockUtility.generateString;
-import static com.ansill.tesla.api.mock.MockUtility.simpleToString;
+import static com.ansill.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 public class MockVehicle{
@@ -131,7 +131,7 @@ public class MockVehicle{
       "online",
       false,
       true,
-      6,
+      com.ansill.tesla.api.data.model.VehicleState.SUPPORTED_API_VERSION,
       null,
       null,
       DriveState.generateParked(),
@@ -1955,7 +1955,7 @@ public class MockVehicle{
     public static VehicleState generate(){
       var random = new Random();
       return new VehicleState(
-        random.nextInt(),
+        com.ansill.tesla.api.data.model.VehicleState.SUPPORTED_API_VERSION,
         null,
         null,
         true,
