@@ -2,3 +2,5 @@
 .attach_pid*
 **/*.iml
 target/
+ignored/
+**/*.versionsBackup
