@@ -119,6 +119,19 @@ public class MockModel{
     return found.get();
   }
 
+  public boolean removeVehicle(@Nonnull MockVehicle vehicle){
+    AtomicBoolean found = new AtomicBoolean(false);
+
+    // Get matching vehicle
+    var returnedSet = vehicles.values()
+                              .stream()
+                              .filter(item -> item.containsKey(vehicle.getIdString().toLowerCase()))
+                              .findAny()
+                              .orElseThrow();
+
+    return returnedSet.remove(vehicle.getIdString().toLowerCase()) != null;
+  }
+
   @Nonnull
   public Optional<MockSession> authenticate(@Nonnull String emailAddress, @Nonnull String password){
     var sessionRef = new AtomicReference<MockSession>();

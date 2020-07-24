@@ -11,6 +11,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.ansill.utility.Utility.f;
@@ -108,6 +109,11 @@ public class SimpleSerializer extends StdSerializer<Object>{
         }finally{
           field.setAccessible(false);
         }
+      }
+
+      // Get object class
+      if(object instanceof Optional<?> optional){
+        object = optional.orElse(null);
       }
 
       // Write object
