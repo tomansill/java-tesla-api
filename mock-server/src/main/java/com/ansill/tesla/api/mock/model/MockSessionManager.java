@@ -36,6 +36,10 @@ public class MockSessionManager{
     this.defaultSessionDuration = Validation.assertNonnull(defaultSessionDuration, "defaultSessionDuration");
   }
 
+  void pingAccount(@Nonnull MockAccount account){
+    accountsToSessions.putIfAbsent(account, new HashSet<>());
+  }
+
   @Nonnull
   private MockSession getSession(){
 

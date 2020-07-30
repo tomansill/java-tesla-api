@@ -3,6 +3,7 @@ package com.ansill.tesla.api.mock.model;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,6 +73,7 @@ public class MockModel{
     if(accounts.containsKey(emailAddress.toLowerCase())) throw new IllegalStateException(
       "Duplicate account with same email address exists!");
     accounts.put(emailAddress.toLowerCase(), account);
+    sessionManager.pingAccount(account);
     return account;
   }
 
@@ -230,5 +232,10 @@ public class MockModel{
   @Nonnull
   public Optional<Set<MockSession>> getSessions(@Nonnull MockAccount acct){
     return sessionManager.getSessions(acct);
+  }
+
+  @Nonnull
+  public Collection<MockAccount> getAllAccounts(){
+    return this.accounts.values();
   }
 }

@@ -16,6 +16,7 @@ import io.javalin.plugin.openapi.annotations.OpenApi;
 import io.javalin.plugin.openapi.ui.ReDocOptions;
 import io.javalin.plugin.openapi.ui.SwaggerOptions;
 import io.swagger.v3.oas.models.info.Info;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,13 +144,22 @@ public class MockServer implements AutoCloseable{
       }
     });
     server.exception(NotFoundResponse.class, (exception, ctx) -> {
-      if(ctx.path().contains("api") || ctx.path().contains("oauth")){
+      if(
+        ctx.path().contains("api") ||
+        ctx.path().contains("oauth") ||
+        (ctx.path().contains("model") && "html".equalsIgnoreCase(ctx.queryParam("type")))
+      ){
         ctx.contentType("application/json");
         var map = new HashMap<>();
         map.put("code", 404);
         map.put("message", "not found");
         ctx.json(map);
+        return;
       }
+      ctx.contentType("text/html");
+      var document = Document.createShell("");
+      document.body().appendElement("h1").text("Not Found");
+      ctx.result(document.toString());
     });
 
     // Set up routes
