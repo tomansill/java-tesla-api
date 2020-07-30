@@ -19,6 +19,20 @@ import static com.ansill.utility.Utility.simpleToString;
 @SuppressWarnings("unused")
 public class MockVehicle{
 
+  private boolean hidden = false;
+
+  public void suspend(){
+    hidden = true;
+  }
+
+  public void unsuspend(){
+    hidden = false;
+  }
+
+  public boolean isHidden(){
+    return hidden;
+  }
+
   @Nonnull
   private final String vin;
 
