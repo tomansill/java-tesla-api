@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.ansill.tesla.api.mock.MockUtility.generateLegibleString;
 import static com.ansill.tesla.api.mock.MockUtility.generateString;
 import static com.ansill.utility.Utility.simpleToString;
 
@@ -138,7 +139,7 @@ public class MockVehicle{
       Math.abs(random.nextLong()),
       Math.abs(random.nextLong()),
       generateString(32),
-      generateString(32),
+      generateLegibleString(),
       generateString(32),
       generateString(5),
       Collections.singletonList(generateString(32)),

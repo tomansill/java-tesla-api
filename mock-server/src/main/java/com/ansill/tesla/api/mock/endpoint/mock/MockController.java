@@ -3,6 +3,7 @@ package com.ansill.tesla.api.mock.endpoint.mock;
 import com.ansill.tesla.api.mock.model.MockAccount;
 import com.ansill.tesla.api.mock.model.MockModel;
 import com.ansill.tesla.api.mock.model.MockSession;
+import com.ansill.tesla.api.mock.model.MockVehicle;
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
 import io.javalin.websocket.WsHandler;
@@ -47,8 +48,48 @@ public class MockController implements EndpointGroup{
     get("user/:username/session/:session", this::deleteSessionConfirm);
     post("user/:username/session/:session", this::deleteSession);
     get("user/:username/vehicle&create", this::createVehicle);
-    //get("user/:username/vehicle/:session", this::deleteSessionConfirm);
-    //post("user/:username/vehicle/:session", this::deleteVehicle);
+    get("user/:username/vehicle/:vehicle", this::getVehicle);
+    post("user/:username/vehicle/:vehicle/namechange", this::changeVehicleName);
+    post("user/:username/vehicle/:vehicle", this::deleteVehicle);
+  }
+
+  private void changeVehicleName(Context context){
+
+    // Get user
+    var user = getUsername(context);
+    if(user == null) return;
+
+    // Get vehicle
+    var vehicle = getVehicle(user, context);
+    if(vehicle == null) return;
+
+    // Get new name
+    var name = context.formParam("new_name");
+    if(name == null || name.isBlank()) return;
+
+    // Set display name
+    vehicle.setDisplayName(name);
+
+    // Switch on html or json
+    if(!"json".equalsIgnoreCase(context.header("type"))){
+
+      // Set up JSoup
+      var document = Document.createShell("");
+
+      // Add title
+      document.head().appendElement("title").text(f(TITLE + ": Vehicle '{}'", vehicle.getIdString()));
+
+      // Add header
+      document.body().appendElement("h1").text(f("Vehicle {} has been changed", vehicle.getIdString()));
+
+      // Go back
+      document.body().appendElement("a").attr("href", f("../{}", vehicle.getIdString())).text("Go Back");
+
+      // Return it
+      context.contentType("text/html");
+      context.result(document.toString());
+
+    }else throw new UnsupportedOperationException();
   }
 
   private void createVehicle(Context context){
@@ -234,6 +275,51 @@ public class MockController implements EndpointGroup{
     return mockSession.orElseThrow();
   }
 
+  @Nullable
+  private MockVehicle getVehicle(MockAccount user, Context context){
+
+    // Get session
+    var vehicleId = context.pathParam("vehicle");
+    var mockVehicle = model.get()
+                           .getVehicles(user)
+                           //.orElseThrow()
+                           .stream()
+                           .filter(item -> item.getIdString().equals(vehicleId))
+                           .findAny();
+
+    // Error if user does not exist
+    if(mockVehicle.isEmpty()){
+
+      // Switch on html or json
+      if(!"json".equalsIgnoreCase(context.header("type"))){
+
+        // Set up JSoup
+        var document = Document.createShell("");
+
+        // Add title
+        document.head().appendElement("title").text(f(TITLE + ": Vehicle Id '{}'", vehicleId));
+
+        // Add header
+        document.body().appendElement("h1").text(f("Vehicle Id '{}' not found", vehicleId));
+
+        // Add return
+        document.body().appendElement("a").attr("href", ".").text("Go Back");
+
+        // Return it
+        context.contentType("text/html");
+        context.status(404);
+        context.result(document.toString());
+        return null;
+
+      }else{
+        throw new UnsupportedOperationException();
+      }
+    }
+
+    // Return it
+    return mockVehicle.orElseThrow();
+  }
+
   private void deleteSessionConfirm(Context context){
 
     // Get user
@@ -269,6 +355,57 @@ public class MockController implements EndpointGroup{
     }else throw new UnsupportedOperationException();
   }
 
+  private void getVehicle(Context context){
+
+    // Get user
+    var user = getUsername(context);
+    if(user == null) return;
+
+    // Get vehicle
+    var vehicle = getVehicle(user, context);
+    if(vehicle == null) return;
+
+    // Switch on html or json
+    if(!"json".equalsIgnoreCase(context.header("type"))){
+
+      // Set up JSoup
+      var document = Document.createShell("");
+
+      // Add title
+      document.head().appendElement("title").text(f(TITLE + ": User '{}'", user.getEmailAddress()));
+
+      // Add header
+      document.body().appendElement("h1").text(f(
+        "Vehicle id '{}' for User '{}'",
+        vehicle.getIdString(),
+        user.getEmailAddress()
+      ));
+
+      // Name Change dialog
+      document.body().appendElement("h4").text(f("Change vehicle name: Current: {}", vehicle.getDisplayName()));
+      var form = document.body().appendElement("form").attr("method", "POST").attr(
+        "action",
+        f("/model/user/{}/vehicle/{}/namechange", user.getEmailAddress(), vehicle.getIdString())
+      );
+      form.appendElement("input")
+          .attr("type", "text")
+          .attr("name", "new_name")
+          .attr("value", vehicle.getDisplayName())
+          .attr("placeholder", "New Name");
+      form.appendElement("input").attr("type", "submit").attr("value", "Change Name");
+
+      // Delete dialog
+      document.body().appendElement("h4").text("Delete vehicle?");
+      form = document.body().appendElement("form").attr("method", "POST");
+      form.appendElement("input").attr("type", "submit").attr("value", "Delete");
+
+      // Return it
+      context.contentType("text/html");
+      context.result(document.toString());
+
+    }else throw new UnsupportedOperationException();
+  }
+
   private void deleteSession(Context context){
 
     // Get user
@@ -293,6 +430,41 @@ public class MockController implements EndpointGroup{
 
       // Add header
       document.body().appendElement("h1").text(f("Session for User '{}' has been deleted", user.getEmailAddress()));
+
+      // Go back
+      document.body().appendElement("a").attr("href", "..").text("Go Back");
+
+      // Return it
+      context.contentType("text/html");
+      context.result(document.toString());
+
+    }else throw new UnsupportedOperationException();
+  }
+
+  private void deleteVehicle(Context context){
+
+    // Get user
+    var user = getUsername(context);
+    if(user == null) return;
+
+    // Get vehicle
+    var vehicle = getVehicle(user, context);
+    if(vehicle == null) return;
+
+    // Delete it
+    model.get().removeVehicle(vehicle);
+
+    // Switch on html or json
+    if(!"json".equalsIgnoreCase(context.header("type"))){
+
+      // Set up JSoup
+      var document = Document.createShell("");
+
+      // Add title
+      document.head().appendElement("title").text(f(TITLE + ": User '{}'", user.getEmailAddress()));
+
+      // Add header
+      document.body().appendElement("h1").text(f("Vehicle for User '{}' has been deleted", user.getEmailAddress()));
 
       // Go back
       document.body().appendElement("a").attr("href", "..").text("Go Back");

@@ -24,10 +24,12 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static com.ansill.utility.Utility.generateString;
 import static io.javalin.apibuilder.ApiBuilder.get;
 import static io.javalin.apibuilder.ApiBuilder.path;
 
@@ -62,13 +64,24 @@ public class MockServer implements AutoCloseable{
 
   public static void main(String... args) throws InterruptedException{
 
+    // Random Generator
+    Random randomGenerator;
+
+    if(args.length != 0) randomGenerator = new Random(args[0].hashCode());
+    else randomGenerator = new Random();
+
     // Set up model
-    var model = new AtomicReference<>(new MockModel("wefw", "sefew"));
+    var model = new AtomicReference<>(new MockModel(
+      generateString(randomGenerator, 64),
+      generateString(randomGenerator, 64)
+    ));
 
     // Run it
     var cdl = new CountDownLatch(1);
     try(var server = new MockServer(model)){
       System.out.println("Port: " + server.getPort());
+      System.out.println("Client Id: " + model.get().getClientId());
+      System.out.println("Client Secret: " + model.get().getClientSecret());
       LOGGER.info("Mock Server started");
       cdl.await();
     }
