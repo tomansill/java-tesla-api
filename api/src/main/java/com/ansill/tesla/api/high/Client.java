@@ -10,14 +10,18 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 /** Highly-Opinionated client */
-public final class Client{
+public final class Client implements AutoCloseable{
 
   /** Default fast changing data lifetime - used to prevent too-frequent polling */
   private static final Duration DEFAULT_FAST_CHANGING_DATA_LIFETIME = Duration.ofMillis(100); // 1/10 seconds
@@ -28,6 +32,14 @@ public final class Client{
   /** Low-level client */
   @Nonnull
   private final com.ansill.tesla.api.low.Client client;
+
+  /** Closed flag */
+  @Nonnull
+  private final AtomicBoolean closed = new AtomicBoolean(false);
+
+  /** Set of active accounts */
+  @Nonnull
+  private final Set<Account> accounts = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
   /** Lifetime in duration for fast-changing data to be cached in the memory before it's purged */
   @Nonnull
@@ -103,6 +115,10 @@ public final class Client{
    */
   @Nonnull
   public Optional<Account> authenticate(@Nonnull String emailAddress, @Nonnull String password){
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     try{
       return Optional.of(new Account(
         client,
@@ -110,7 +126,8 @@ public final class Client{
         new AtomicReference<>(fastChangingDataLifetime),
         new AtomicReference<>(slowChangingDataLifetime),
         null,
-        null
+        null,
+        this.accounts::remove
       ));
     }catch(AuthenticationException e){
       return Optional.empty();
@@ -131,6 +148,10 @@ public final class Client{
     @Nonnull String password,
     @Nonnull Duration refreshOffsetDuration
   ){
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
     try{
       return Optional.of(new Account(
@@ -139,7 +160,8 @@ public final class Client{
         new AtomicReference<>(fastChangingDataLifetime),
         new AtomicReference<>(slowChangingDataLifetime),
         null,
-        refreshOffsetDuration
+        refreshOffsetDuration,
+        this.accounts::remove
       ));
     }catch(AuthenticationException e){
       return Optional.empty();
@@ -162,6 +184,10 @@ public final class Client{
     @Nonnull Consumer<AccountCredentials> consumer,
     @Nonnull Consumer<ReAuthenticationException> onError
   ){
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     try{
 
       // Refresh now
@@ -177,7 +203,8 @@ public final class Client{
           consumer,
           Validation.assertNonnull(onError, "onError")
         ),
-        null
+        null,
+        this.accounts::remove
       ));
     }catch(AuthenticationException e){
       return Optional.empty();
@@ -203,6 +230,10 @@ public final class Client{
     @Nonnull Consumer<ReAuthenticationException> onError,
     @Nonnull Duration refreshOffsetDuration
   ){
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     try{
 
       refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
@@ -220,7 +251,8 @@ public final class Client{
           consumer,
           Validation.assertNonnull(onError, "onError")
         ),
-        refreshOffsetDuration
+        refreshOffsetDuration,
+        this.accounts::remove
       ));
     }catch(AuthenticationException e){
       return Optional.empty();
@@ -235,6 +267,10 @@ public final class Client{
    */
   @Nonnull
   public Optional<Account> authenticate(@Nonnull String refreshToken){
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     try{
       return Optional.of(new Account(
         client,
@@ -242,7 +278,8 @@ public final class Client{
         new AtomicReference<>(fastChangingDataLifetime),
         new AtomicReference<>(slowChangingDataLifetime),
         null,
-        null
+        null,
+        this.accounts::remove
       ));
     }catch(ReAuthenticationException e){
       return Optional.empty();
@@ -258,6 +295,11 @@ public final class Client{
    */
   @Nonnull
   public Optional<Account> authenticate(@Nonnull String refreshToken, @Nonnull Duration refreshOffsetDuration){
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
+    // Check parameter
     refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
     try{
       return Optional.of(new Account(
@@ -266,7 +308,8 @@ public final class Client{
         new AtomicReference<>(fastChangingDataLifetime),
         new AtomicReference<>(slowChangingDataLifetime),
         null,
-        refreshOffsetDuration
+        refreshOffsetDuration,
+        this.accounts::remove
       ));
     }catch(ReAuthenticationException e){
       return Optional.empty();
@@ -287,6 +330,10 @@ public final class Client{
     @Nonnull Consumer<AccountCredentials> consumer,
     @Nonnull Consumer<ReAuthenticationException> onError
   ){
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     try{
 
       // Refresh now
@@ -303,7 +350,8 @@ public final class Client{
           consumer,
           Validation.assertNonnull(onError, "onError")
         ),
-        null
+        null,
+        this.accounts::remove
       ));
     }catch(ReAuthenticationException e){
       return Optional.empty();
@@ -326,7 +374,13 @@ public final class Client{
     @Nonnull Consumer<ReAuthenticationException> onError,
     @Nonnull Duration refreshOffsetDuration
   ){
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
+    // Check refresh parameter
     refreshOffsetDuration = Validation.assertNonnull(refreshOffsetDuration, "refreshOffsetDuration");
+
     try{
 
       // Refresh now
@@ -343,7 +397,8 @@ public final class Client{
           consumer,
           Validation.assertNonnull(onError, "onError")
         ),
-        refreshOffsetDuration
+        refreshOffsetDuration,
+        this.accounts::remove
       ));
     }catch(ReAuthenticationException e){
       return Optional.empty();
@@ -368,6 +423,9 @@ public final class Client{
     @Nonnull Consumer<ReAuthenticationException> onError
   ){
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check all inputs
     Validation.assertNonnull(credentials, "credentials");
     Validation.assertNonnull(consumer, "consumer");
@@ -383,7 +441,8 @@ public final class Client{
       new AtomicReference<>(fastChangingDataLifetime),
       new AtomicReference<>(slowChangingDataLifetime),
       new RefreshSubscription(consumer, onError),
-      null
+      null,
+      this.accounts::remove
     ));
   }
 
@@ -407,6 +466,9 @@ public final class Client{
     @Nonnull Duration refreshOffsetDuration
   ){
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check all inputs
     Validation.assertNonnull(credentials, "credentials");
     Validation.assertNonnull(consumer, "consumer");
@@ -423,8 +485,25 @@ public final class Client{
       new AtomicReference<>(fastChangingDataLifetime),
       new AtomicReference<>(slowChangingDataLifetime),
       new RefreshSubscription(consumer, onError),
-      refreshOffsetDuration
+      refreshOffsetDuration,
+      this.accounts::remove
     ));
+  }
+
+  @Override
+  public void close(){
+
+    // Guard against multiple calls
+    if(!this.closed.compareAndSet(false, true)) return;
+
+    // Close all accounts
+    for(var account : accounts){
+      account.close();
+      accounts.remove(account);
+    }
+
+    // Close client
+    this.client.close();
   }
 
   /** Builder */

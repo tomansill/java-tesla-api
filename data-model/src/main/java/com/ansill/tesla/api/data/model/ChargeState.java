@@ -61,7 +61,8 @@ public final class ChargeState{
 
   private final boolean chargeToMaxRange;
 
-  private final int chargerPhases;
+  @Nullable
+  private final Integer chargerPhases;
 
   private final int chargerActualCurrent;
 
@@ -139,7 +140,7 @@ public final class ChargeState{
     double chargeRate,
     boolean chargeToMaxRange,
     int chargerActualCurrent,
-    int chargerPhases,
+    @Nullable Integer chargerPhases,
     int chargerPilotCurrent,
     int chargerPower,
     int chargerVoltage,
@@ -346,7 +347,7 @@ public final class ChargeState{
     temp = Double.doubleToLongBits(getChargeRate());
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     result = 31 * result + (chargeToMaxRange ? 1 : 0);
-    result = 31 * result + getChargerPhases();
+    result = 31 * result + getChargerPhases().orElse(0);
     result = 31 * result + getChargerActualCurrent();
     result = 31 * result + getChargerPilotCurrent();
     result = 31 * result + getChargerPower();
@@ -394,8 +395,9 @@ public final class ChargeState{
     return chargerActualCurrent;
   }
 
-  public int getChargerPhases(){
-    return chargerPhases;
+  @Nonnull
+  public Optional<Integer> getChargerPhases(){
+    return Optional.ofNullable(chargerPhases);
   }
 
   public int getChargerPilotCurrent(){
@@ -545,7 +547,7 @@ public final class ChargeState{
       var chargeRate = JacksonUtility.getDouble(node, "charge_rate", usedKeysSet);
       var chargeToMaxRange = JacksonUtility.getBoolean(node, "charge_to_max_range", usedKeysSet);
       var chargerActualCurrent = JacksonUtility.getInteger(node, "charger_actual_current", usedKeysSet);
-      var chargerPhases = JacksonUtility.getInteger(node, "charger_phases", usedKeysSet);
+      var chargerPhases = JacksonUtility.getIntegerNullable(node, "charger_phases", usedKeysSet);
       var chargerPilotCurrent = JacksonUtility.getInteger(node, "charger_pilot_current", usedKeysSet);
       var chargerPower = JacksonUtility.getInteger(node, "charger_power", usedKeysSet);
       var chargerVoltage = JacksonUtility.getInteger(node, "charger_voltage", usedKeysSet);

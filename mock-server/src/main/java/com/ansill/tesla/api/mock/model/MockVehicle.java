@@ -358,7 +358,6 @@ public class MockVehicle{
   public CompleteVehicle convertComplete(){
     return new CompleteVehicle(
       id,
-      userId,
       vehicleId,
       vin,
       displayName,

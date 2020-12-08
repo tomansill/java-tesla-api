@@ -965,7 +965,6 @@ class RawClientTest{
     var vehicle = new Vehicle(
       vehicle_temp.getId(),
       vehicle_temp.getVehicleId(),
-      vehicle_temp.getUserId(),
       vehicle_temp.getVIN(),
       vehicle_temp.getDisplayName(),
       vehicle_temp.getOptionCodes(),
@@ -1040,7 +1039,6 @@ class RawClientTest{
     var vehicle = new Vehicle(
       vehicle_temp.getId(),
       vehicle_temp.getVehicleId(),
-      vehicle_temp.getUserId(),
       vehicle_temp.getVIN(),
       vehicle_temp.getDisplayName(),
       vehicle_temp.getOptionCodes(),
@@ -1404,7 +1402,6 @@ class RawClientTest{
     var vehicle = new Vehicle(
       vehicle_temp.getId(),
       vehicle_temp.getVehicleId(),
-      vehicle_temp.getUserId(),
       vehicle_temp.getVIN(),
       vehicle_temp.getDisplayName(),
       vehicle_temp.getOptionCodes(),
@@ -1479,7 +1476,6 @@ class RawClientTest{
     var vehicle = new Vehicle(
       vehicle_temp.getId(),
       vehicle_temp.getVehicleId(),
-      vehicle_temp.getUserId(),
       vehicle_temp.getVIN(),
       vehicle_temp.getDisplayName(),
       vehicle_temp.getOptionCodes(),

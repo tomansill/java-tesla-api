@@ -28,7 +28,7 @@ import static com.ansill.utility.Utility.f;
 @Immutable
 public final class VehicleState{
 
-  public static final int SUPPORTED_API_VERSION = 8;
+  public static final int SUPPORTED_API_VERSION = 10;
 
   @Nullable
   private final String autoparkStateV3;

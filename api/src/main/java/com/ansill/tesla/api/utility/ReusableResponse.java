@@ -12,20 +12,38 @@ import static com.ansill.utility.Utility.simpleToString;
 /** Reusable version of Response - allows us to read response body many times */
 public class ReusableResponse implements AutoCloseable{
 
+  /** Original response object */
   @Nonnull
-  final Response response;
+  private final Response response;
 
+  /** Body string */
   @Nullable
   private String bodyString = null;
 
-  public ReusableResponse(@Nonnull Response response){
+  /**
+   * Creates reusable response from response
+   *
+   * @param response response
+   */
+  ReusableResponse(@Nonnull Response response){
     this.response = response;
   }
 
+  /**
+   * HTTP response status code
+   *
+   * @return code
+   */
   public int code(){
     return response.code();
   }
 
+  /**
+   * Retrieve body as string
+   *
+   * @return optional string containing body string
+   * @throws IOException thrown if cannot read body
+   */
   @Nonnull
   public synchronized Optional<String> getBodyAsString() throws IOException{
     if(bodyString != null) return Optional.of(bodyString);

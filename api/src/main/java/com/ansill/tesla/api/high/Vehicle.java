@@ -26,7 +26,11 @@ import javax.measure.quantity.Length;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Speed;
 import java.time.Duration;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.ansill.utility.Utility.f;
 
 /** Vehicle class */
 public class Vehicle{
@@ -825,5 +829,30 @@ public class Vehicle{
 
     // Get it and convert it to high level and return
     return getRawVehicleState().getCarVersion();
+  }
+
+  @Override
+  public String toString(){
+
+    // Set up SB
+    var sb = new StringBuilder();
+
+    // Set up list
+    List<String> info = new LinkedList<>();
+
+    // Write name
+    sb.append("Vehicle(");
+    info.add(f("id={}", this.id));
+    info.add(f("vin={}", this.vin));
+    info.add(f("vehicle={}", this.cachedVehicle.get().map(Object::toString).orElse("not available")));
+    info.add(f("driveState={}", this.cachedDriveState.get().map(Object::toString).orElse("not available")));
+    info.add(f("chargeState={}", this.cachedChargeState.get().map(Object::toString).orElse("not available")));
+    info.add(f("climateState={}", this.cachedClimateState.get().map(Object::toString).orElse("not available")));
+    info.add(f("guiSettings={}", this.cachedGuiSettings.get().map(Object::toString).orElse("not available")));
+    info.add(f("vehicleConfig={}", this.cachedVehicleConfig.get().map(Object::toString).orElse("not available")));
+    info.add(f("vehicleState={}", this.cachedVehicleState.get().map(Object::toString).orElse("not available")));
+
+    // Assemble and return
+    return sb.append(String.join(",", info)).append(")").toString();
   }
 }
