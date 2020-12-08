@@ -25,7 +25,7 @@ public class MockSessionManager{
   private final Map<String,MockSession> refreshTokensToSessions = new ConcurrentHashMap<>();
 
   @Nonnull
-  private Duration defaultSessionDuration = Duration.ofMinutes(120);
+  private Duration defaultSessionDuration = Duration.ofDays(45);
 
   @Nonnull
   public Duration getDefaultSessionDuration(){
@@ -34,6 +34,10 @@ public class MockSessionManager{
 
   public void setDefaultSessionDuration(@Nonnull Duration defaultSessionDuration){
     this.defaultSessionDuration = Validation.assertNonnull(defaultSessionDuration, "defaultSessionDuration");
+  }
+
+  void pingAccount(@Nonnull MockAccount account){
+    accountsToSessions.putIfAbsent(account, new HashSet<>());
   }
 
   @Nonnull
