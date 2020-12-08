@@ -88,6 +88,7 @@ public final class JacksonUtility{
     @Nonnull Set<String> usedKeyNames
   ){
     var itemNode = node.get(keyName);
+    if(itemNode == null) return null;
     if(!itemNode.isNull() && !itemNode.isBoolean()) throw new RuntimeException(f(
       "Key name '{}' is not a Boolean!",
       keyName
@@ -134,6 +135,7 @@ public final class JacksonUtility{
     @Nonnull Set<String> usedKeyNames
   ){
     var itemNode = node.get(keyName);
+    if(itemNode == null) return null;
     if(!itemNode.isNull() && !itemNode.isTextual()) throw new RuntimeException(f(
       "Key name '{}' is not a String!",
       keyName
@@ -161,11 +163,29 @@ public final class JacksonUtility{
     @Nonnull Set<String> usedKeyNames
   ){
     var itemNode = node.get(keyName);
+    if(itemNode == null) return null;
     if(!itemNode.isNull() && !itemNode.isLong() && !itemNode.isIntegralNumber()) throw new RuntimeException(f(
       "Key name '{}' is not a Long!",
       keyName
     ));
     var item = itemNode.isNull() ? null : itemNode.asLong();
+    usedKeyNames.add(keyName);
+    return item;
+  }
+
+  @Nullable
+  public static Integer getIntegerNullable(
+    @Nonnull ObjectNode node,
+    @Nonnull String keyName,
+    @Nonnull Set<String> usedKeyNames
+  ){
+    var itemNode = node.get(keyName);
+    if(itemNode == null) return null;
+    if(!itemNode.isNull() && !itemNode.isLong() && !itemNode.isIntegralNumber()) throw new RuntimeException(f(
+      "Key name '{}' is not a Integer!",
+      keyName
+    ));
+    var item = itemNode.isNull() ? null : itemNode.asInt();
     usedKeyNames.add(keyName);
     return item;
   }

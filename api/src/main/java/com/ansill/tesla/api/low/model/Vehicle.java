@@ -2,6 +2,7 @@ package com.ansill.tesla.api.low.model;
 
 import com.ansill.tesla.api.data.model.AbstractVehicle;
 import com.ansill.tesla.api.data.model.response.VehicleResponse;
+import com.ansill.utility.Utility;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -145,5 +146,10 @@ public final class Vehicle{
     DRIVING,
     OFFLINE
     //Others??
+  }
+
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
   }
 }

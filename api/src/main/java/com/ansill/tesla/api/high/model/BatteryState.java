@@ -1,6 +1,7 @@
 package com.ansill.tesla.api.high.model;
 
 import com.ansill.tesla.api.low.model.ChargeState;
+import com.ansill.utility.Utility;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -148,4 +149,8 @@ public final class BatteryState{
     return estimatedBatteryRange;
   }
 
+  @Override
+  public String toString(){
+    return Utility.simpleToString(this);
+  }
 }

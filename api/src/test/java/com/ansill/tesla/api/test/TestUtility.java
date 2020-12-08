@@ -44,7 +44,6 @@ public final class TestUtility{
     return new CompleteVehicle(
       RANDOM.nextLong(),
       RANDOM.nextLong(),
-      RANDOM.nextLong(),
       generateString(8),
       generateString(6),
       generateString(6),
@@ -271,7 +270,6 @@ public final class TestUtility{
   public static Vehicle generateVehicle(){
     Collections.shuffle(STATES);
     return new Vehicle(
-      RANDOM.nextLong(),
       RANDOM.nextLong(),
       RANDOM.nextLong(),
       generateString(32),

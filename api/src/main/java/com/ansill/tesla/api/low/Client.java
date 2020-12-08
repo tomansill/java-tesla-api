@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 
 /** Slightly opinionated client */
-public class Client{
+public class Client implements AutoCloseable{
 
   /** Raw client */
   private final com.ansill.tesla.api.raw.Client client;
@@ -495,6 +495,11 @@ public class Client{
 
     // Get the data
     return CompleteData.convert(client.getVehicleData(accessToken, idString).getResponse());
+  }
+
+  @Override
+  public void close(){
+    this.client.close();
   }
 
   /** Builder */

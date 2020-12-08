@@ -16,6 +16,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -183,7 +184,7 @@ public final class ClimateState{
     if(sideMirrorHeaters != that.sideMirrorHeaters) return false;
     if(getTimestamp() != that.getTimestamp()) return false;
     if(wiperBladeHeater != that.wiperBladeHeater) return false;
-    if(!batteryHeaterNoPower.equals(that.batteryHeaterNoPower)) return false;
+    if(!Objects.equals(batteryHeaterNoPower, that.batteryHeaterNoPower)) return false;
     if(!getClimateKeeperMode().equals(that.getClimateKeeperMode())) return false;
     if(!getSeatHeaterRight().equals(that.getSeatHeaterRight())) return false;
     if(!getSeatHeaterLeft().equals(that.getSeatHeaterLeft())) return false;
@@ -199,7 +200,7 @@ public final class ClimateState{
     int result;
     long temp;
     result = (batteryHeater ? 1 : 0);
-    result = 31 * result + batteryHeaterNoPower.hashCode();
+    result = 31 * result + Objects.hashCode(batteryHeaterNoPower);
     result = 31 * result + getClimateKeeperMode().hashCode();
     result = 31 * result + getDefrostMode();
     temp = Double.doubleToLongBits(getDriverTempSetting());
@@ -413,8 +414,8 @@ public final class ClimateState{
       var seatHeaterRearCenter = JacksonUtility.getInteger(node, "seat_heater_rear_center", usedKeysSet);
       var seatHeaterRearLeft = JacksonUtility.getInteger(node, "seat_heater_rear_left", usedKeysSet);
       var seatHeaterRearRight = JacksonUtility.getInteger(node, "seat_heater_rear_right", usedKeysSet);
-      var seatHeaterBackLeft = JacksonUtility.getInteger(node, "seat_heater_back_left", usedKeysSet);
-      var seatHeaterBackRight = JacksonUtility.getInteger(node, "seat_heater_back_right", usedKeysSet);
+      var seatHeaterBackLeft = JacksonUtility.getIntegerNullable(node, "seat_heater_back_left", usedKeysSet);
+      var seatHeaterBackRight = JacksonUtility.getIntegerNullable(node, "seat_heater_back_right", usedKeysSet);
       var seatHeaterRight = JacksonUtility.getInteger(node, "seat_heater_right", usedKeysSet);
       var sideMirrorHeaters = JacksonUtility.getBoolean(node, "side_mirror_heaters", usedKeysSet);
       var timestamp = JacksonUtility.getLong(node, "timestamp", usedKeysSet);

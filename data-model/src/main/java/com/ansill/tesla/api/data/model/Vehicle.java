@@ -28,7 +28,6 @@ public final class Vehicle extends AbstractVehicle{
 
   public Vehicle(
     long id,
-    long userId,
     long vehicleId,
     @Nonnull String vin,
     @Nonnull String displayName,
@@ -44,7 +43,6 @@ public final class Vehicle extends AbstractVehicle{
   ){
     super(
       id,
-      userId,
       vehicleId,
       vin,
       displayName,
@@ -63,7 +61,6 @@ public final class Vehicle extends AbstractVehicle{
 
   public Vehicle(
     long id,
-    long userId,
     long vehicleId,
     @Nonnull String vin,
     @Nonnull String displayName,
@@ -80,7 +77,6 @@ public final class Vehicle extends AbstractVehicle{
   ){
     super(
       id,
-      userId,
       vehicleId,
       vin,
       displayName,
@@ -139,7 +135,6 @@ public final class Vehicle extends AbstractVehicle{
       // Return vehicle
       return new Vehicle(
         vehicle.getId(),
-        vehicle.getUserId(),
         vehicle.getVehicleId(),
         vehicle.getVIN(),
         vehicle.getDisplayName(),

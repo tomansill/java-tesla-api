@@ -22,9 +22,6 @@ public class AbstractVehicle{
   private final long id;
 
   @Nonnegative
-  private final long userId;
-
-  @Nonnegative
   private final long vehicleId;
 
   @Nonnull
@@ -63,7 +60,6 @@ public class AbstractVehicle{
 
   protected AbstractVehicle(
     long id,
-    long userId,
     long vehicleId,
     @Nonnull String vin,
     @Nonnull String displayName,
@@ -79,7 +75,6 @@ public class AbstractVehicle{
     @Nonnull Map<String,Optional<Object>> unknownFields
   ){
     this.id = id;
-    this.userId = userId;
     this.vehicleId = vehicleId;
     this.vin = vin;
     this.displayName = displayName;
@@ -104,9 +99,6 @@ public class AbstractVehicle{
 
     // Get id
     var id = getLong(node, "id", usedKeys);
-
-    // Get userId
-    var userId = getLong(node, "user_id", usedKeys);
 
     // Get vehicleId
     var vehicleId = getLong(node, "vehicle_id", usedKeys);
@@ -155,7 +147,6 @@ public class AbstractVehicle{
     // Build and return
     return new AbstractVehicle(
       id,
-      userId,
       vehicleId,
       vin,
       displayName,
@@ -179,10 +170,6 @@ public class AbstractVehicle{
   @Nonnull
   public String getIdString(){
     return id + "";
-  }
-
-  public long getUserId(){
-    return userId;
   }
 
   public long getVehicleId(){
@@ -242,7 +229,6 @@ public class AbstractVehicle{
     if(!(o instanceof AbstractVehicle that)) return false;
 
     if(getId() != that.getId()) return false;
-    if(getUserId() != that.getUserId()) return false;
     if(getVehicleId() != that.getVehicleId()) return false;
     if(isInService() != that.isInService()) return false;
     if(isCalendarEnabled() != that.isCalendarEnabled()) return false;
@@ -261,7 +247,6 @@ public class AbstractVehicle{
   @Override
   public int hashCode(){
     int result = (int) (getId() ^ (getId() >>> 32));
-    result = 31 * result + (int) (getUserId() ^ (getUserId() >>> 32));
     result = 31 * result + (int) (getVehicleId() ^ (getVehicleId() >>> 32));
     result = 31 * result + vin.hashCode();
     result = 31 * result + getDisplayName().hashCode();

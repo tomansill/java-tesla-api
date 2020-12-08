@@ -4,3 +4,4 @@
 target/
 ignored/
 **/*.versionsBackup
+api/src/test/java/com/ansill/tesla/api/test/QuickTest.java
