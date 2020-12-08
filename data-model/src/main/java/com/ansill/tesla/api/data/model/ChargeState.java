@@ -292,7 +292,7 @@ public final class ChargeState{
     if(isChargePortDoorOpen() != that.isChargePortDoorOpen()) return false;
     if(Double.compare(that.getChargeRate(), getChargeRate()) != 0) return false;
     if(chargeToMaxRange != that.chargeToMaxRange) return false;
-    if(!getChargerPhases().equals(that.getChargerPhases())) return false;
+    if(getChargerPhases() != that.getChargerPhases()) return false;
     if(getChargerActualCurrent() != that.getChargerActualCurrent()) return false;
     if(getChargerPilotCurrent() != that.getChargerPilotCurrent()) return false;
     if(getChargerPower() != that.getChargerPower()) return false;
