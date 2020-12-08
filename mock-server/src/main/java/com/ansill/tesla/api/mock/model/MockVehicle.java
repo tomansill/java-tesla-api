@@ -13,11 +13,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.ansill.tesla.api.mock.MockUtility.generateLegibleString;
 import static com.ansill.tesla.api.mock.MockUtility.generateString;
 import static com.ansill.utility.Utility.simpleToString;
 
 @SuppressWarnings("unused")
 public class MockVehicle{
+
+  private boolean hidden = false;
+
+  public void suspend(){
+    hidden = true;
+  }
+
+  public void unsuspend(){
+    hidden = false;
+  }
+
+  public boolean isHidden(){
+    return hidden;
+  }
 
   @Nonnull
   private final String vin;
@@ -124,7 +139,7 @@ public class MockVehicle{
       Math.abs(random.nextLong()),
       Math.abs(random.nextLong()),
       generateString(32),
-      generateString(32),
+      generateLegibleString(),
       generateString(32),
       generateString(5),
       Collections.singletonList(generateString(32)),
@@ -343,7 +358,6 @@ public class MockVehicle{
   public CompleteVehicle convertComplete(){
     return new CompleteVehicle(
       id,
-      userId,
       vehicleId,
       vin,
       displayName,

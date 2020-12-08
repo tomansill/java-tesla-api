@@ -16,6 +16,7 @@ import io.javalin.plugin.openapi.annotations.OpenApi;
 import io.javalin.plugin.openapi.ui.ReDocOptions;
 import io.javalin.plugin.openapi.ui.SwaggerOptions;
 import io.swagger.v3.oas.models.info.Info;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +24,12 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static com.ansill.utility.Utility.generateString;
 import static io.javalin.apibuilder.ApiBuilder.get;
 import static io.javalin.apibuilder.ApiBuilder.path;
 
@@ -61,13 +64,24 @@ public class MockServer implements AutoCloseable{
 
   public static void main(String... args) throws InterruptedException{
 
+    // Random Generator
+    Random randomGenerator;
+
+    if(args.length != 0) randomGenerator = new Random(args[0].hashCode());
+    else randomGenerator = new Random();
+
     // Set up model
-    var model = new AtomicReference<>(new MockModel("wefw", "sefew"));
+    var model = new AtomicReference<>(new MockModel(
+      generateString(randomGenerator, 64),
+      generateString(randomGenerator, 64)
+    ));
 
     // Run it
     var cdl = new CountDownLatch(1);
     try(var server = new MockServer(model)){
       System.out.println("Port: " + server.getPort());
+      System.out.println("Client Id: " + model.get().getClientId());
+      System.out.println("Client Secret: " + model.get().getClientSecret());
       LOGGER.info("Mock Server started");
       cdl.await();
     }
@@ -143,13 +157,22 @@ public class MockServer implements AutoCloseable{
       }
     });
     server.exception(NotFoundResponse.class, (exception, ctx) -> {
-      if(ctx.path().contains("api") || ctx.path().contains("oauth")){
+      if(
+        ctx.path().contains("api") ||
+        ctx.path().contains("oauth") ||
+        (ctx.path().contains("model") && "html".equalsIgnoreCase(ctx.queryParam("type")))
+      ){
         ctx.contentType("application/json");
         var map = new HashMap<>();
         map.put("code", 404);
         map.put("message", "not found");
         ctx.json(map);
+        return;
       }
+      ctx.contentType("text/html");
+      var document = Document.createShell("");
+      document.body().appendElement("h1").text("Not Found");
+      ctx.result(document.toString());
     });
 
     // Set up routes

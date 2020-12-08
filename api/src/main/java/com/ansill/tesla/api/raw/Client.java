@@ -55,19 +55,24 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static com.ansill.utility.Utility.f;
 
 /** Raw (Very Low Level) Tesla API client */
-public final class Client{
+public final class Client implements AutoCloseable{
 
   /** Logger */
   private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
 
   /** Number of connection attempts */
   private static final int MAX_ATTEMPTS = 5;
+
+  /** Flag to indicate that client is closed */
+  @Nonnull
+  private final AtomicBoolean closed = new AtomicBoolean(false);
 
   /** Client ID to use */
   @Nonnull
@@ -88,6 +93,9 @@ public final class Client{
   /** Read Timeout Duration */
   @Nonnull
   private final AtomicReference<Duration> readTimeoutDuration = new AtomicReference<>();
+
+  @Nonnull
+  private final AtomicReference<OkHttpClient> clientReference;
 
   private final boolean verifySleepingState = true;
 
@@ -146,6 +154,31 @@ public final class Client{
 
     // Set function
     setUnknownFieldsFunction(unknownFieldsFunction);
+
+    // Set up client
+    this.clientReference = new AtomicReference<>();
+    this.updateClientBuilder();
+  }
+
+  private void updateClientBuilder(){
+    this.clientReference.updateAndGet(client -> {
+
+      // Cancel/close old
+      if(client != null){
+        client.dispatcher().executorService().shutdownNow();
+        client.connectionPool().evictAll();
+      }
+
+      // Set up builder
+      var builder = new OkHttpClient.Builder();
+      var timeout = this.connectTimeoutDuration.get();
+      if(timeout != null) builder.connectTimeout(timeout);
+      timeout = this.readTimeoutDuration.get();
+      if(timeout != null) builder.readTimeout(timeout);
+
+      // Save
+      return builder.build();
+    });
   }
 
   @Nonnull
@@ -280,10 +313,12 @@ public final class Client{
 
   public void resetConnectTimeoutDuration(){
     this.connectTimeoutDuration.set(null);
+    this.updateClientBuilder();
   }
 
   public void resetReadTimeoutDuration(){
     this.readTimeoutDuration.set(null);
+    this.updateClientBuilder();
   }
 
   @Nonnull
@@ -293,6 +328,7 @@ public final class Client{
 
   public void setConnectTimeoutDuration(@Nonnull Duration timeout){
     this.connectTimeoutDuration.set(Validation.assertNonnull(timeout, "timeout"));
+    this.updateClientBuilder();
   }
 
   @Nonnull
@@ -302,17 +338,7 @@ public final class Client{
 
   public void setReadTimeoutDuration(@Nonnull Duration timeout){
     this.readTimeoutDuration.set(Validation.assertNonnull(timeout, "timeout"));
-  }
-
-  @Nonnull
-  private Function<OkHttpClient.Builder,OkHttpClient.Builder> buildClientConfigurator(){
-    return builder -> {
-      var timeout = this.connectTimeoutDuration.get();
-      if(timeout != null) builder.connectTimeout(timeout);
-      timeout = this.readTimeoutDuration.get();
-      if(timeout != null) builder.readTimeout(timeout);
-      return builder;
-    };
+    this.updateClientBuilder();
   }
 
   /**
@@ -329,6 +355,9 @@ public final class Client{
     @Nonnull String emailAddress,
     @Nonnull String password
   ) throws AuthenticationException, ClientException{
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
 
     // Check parameters
     Validation.assertNonnull(emailAddress, "emailAddress");
@@ -350,7 +379,7 @@ public final class Client{
 
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
+    try(var response = HTTPUtility.httpCall(request, this.clientReference)){
 
       // Handle code
       return switch(response.code()){
@@ -411,6 +440,9 @@ public final class Client{
 
   public void revokeToken(@Nonnull String refreshToken){
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(refreshToken, "refreshToken");
 
@@ -424,7 +456,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
+    try(var response = HTTPUtility.httpCall(request, this.clientReference)){
 
       // Handle code
       if(response.code() != 200){
@@ -440,6 +472,9 @@ public final class Client{
 
   @Nonnull
   public SuccessfulAuthenticationResponse refreshToken(@Nonnull String refreshToken) throws ReAuthenticationException{
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
 
     // Check parameters
     Validation.assertNonnull(refreshToken, "refreshToken");
@@ -458,7 +493,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
+    try(var response = HTTPUtility.httpCall(request, this.clientReference)){
 
       // Handle code
       return switch(response.code()){
@@ -532,6 +567,9 @@ public final class Client{
   @Nonnull
   public VehiclesResponse getVehicles(@Nonnull String access_token) throws InvalidAccessTokenException{
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(access_token, "access_token");
 
@@ -542,7 +580,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
+    try(var response = HTTPUtility.httpCall(request, this.clientReference)){
 
       // Handle code
       return switch(response.code()){
@@ -567,6 +605,9 @@ public final class Client{
   @Nonnull
   public Optional<VehicleResponse> getVehicle(@Nonnull String accessToken, @Nonnull String idString){
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
 
@@ -580,7 +621,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
+    try(var response = HTTPUtility.httpCall(request, this.clientReference)){
 
       // Handle code
       return switch(response.code()){
@@ -618,6 +659,9 @@ public final class Client{
   public VehicleResponse wakeup(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
 
@@ -631,7 +675,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
+    try(var response = HTTPUtility.httpCall(request, this.clientReference)){
 
       // Handle code
       return switch(response.code()){
@@ -669,6 +713,9 @@ public final class Client{
     @Nonnull String command
   ) throws VehicleIDNotFoundException{
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
 
@@ -682,7 +729,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
+    try(var response = HTTPUtility.httpCall(request, this.clientReference)){
 
       // Handle code
       return switch(response.code()){
@@ -729,7 +776,7 @@ public final class Client{
                                            .build();
 
     // Send request
-    try(ReusableResponse response = HTTPUtility.httpCall(request, buildClientConfigurator())){
+    try(var response = HTTPUtility.httpCall(request, this.clientReference)){
 
       // Handle code
       return switch(response.code()){
@@ -933,6 +980,9 @@ public final class Client{
   public CompleteVehicleDataResponse getVehicleData(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
 
@@ -950,6 +1000,9 @@ public final class Client{
   @Nonnull
   public ChargeState getVehicleChargeState(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
 
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
@@ -971,6 +1024,9 @@ public final class Client{
   public ClimateState getVehicleClimateState(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
 
@@ -988,6 +1044,9 @@ public final class Client{
   @Nonnull
   public DriveState getVehicleDriveState(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
 
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
@@ -1007,6 +1066,9 @@ public final class Client{
   public GuiSettings getVehicleGuiSettings(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
 
@@ -1024,6 +1086,9 @@ public final class Client{
   @Nonnull
   public VehicleState getVehicleVehicleState(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
+
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
 
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
@@ -1043,6 +1108,9 @@ public final class Client{
   public VehicleConfig getVehicleVehicleConfig(@Nonnull String accessToken, @Nonnull String idString)
   throws VehicleIDNotFoundException{
 
+    // Ensure that client is not closed
+    if(this.closed.get()) throw new IllegalStateException("Client is closed");
+
     // Check parameters
     Validation.assertNonnull(accessToken, "accessToken");
 
@@ -1055,6 +1123,17 @@ public final class Client{
 
     // Get the data
     return getVehicleDataForm(accessToken, idString, typeToken, "data_request/vehicle_config").getResponse();
+  }
+
+  @Override
+  public void close(){
+
+    // Ensure no double call
+    if(!this.closed.compareAndSet(false, true)) return;
+
+    var client = this.clientReference.getAndSet(null);
+    client.dispatcher().executorService().shutdownNow();
+    client.connectionPool().evictAll();
   }
 
   /** Builder */

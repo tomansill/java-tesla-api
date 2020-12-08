@@ -67,6 +67,9 @@ public class Account implements AutoCloseable{
   private RefreshSubscription refreshSubscription;
 
   @Nonnull
+  private final Consumer<Account> onClose;
+
+  @Nonnull
   private final AtomicReference<Duration> refreshDurationBeforeExpiration = new AtomicReference<>();
 
   /**
@@ -77,6 +80,7 @@ public class Account implements AutoCloseable{
    * @param fastChangingDataLifetime        lifetime for fast-changing data
    * @param slowChangingDataLifetime        lifetime for slow-changing data
    * @param refreshDurationBeforeExpiration duration before the expiration for Account to refresh the credentials
+   * @param onClose
    */
   Account(
     @Nonnull Client client,
@@ -84,13 +88,15 @@ public class Account implements AutoCloseable{
     @Nonnull AtomicReference<AtomicReference<Duration>> fastChangingDataLifetime,
     @Nonnull AtomicReference<AtomicReference<Duration>> slowChangingDataLifetime,
     @Nullable RefreshSubscription subscription,
-    @Nullable Duration refreshDurationBeforeExpiration
+    @Nullable Duration refreshDurationBeforeExpiration,
+    @Nonnull Consumer<Account> onClose
   ){
     this.client = client;
     this.credentials = credentials;
     this.fastChangingDataLifetime = fastChangingDataLifetime;
     this.slowChangingDataLifetime = slowChangingDataLifetime;
     this.refreshSubscription = subscription;
+    this.onClose = onClose;
     this.refreshDurationBeforeExpiration.set(refreshDurationBeforeExpiration !=
                                              null ? refreshDurationBeforeExpiration : DEFAULT_TIME_OFFSET_BEFORE_REFRESH);
     resetTimer();
@@ -149,6 +155,9 @@ public class Account implements AutoCloseable{
 
     // Log
     LOGGER.debug("Setting up refresh timer");
+
+    // Ensure that it's not closed
+    if(this.closed.get()) return;
 
     // Set up TimerTask
     TimerTask task = new TimerTask(){
@@ -226,7 +235,7 @@ public class Account implements AutoCloseable{
     LOGGER.debug("Attempting to refresh");
 
     // Ensure that it's not closed
-    if(this.closed.get()) throw new IllegalStateException("Account is closed!");
+    if(this.closed.get()) return;
 
     // Lock it
     try(var ignored = AutoLock.create(rrwl.writeLock()).doLock()){
@@ -260,6 +269,9 @@ public class Account implements AutoCloseable{
   @Nonnull
   public Set<Vehicle> getVehicles(){
 
+    // Ensure that it's not closed
+    if(this.closed.get()) throw new IllegalStateException("Account is closed!");
+
     // Perform it
     return performOnClient(client -> client.getVehicles(credentials.getAccessToken())
                                            .stream()
@@ -270,6 +282,9 @@ public class Account implements AutoCloseable{
 
   @Nonnull
   public Optional<Vehicle> getVehicleByName(@Nonnull String name){
+
+    // Ensure that it's not closed
+    if(this.closed.get()) throw new IllegalStateException("Account is closed!");
 
     // Assert name
     Validation.assertNonemptyString(name);
@@ -286,6 +301,9 @@ public class Account implements AutoCloseable{
   @Nonnull
   public Optional<Vehicle> getVehicleByID(@Nonnull String id){
 
+    // Ensure that it's not closed
+    if(this.closed.get()) throw new IllegalStateException("Account is closed!");
+
     // Assert id
     Validation.assertNonemptyString(id);
 
@@ -296,6 +314,9 @@ public class Account implements AutoCloseable{
 
   @Nonnull
   public Optional<Vehicle> getVehicleByVIN(@Nonnull String vin){
+
+    // Ensure that it's not closed
+    if(this.closed.get()) throw new IllegalStateException("Account is closed!");
 
     // Assert vin
     Validation.assertNonemptyString(vin);
@@ -378,5 +399,6 @@ public class Account implements AutoCloseable{
     if(!closed.compareAndSet(false, true)) return;
     var timer = this.timer.getAndSet(null);
     if(timer != null) timer.cancel();
+    this.onClose.accept(this);
   }
 }

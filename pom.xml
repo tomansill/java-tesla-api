@@ -7,7 +7,7 @@
     <groupId>com.ansill.tesla</groupId>
     <artifactId>tesla-api</artifactId>
     <packaging>pom</packaging>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <!-- mvn versions:set -DnewVersion=new_version -->
 
     <modules>
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>com.ansill.utility</groupId>
             <artifactId>utility</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.3</version>
         </dependency>
         <dependency>
             <groupId>com.ansill.validation</groupId>

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import static com.ansill.utility.Utility.f;
 
@@ -36,12 +35,11 @@ public final class HTTPUtility{
   @Nonnull
   public static ReusableResponse httpCall(
     @Nonnull Request request,
-    @Nonnull Function<OkHttpClient.Builder,OkHttpClient.Builder> config
+    @Nonnull AtomicReference<OkHttpClient> clientRef
   ) throws IOException{
-    var client = config.apply(new OkHttpClient.Builder()).build();
     ReusableResponse reusableResponse = null;
     try{
-      reusableResponse = new ReusableResponse(client.newCall(request).execute());
+      reusableResponse = new ReusableResponse(clientRef.get().newCall(request).execute());
     }finally{
       var consumer = HTTP_LOGGING.get();
       if(consumer != null) consumer.accept(request, reusableResponse);

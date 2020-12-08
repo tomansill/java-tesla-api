@@ -3,6 +3,7 @@ package com.ansill.tesla.api.mock.model;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class MockModel{
 
@@ -71,6 +73,7 @@ public class MockModel{
     if(accounts.containsKey(emailAddress.toLowerCase())) throw new IllegalStateException(
       "Duplicate account with same email address exists!");
     accounts.put(emailAddress.toLowerCase(), account);
+    sessionManager.pingAccount(account);
     return account;
   }
 
@@ -211,7 +214,8 @@ public class MockModel{
 
   @Nonnull
   public Set<MockVehicle> getVehicles(@Nonnull MockAccount account){
-    var vehicle = new HashSet<>(vehicles.getOrDefault(account, Collections.emptyMap()).values());
+    var vehicle = new HashSet<>(vehicles.getOrDefault(account, Collections.emptyMap()).values()).stream().filter(
+      vehicle1 -> !vehicle1.isHidden()).collect(Collectors.toSet());
     vehiclesSubscription.values().forEach(consumer -> consumer.accept(account.getEmailAddress(), vehicle));
     return vehicle;
   }
@@ -219,12 +223,19 @@ public class MockModel{
   @Nonnull
   public Optional<MockVehicle> getVehicle(MockAccount account, String id){
     var result = Optional.ofNullable(vehicles.getOrDefault(account, Collections.emptyMap()).get(id));
-    vehicleDataRequestSubscription.values().forEach(consumer -> consumer.accept(id, result));
-    return result;
+    if(result.isPresent() && !result.get().isHidden()){
+      vehicleDataRequestSubscription.values().forEach(consumer -> consumer.accept(id, result));
+    }
+    return result.filter(vehicle -> !vehicle.isHidden());
   }
 
   @Nonnull
   public Optional<Set<MockSession>> getSessions(@Nonnull MockAccount acct){
     return sessionManager.getSessions(acct);
+  }
+
+  @Nonnull
+  public Collection<MockAccount> getAllAccounts(){
+    return this.accounts.values();
   }
 }
