@@ -1,4 +1,4 @@
-package com.ansill.tesla.api.model;
+package com.ansill.tesla.api.data.utility;
 
 import tech.units.indriya.function.AddConverter;
 import tech.units.indriya.function.MultiplyConverter;

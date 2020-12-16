@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.low.model;
 
-import com.ansill.tesla.api.model.ImperialUnits;
+import com.ansill.tesla.api.data.utility.ImperialUnits;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 

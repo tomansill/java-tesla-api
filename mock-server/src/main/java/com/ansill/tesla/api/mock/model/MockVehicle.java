@@ -339,7 +339,6 @@ public class MockVehicle{
   public Vehicle convert(){
     return new Vehicle(
       id,
-      userId,
       vehicleId,
       vin,
       displayName,

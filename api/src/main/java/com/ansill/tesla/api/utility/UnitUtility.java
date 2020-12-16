@@ -1,6 +1,6 @@
 package com.ansill.tesla.api.utility;
 
-import com.ansill.tesla.api.model.ImperialUnits;
+import com.ansill.tesla.api.data.utility.ImperialUnits;
 import tech.units.indriya.function.MultiplyConverter;
 import tech.units.indriya.unit.TransformedUnit;
 import tech.units.indriya.unit.Units;

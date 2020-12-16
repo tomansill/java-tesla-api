@@ -50,7 +50,44 @@ public class MockController implements EndpointGroup{
     get("user/:username/vehicle&create", this::createVehicle);
     get("user/:username/vehicle/:vehicle", this::getVehicle);
     post("user/:username/vehicle/:vehicle/namechange", this::changeVehicleName);
+    post("user/:username/vehicle/:vehicle/drive", this::driveVehicle);
     post("user/:username/vehicle/:vehicle", this::deleteVehicle);
+  }
+
+  private void driveVehicle(Context context){
+
+    // Get user
+    var user = getUsername(context);
+    if(user == null) return;
+
+    // Get vehicle
+    var vehicle = getVehicle(user, context);
+    if(vehicle == null) return;
+
+    // Get new state
+    var driveMode = model.get().toggleDriveMode(vehicle);
+
+    // Switch on html or json
+    if(!"json".equalsIgnoreCase(context.header("type"))){
+
+      // Set up JSoup
+      var document = Document.createShell("");
+
+      // Add title
+      document.head().appendElement("title").text(f(TITLE + ": Vehicle '{}'", vehicle.getIdString()));
+
+      // Add header
+      var message = driveMode ? "Driving mode is activated for Vehicle {}" : "Driving mode is deactivated for Vehicle {}";
+      document.body().appendElement("h1").text(f(message, vehicle.getIdString()));
+
+      // Go back
+      document.body().appendElement("a").attr("href", f("../{}", vehicle.getIdString())).text("Go Back");
+
+      // Return it
+      context.contentType("text/html");
+      context.result(document.toString());
+
+    }else throw new UnsupportedOperationException();
   }
 
   private void changeVehicleName(Context context){

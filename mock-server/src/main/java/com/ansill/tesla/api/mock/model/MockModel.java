@@ -1,8 +1,10 @@
 package com.ansill.tesla.api.mock.model;
 
+import com.ansill.tesla.api.mock.MockDriver;
 import com.ansill.validation.Validation;
 
 import javax.annotation.Nonnull;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +45,9 @@ public class MockModel{
   private final Map<AutoCloseable,BiConsumer<String,Set<MockVehicle>>> vehiclesSubscription = new HashMap<>();
 
   private final Map<AutoCloseable,BiConsumer<String,Optional<MockVehicle>>> vehicleDataRequestSubscription = new HashMap<>();
+
+  @Nonnull
+  private final MockDriver mockDriver = new MockDriver(Duration.ofMillis(100));
 
   public MockModel(@Nonnull String clientId, @Nonnull String clientSecret){
     this.clientId = Validation.assertNonnull(clientId, "clientId");
@@ -237,5 +242,9 @@ public class MockModel{
   @Nonnull
   public Collection<MockAccount> getAllAccounts(){
     return this.accounts.values();
+  }
+
+  public boolean toggleDriveMode(@Nonnull MockVehicle vehicle){
+    return this.mockDriver.toggleDriveMode(vehicle);
   }
 }
