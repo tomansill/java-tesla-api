@@ -1,5 +1,6 @@
 package com.ansill.tesla.api.data.model;
 
+import com.ansill.utility.Utility;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -87,7 +88,7 @@ public class AbstractVehicle{
     this.apiVersion = apiVersion;
     this.backseatToken = backseatToken;
     this.backseatTokenUpdatedAt = backseatTokenUpdatedAt;
-    this._unknownFields = Collections.unmodifiableMap(unknownFields);
+    this._unknownFields = Utility.unmodifiableMap(unknownFields);
   }
 
   @Nonnull

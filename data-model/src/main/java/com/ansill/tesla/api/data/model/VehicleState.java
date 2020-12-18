@@ -2,6 +2,7 @@ package com.ansill.tesla.api.data.model;
 
 import com.ansill.tesla.api.data.utility.JacksonUtility;
 import com.ansill.tesla.api.data.utility.SimpleSerializer;
+import com.ansill.utility.Utility;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -239,15 +240,13 @@ public final class VehicleState{
     this.valetMode = valetMode;
     this.valetPinNeeded = valetPinNeeded;
     this.vehicleName = vehicleName;
-    this._unknownFields = Collections.unmodifiableMap(unknownFields);
+    this._unknownFields = Utility.unmodifiableMap(unknownFields);
   }
 
   @Override
   public boolean equals(Object o){
     if(this == o) return true;
-    if(!(o instanceof VehicleState)) return false;
-
-    VehicleState that = (VehicleState) o;
+    if(!(o instanceof VehicleState that)) return false;
 
     if(apiVersion != that.apiVersion) return false;
     if(isCalendarSupported() != that.isCalendarSupported()) return false;

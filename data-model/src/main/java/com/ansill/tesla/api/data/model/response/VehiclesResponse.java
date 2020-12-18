@@ -3,6 +3,7 @@ package com.ansill.tesla.api.data.model.response;
 import com.ansill.tesla.api.data.model.Vehicle;
 import com.ansill.tesla.api.data.utility.JacksonUtility;
 import com.ansill.tesla.api.data.utility.SimpleSerializer;
+import com.ansill.utility.Utility;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -15,7 +16,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -71,7 +71,7 @@ public final class VehiclesResponse{
    */
   @Nonnull
   public List<Vehicle> getResponse(){
-    return Collections.unmodifiableList(response);
+    return Utility.unmodifiableList(response);
   }
 
   @Override

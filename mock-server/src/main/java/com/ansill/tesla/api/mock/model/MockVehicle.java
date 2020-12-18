@@ -205,7 +205,7 @@ public class MockVehicle{
   }
 
   public List<String> getTokens(){
-    return Collections.unmodifiableList(tokens);
+    return Utility.unmodifiableList(tokens);
   }
 
   public void setTokens(@Nonnull List<String> tokens){
