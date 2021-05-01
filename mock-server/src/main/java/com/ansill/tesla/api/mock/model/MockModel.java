@@ -240,11 +240,15 @@ public class MockModel{
   }
 
   @Nonnull
-  public Collection<MockAccount> getAllAccounts(){
+  public Collection<MockAccount> getAllAccounts() {
     return this.accounts.values();
   }
 
-  public boolean toggleDriveMode(@Nonnull MockVehicle vehicle){
+  public boolean toggleDriveMode(@Nonnull MockVehicle vehicle) {
     return this.mockDriver.toggleDriveMode(vehicle);
+  }
+
+  public boolean getAutoDriveState(MockVehicle vehicle) {
+    return this.mockDriver.getDriveState(vehicle);
   }
 }

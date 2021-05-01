@@ -4,6 +4,7 @@ import com.ansill.tesla.api.mock.model.MockAccount;
 import com.ansill.tesla.api.mock.model.MockModel;
 import com.ansill.tesla.api.mock.model.MockSession;
 import com.ansill.tesla.api.mock.model.MockVehicle;
+import com.ansill.utility.Utility;
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
 import io.javalin.websocket.WsHandler;
@@ -19,7 +20,9 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.ansill.utility.Utility.f;
-import static io.javalin.apibuilder.ApiBuilder.*;
+import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.post;
+import static io.javalin.apibuilder.ApiBuilder.ws;
 
 public class MockController implements EndpointGroup{
 
@@ -425,11 +428,21 @@ public class MockController implements EndpointGroup{
         f("/model/user/{}/vehicle/{}/namechange", user.getEmailAddress(), vehicle.getIdString())
       );
       form.appendElement("input")
-          .attr("type", "text")
-          .attr("name", "new_name")
-          .attr("value", vehicle.getDisplayName())
-          .attr("placeholder", "New Name");
+        .attr("type", "text")
+        .attr("name", "new_name")
+        .attr("value", vehicle.getDisplayName())
+        .attr("placeholder", "New Name");
       form.appendElement("input").attr("type", "submit").attr("value", "Change Name");
+      document.body().appendElement("p").text(Utility.simpleToString(vehicle.getDriveState()));
+
+
+      // Autodrive dialog
+      document.body().appendElement("h4").text(f("Autodrive state: Current: {}", model.get().getAutoDriveState(vehicle)));
+      form = document.body().appendElement("form").attr("method", "POST").attr(
+        "action",
+        f("/model/user/{}/vehicle/{}/drive", user.getEmailAddress(), vehicle.getIdString())
+      );
+      form.appendElement("input").attr("type", "submit").attr("value", "Toggle");
 
       // Delete dialog
       document.body().appendElement("h4").text("Delete vehicle?");

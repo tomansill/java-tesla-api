@@ -4,6 +4,7 @@ package com.ansill.tesla.api.mock.model;
 import com.ansill.tesla.api.data.model.CompleteVehicle;
 import com.ansill.tesla.api.data.model.GuiSettings;
 import com.ansill.tesla.api.data.model.Vehicle;
+import com.ansill.utility.Utility;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
